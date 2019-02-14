@@ -29,7 +29,7 @@ sudo ./Remote
 #define MAX_PWM 4096
 #define HERTZ 50
 
-#define motorPin1	    PIN_BASE+	1   //Motor Vorwärts        out digital
+#define motorPin1	    PIN_BASE+	1  //Motor Vorwärts        out digital
 #define motorPin2	    PIN_BASE+	2  //Motor Rückwärts       out digital
 #define enablePin[3]    PIN_BASE+	3  //Motor Geschwindigkeit out PWM
 #define servoPin_CX	    PIN_BASE+	4  //Camera X              out PWM
