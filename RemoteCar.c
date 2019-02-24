@@ -49,8 +49,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
 
-#define	SERVO_MIN_ST	13+OFFSET_ST
-#define SERVO_MAX_ST	23+OFFSET_ST
+#define	SERVO_MIN_ST	9+OFFSET_ST
+#define SERVO_MAX_ST	18+OFFSET_ST
 
 #define	SERVO_MIN_US	7+OFFSET_ST
 #define SERVO_MAX_US	23+OFFSET_ST
