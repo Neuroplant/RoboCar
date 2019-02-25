@@ -296,30 +296,28 @@ int freeDirection() {
 
 // Motor
 
-void motor(int value){
-	if(gear>0){
-		digitalWrite(motorPin1,HIGH);
-		digitalWrite(motorPin2,LOW);
+PI_THREAD(motor){
+	while (run==0) {
+		if(gear>0){
+			digitalWrite(motorPin1,HIGH);
+			digitalWrite(motorPin2,LOW);
 		//printf("turn Forward...\n");
-	}
-	else if (gear<=0){
-		digitalWrite(motorPin1,LOW);
-		digitalWrite(motorPin2,HIGH);
+		}
+		else{
+			if (gear<=0){
+				digitalWrite(motorPin1,LOW);
+				digitalWrite(motorPin2,HIGH);
 		//printf("turn Back...\n");
-		soundNr = 2;
-		soundLoop = 1;
-	}
-	/*else {
-	    digitalWrite(motorPin1,LOW); 
-		digitalWrite(motorPin2,LOW);
-		printf("Motor Stop...\n");
-	*/
-	
-	if (gear == 0 ){
-		softPwmWrite(enablePin,BRAKE);
-		blink(rearlightPin,1,0);
-	}else{
-		softPwmWrite(enablePin,abs(value));
+				soundNr = 2;
+				soundLoop = 1;
+			}
+		}
+		if (gear == 0 ){
+			softPwmWrite(enablePin,BRAKE);
+			blink(rearlightPin,1,0);
+		}else{
+			softPwmWrite(enablePin,abs(speed));
+		}
 	}
 }
 
@@ -622,6 +620,9 @@ int Setup () {
 		}
 
 	return 0;
+//Motor
+	in x = piThreadCreate (myThread) ;
+	if (x != 0) printf ("it didn't start\n");
 }
 
 int SubmitMotor( int steeringInput, int speedInput) {
