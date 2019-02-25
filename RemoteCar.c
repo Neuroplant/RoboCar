@@ -42,7 +42,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define OFFSET_CX 0
 #define OFFSET_CY 0
 
-#define OFFSET_ST 0
+#define OFFSET_ST 1
 
 #define OFFSET_US 0
 
