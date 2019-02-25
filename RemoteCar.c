@@ -33,7 +33,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define servoPin_US     6   //Ultraschall-Servo     out PWM
 #define trigPin         4   //Ultraschall-Trigger   out digital
 #define echoPin         5   //Ultraschall-Echo      in  digital
-#define laserPin	    25  //div LEDs              out digital
+#define laserPin	  25  //div LEDs              out digital
 #define blinkrechtsPin  28  //div LEDs              out digital
 #define blinklinksPin   29  //div LEDs              out digital
 #define frontlightPin   27  //div LEDs              out digital
@@ -81,7 +81,54 @@ int turr1X	 = 0, turr1Y = -10, turret1 = 0;
 
 pthread_t t_blink[100];
 int blink_t_counter = 0;
+struct s_Blinker {
+	int pin;
+	int dura;
+	float freq;
+}
+struct s_Blinker Blinker[10];
+pthreat_t t_Blinker[10];
 
+void *BlinkerThread (void *arg) {
+	int idNr = (int*)arg;
+	int cycles,i;
+	pinMode(Blinker[idNr].pin,OUTPUT);
+	while (run == 0) {
+		cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
+		if (Blinker[idNr].freq == 0) {
+			digitalWrite(Blinker[idNr].pin,HIGH);
+	    		delay(Blinker[idNr].dura * 1000);
+	    		digitalWrite(Blinker[idNr].pin,LOW);
+		} else {
+			for (i=0;i<cycles;i++) {
+				digitalWrite(Blinker[idNr].pin,HIGH);
+				delay(500 / Blinker[idNr].freq);
+				digitalWrite(Blinker[idNr].pin,LOW);
+				delay(500 / Blinker[idNr].freq);
+			}
+		}
+		Blinker[idNr].dura = 0;
+	}
+	return NULL;
+}
+		
+
+int init_Blinker (void) {
+	Blinker[0].pin = laserPin; 
+	Blinker[1].pin = blinkrechtsPin;
+	Blinker[2].pin = blinklinksPin;
+	Blinker[3].pin = frontlightPin;
+	Blinker[4].pin = rearlightPin;
+	
+	int i=0;
+	for (i=0;i<10;i++) {
+		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
+	   	printf("Error creating thread t_Blinker %i\n",i);
+	   	return 1;
+		}
+	}
+}
+		
 const char *device;
 int js;
 struct js_event event;
@@ -97,45 +144,7 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 
 //multi Threading
 
-void *blinkThread (void *input) {
-    int *parameter = ((int*)input);
-	int i;
-	int pin 	= parameter[0];
-	int dura	= parameter[1];
-	int freq	= parameter[2];
-	int cycles = (freq * dura);
-//	printf(" Pin %i \n Frequenz %iHz \n Dauer %is\n",pin,freq,dura);
-	if (freq == 0) {    		//Dauerlicht
-	    digitalWrite(pin,HIGH);
-	    delay(dura * 1000);
-	    digitalWrite(pin,LOW);
-	} else {                    	//Blinken
-		for (i=0;i<cycles;i++) {
-			digitalWrite(pin,HIGH);
-			//printf("LED %i on...\n", pin);
-			delay(500 / freq);
-			digitalWrite(pin,LOW);
-			//printf("LED %i off..\n", pin);
-			delay(500 / freq);
-		}
-	}
-	return NULL;
-}
-//Thread starter
-int blink (int pin,int dura,int freq) {
-	int *LEDArgs = (int*)malloc(3*sizeof(int));
-	LEDArgs[0] = pin;
-	LEDArgs[1] = dura;      //Dauer in Sekunden
-	LEDArgs[2] = freq;     //Frequenz in Hz
-	//pthread_join(t_blink[blink_t_counter],NULL);
-	if(pthread_create(&t_blink[blink_t_counter], NULL, blinkThread, (void*)LEDArgs)) {
-	   	printf("Error creating thread t_blink\n");
-	   	return 1;
-	}
-	blink_t_counter++;
-	if (blink_t_counter==99) blink_t_counter=0;
-	return 0;
-}
+Blinker[idNr].
 
 // Sound
 
@@ -565,11 +574,6 @@ int Setup () {
 	
 // Output
 	//OnOff
-	pinMode(laserPin,OUTPUT);
-	pinMode(blinkrechtsPin,OUTPUT);
-    pinMode(blinklinksPin,OUTPUT);
-    pinMode(frontlightPin,OUTPUT);  
-    pinMode(rearlightPin,OUTPUT);
 	
 	//Servos
 	servoInit(servoPin_CX);	//Camera X
@@ -582,7 +586,9 @@ int Setup () {
 	pinMode(motorPin1,OUTPUT);
 	pinMode(motorPin2,OUTPUT);
 	softPwmCreate(enablePin,0,SPEED_MAX);
-
+//Blinker
+	init_Blinker();
+	
 //Joystick init
 	js = open(device, O_RDONLY);
 	while (js == -1) {
