@@ -105,11 +105,11 @@ void *blinkThread (void *input) {
 	int freq	= parameter[2];
 	int cycles = (freq * dura);
 //	printf(" Pin %i \n Frequenz %iHz \n Dauer %is\n",pin,freq,dura);
-	if (freq == 0) {    //Dauerlicht
+	if (freq == 0) {    		//Dauerlicht
 	    digitalWrite(pin,HIGH);
 	    delay(dura * 1000);
 	    digitalWrite(pin,LOW);
-	} else {                    //Blinken
+	} else {                    	//Blinken
 		for (i=0;i<cycles;i++) {
 			digitalWrite(pin,HIGH);
 			//printf("LED %i on...\n", pin);
@@ -291,12 +291,12 @@ void motor(int value){
 	if(gear>0){
 		digitalWrite(motorPin1,HIGH);
 		digitalWrite(motorPin2,LOW);
-		printf("turn Forward...\n");
+		//printf("turn Forward...\n");
 	}
 	else if (gear<=0){
 		digitalWrite(motorPin1,LOW);
 		digitalWrite(motorPin2,HIGH);
-		printf("turn Back...\n");
+		//printf("turn Back...\n");
 		soundNr = 2;
 		soundLoop = 1;
 	}
@@ -306,11 +306,11 @@ void motor(int value){
 		printf("Motor Stop...\n");
 	*/
 	
-	if (gear != 0 ){
-	    softPwmWrite(enablePin,abs(value));
+	if (gear == 0 ){
+		softPwmWrite(enablePin,BRAKE);
+		blink(rearlightPin,1,0);
 	}else{
-	    softPwmWrite(enablePin,BRAKE);
-	    blink(rearlightPin,1,0);
+		softPwmWrite(enablePin,abs(value));
 	}
 }
 
@@ -411,24 +411,24 @@ int ButtonControl (int button, int value) {
 					
 				//Turret1 Control
 				case 13 :	//UP
-					    turret1 = 8;
+					   	turret1 = 8;
 					break;
 				case 14 :	//DOWN
-    					turret1 = 2;
+    						turret1 = 2;
 					break;
 				case 15 :	//LEFT
-					    turret1 = 4;
+					    	turret1 = 4;
 					break;
 				case 16 :	//RIGHT
-    					turret1 = 6;
+    						turret1 = 6;
 					break;
 				case 5 :    //R1
-                    gear = 0;
+                    				gear = 0;
 				    break;
 				case 6 :	//L2
 					break;
 				case 10 :	//PS
-					run = 1;
+						run = 1;
 					break;
 
 				default :	//noch ohne Funktion
@@ -437,7 +437,6 @@ int ButtonControl (int button, int value) {
 			}
 	}
 //  RELEASE
-// alt1 if (event.value==1) {
     else {
 	    switch (button) {
 				case 0 :		//	X
