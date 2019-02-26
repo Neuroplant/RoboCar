@@ -24,26 +24,25 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #include <pthread.h>
 #include <string.h>
 
-#define motorPin1	    21	//Motor Vorwärts        out digital
-#define motorPin2	    22  //Motor Rückwärts       out digital
-#define enablePin	    23  //Motor Geschwindigkeit out PWM
-#define servoPin_CX	    11  //Camera X              out PWM
-#define	servoPin_CY	    10  //Camera Y              out PWM
-#define servoPin_ST	    16  //Lenkung (Steering)    out PWM
-#define servoPin_US     6   //Ultraschall-Servo     out PWM
-#define trigPin         4   //Ultraschall-Trigger   out digital
-#define echoPin         5   //Ultraschall-Echo      in  digital
-#define laserPin	  25  //div LEDs              out digital
-#define blinkrechtsPin  28  //div LEDs              out digital
-#define blinklinksPin   29  //div LEDs              out digital
-#define frontlightPin   27  //div LEDs              out digital
-#define rearlightPin    26  //div LEDs              out digital
+// Pin definitions
+#define motorPin	21	//Motor Vorwärts        out digital
+#define motorPin2	22  	//Motor Rückwärts       out digital
+#define enablePin	23  	//Motor Geschwindigkeit out PWM
+#define servoPin_CX	11  	//Camera X              out PWM
+#define	servoPin_CY	10  	//Camera Y              out PWM
+#define servoPin_ST	16  	//Lenkung (Steering)    out PWM
+#define servoPin_US     6   	//Ultraschall-Servo     out PWM
+#define trigPin         4   	//Ultraschall-Trigger   out digital
+#define echoPin         5   	//Ultraschall-Echo      in  digital
+#define laserPin	25  	//div LEDs              out digital
+#define blinkrechtsPin  28  	//div LEDs              out digital
+#define blinklinksPin   29  	//div LEDs              out digital
+#define frontlightPin   27  	//div LEDs              out digital
+#define rearlightPin    26  	//div LEDs              out digital
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
-
 #define OFFSET_ST 0
-
 #define OFFSET_US 0
 
 #define	SERVO_MIN_MS	4
@@ -60,23 +59,27 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define	SERVO_MIN_CY	5+OFFSET_CY
 #define SERVO_MAX_CY	15+OFFSET_CY
 
-#define SPEED_MAX       100         //  maxmax 128
-#define BRAKE           30          // Bremskraft
+#define SPEED_MAX       100         	//  maxmax 128
+#define BRAKE           30          	// Bremskraft
 
-
-#define MAX_DISTANCE 	220         //  define the maximum measured distance
-#define timeOut MAX_DISTANCE*60     //  calculate timeout according to the maximum measured distance
-#define MIN_DISTANCE	40	        //  cm bis Kollision unvermeidlich
-
+#define MAX_DISTANCE 	220         	//  define the maximum measured distance
+#define timeOut MAX_DISTANCE*60     	//  calculate timeout according to the maximum measured distance
+#define MIN_DISTANCE	40		//  cm bis Kollision unvermeidlich
 
 int run      = 0;
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
 
-//Car
+
+//Car Funktions////////////////////////////////////////////////////////
+// 	steering 	-	-10..10	-	left/right
+//	speed		-	0..100	-	motor power
+//	gear		-	1/0/-1	-	forward/brake/reverse
+
 int steering = 0, speed = 0, gear = 1;
 PI_THREAD(motor){
+	printf("Motor on\n");
 	while (run==0) {
 		if(gear>0){
 			digitalWrite(motorPin1,HIGH);
@@ -98,105 +101,104 @@ PI_THREAD(motor){
 		}else{
 			softPwmWrite(enablePin,abs(speed));
 		}
+		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
-	servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
+	printf("Motor off\n");	
 }
 
-//sound
+//Sound/////////////////////////////////////////////////////////////////
+//	soundNr		-	0..5	-	selects soundfile
+//	soundLoop	-	0..	-	repeat soundfile
+
 int soundNr = 3, soundLoop = 1;
 void *SoundThread(void *value) {
-    char soundfile[100] ;
+	char soundfile[100];
+	printf("Sound %i on\n", idNr);
 	while (run==0) {
-		
-    if (soundLoop <= 0) soundNr = 0;
-	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
-    switch (soundNr) {
-        case 0 :    //engine running
-            
-        break;
-        case 1 :    //Horn
-            strcat(soundfile, "1-Horn.mp3");
-        break;
-        case 2 :    //RückwärtsBeep
-            strcat(soundfile, "2-BackupBeep.mp3");
-        break;
-        case 3 :    //Engine start
-            strcat(soundfile, "3-EngineStart.mp3");
-        break;
-        case 4 :    //Laser 
-            strcat(soundfile, "4-Laser.mp3");
-        break;
-        case 5 :    //???
-            strcat(soundfile, "XXX.mp3");
-        break;
-       default :    //engine running
-            strcat(soundfile, "0-idle.mp3");
-        break;
-    }
-//PLAYER HERE    
-
-	strcat(soundfile, "&");
-	if (soundLoop > 0) printf("%i. %s\n",soundLoop,soundfile);
-	// system(soundfile);
-    
-    if (soundLoop > 0 ) soundLoop--;
+		if (soundLoop <= 0) soundNr = 0;
+		strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
+		switch (soundNr) {
+			case 0 :	//engine running
+				strcat(soundfile, "0-idle.mp3");
+			break;
+			case 1 :	//Horn
+				strcat(soundfile, "1-Horn.mp3");
+			break;
+			case 2 :	//RückwärtsBeep
+				strcat(soundfile, "2-BackupBeep.mp3");
+			break;
+			case 3 :    	//Engine start
+				strcat(soundfile, "3-EngineStart.mp3");
+			break;
+			case 4 :    	//Laser 
+				strcat(soundfile, "4-Laser.mp3");
+			break;
+			case 5 :	//???
+				strcat(soundfile, "XXX.mp3");
+			break;
+			default :    //engine running
+				strcat(soundfile, "0-idle.mp3");
+		}
+		strcat(soundfile, "&");
+		if (soundLoop > 0) printf("%i. %s\n",soundLoop,soundfile);
+		// system(soundfile);
+		if (soundLoop > 0 ) soundLoop--;
 	}
-    printf("Soundausgabe end\n");
-    return NULL;
+	printf("Sound %i off\n", idNr);
+	return NULL;
 }
 
-// Turret
+// Turret/////////////////////////////////////////////////
+// turr1X	-	10..-10	-	x-axis 
+// turr1Y	-	10..-10	-	y-axis
+// turret1	-	0/1	-	lader off/on
+
 int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
 void *TurretThread (void *value) {
-    while (run==0) {
-        switch (turret1) {
-            case 0 :
-            // dont move
-            break;
-            case 1 :
-            // center
-            turr1X	 = 0, turr1Y = -10;
-            break;
-            case 3 :
-            // Laser on
-            soundNr = 4;
-            soundLoop = 1;
-            digitalWrite(laserPin,HIGH);
-            break;
-            case 9 :
-            // laser off
-            digitalWrite(laserPin,LOW);
-            break;
-            case 8 :
-            //up
-            turr1Y++;
-            delay(100);
-            break;
-            case 2 :
-            //down
-            turr1Y--;
-            delay(100);
-            break;
-            case 4 :
-            //left
-            turr1X--;            
-            delay(100);
-            break;
-            case 6 :
-            //right
-            turr1X++;
-            delay(100);
-            break;
-            default :
-            // dont move;
-            break;
-        }
-    }
-    printf("Turret off\n");
-    return NULL;
+	printf("Turret1 on\n");
+	while (run==0) {
+		switch (turret1) {
+			case 0 : 	// dont move
+			break;
+			case 1 : // center
+				turr1X	 = 0;
+				turr1Y = -10;
+			break;
+			case 3 :	// Laser on
+				soundNr = 4;
+				soundLoop = 1;
+				digitalWrite(laserPin,HIGH);
+			break;
+			case 9 :	// laser off
+				digitalWrite(laserPin,LOW);
+			break;
+			case 8 :	//up
+				turr1Y++;
+				delay(50);
+			break;
+			case 2 :	//down
+				turr1Y--;
+				delay(50);
+			break;
+			case 4 :	//left
+				turr1X--;
+				delay(100);
+			break;
+			case 6 :	//right
+				turr1X++;
+				delay(100);
+			break;
+			default :	// dont move;
+			break;
+		}
+		servoWriteMS(servoPin_CX,map(x,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
+		servoWriteMS(servoPin_CY,map(y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
+	}
+	printf("Turret1 off\n");
+	return NULL;
 }
 
-//Blinker
+//Blinker////////////////////////////////////////////////
 struct s_Blinker {
 	int pin;
 	int dura;
@@ -209,22 +211,26 @@ void *BlinkerThread (void *arg) {
 	int idNr = (int*)arg;
 	int cycles,i;
 	pinMode(Blinker[idNr].pin,OUTPUT);
+	printf("Blinker %i on\n", idNr);
 	while (run == 0) {
-		cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
-		if (Blinker[idNr].freq == 0) {
-			digitalWrite(Blinker[idNr].pin,HIGH);
-	    		delay(Blinker[idNr].dura * 1000);
-	    		digitalWrite(Blinker[idNr].pin,LOW);
-		} else {
-			for (i=0;i<cycles;i++) {
+		if (Blinker[idNr].dura != 0) {
+			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
+			if (Blinker[idNr].freq == 0) {
 				digitalWrite(Blinker[idNr].pin,HIGH);
-				delay(500 / Blinker[idNr].freq);
-				digitalWrite(Blinker[idNr].pin,LOW);
-				delay(500 / Blinker[idNr].freq);
+	    			delay(Blinker[idNr].dura * 1000);
+	    			digitalWrite(Blinker[idNr].pin,LOW);
+			} else {
+				for (i=0;i<cycles;i++) {
+					digitalWrite(Blinker[idNr].pin,HIGH);
+					delay(500 / Blinker[idNr].freq);
+					digitalWrite(Blinker[idNr].pin,LOW);
+					delay(500 / Blinker[idNr].freq);
+				}
 			}
 		}
 		Blinker[idNr].dura = 0;
 	}
+	printf("Blinker %i off\n", idNr);
 	return NULL;
 }
 
@@ -244,11 +250,11 @@ int init_Blinker (void) {
 	}
 }
 
-// 	Servo
+// 	Servo//////////////////////////////////////////////////////
 void servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
-    softPwmCreate(pin,  0, 200);
-//	printf("Pin %i OK\n",pin);
+	softPwmCreate(pin,  0, 200);
+	printf("Pin %i OK\n",pin);
 }
 
 void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
@@ -264,7 +270,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 	delay(10);
 }
 
-// 	Sonar
+// 	Sonar////////////////////////////////////////////////////////////////
 long StartTime, EndTime;
 struct timespec rTime;
 
@@ -279,9 +285,10 @@ void StartStopTimer (void) {
 }
 		
 float getSonar(void) {
-	digitalWrite(trigPin,HIGH);
+	// send trigger signal
+	digitalWrite(triggerPin,HIGH);
     	delayMicroseconds(10);
-	digitalWrite(trigPin,LOW);
+	digitalWrite(triggerPin,LOW);
     	delayMicroseconds(30);
 	
 	float puls = (StartTime - EndTime);
@@ -645,14 +652,14 @@ int main (int argc, char *argv[]) {
 			if (steering > 10) 	steering = 10;
 			if (steering <-10) 	steering =-10;
 			if (speed > SPEED_MAX) 	speed = SPEED_MAX;
-			if (speed <-SPEED_MAX) 	speed =-SPEED_MAX;
+			if (speed <0) 		speed =0;
 			//SubmitMotor ( steering, speed);
 		//	printf("Steuer: %i Speed %i", steering,speed);
 			if (turr1X > 10) 	turr1X = 10;
 			if (turr1X <-10) 	turr1X =-10;
 			if (turr1Y > 10) 	turr1Y = 10;
 			if (turr1Y <-10) 	turr1Y =-10;	
-			SubmitTurr1 ( turr1X, turr1Y);
+			//SubmitTurr1 ( turr1X, turr1Y);
 		//	printf(" Turm X: %i Turm Y %i \n",turr1X,turr1Y);
 		}
 		
