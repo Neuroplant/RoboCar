@@ -97,12 +97,15 @@ PI_THREAD(motor){
 		}
 		if (gear == 0 ){
 			softPwmWrite(enablePin,BRAKE);
-			blink(rearlightPin,1,0);
+			Blinker[4].dura = 1;
+			Blinker[4].freq = 0;
 		}else{
 			softPwmWrite(enablePin,abs(speed));
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
+	digitalWrite(motorPin1,LOW);
+	digitalWrite(motorPin2,LOW);
 	printf("Motor off\n");	
 }
 
@@ -315,29 +318,31 @@ int freeDirection() {
 		free = 0;
 		printf(" vorne %i \n--> Weg frei ",free);
 	}else {
-		motor(0); //Stopp während der messung
+		gear=0; //Stopp während der messung
+		delay(100);
 		for (i=SERVO_MIN_US;i<(SERVO_MIN_US+SERVO_MAX_US)/2;i++) {
 			rSum=rSum+getSonarP(i);
-		};
+		}
 		printf(" Rechts : %6f ",rSum);
 		for (i=SERVO_MAX_US;i>(SERVO_MIN_US+SERVO_MAX_US)/2;i--) {
-		lSum=lSum+getSonarP(i);
-		};
-		
+			lSum=lSum+getSonarP(i);
+		}
 		printf(" Links : %6f\n",lSum);
 		if (rSum>lSum) {
-			free = 1;
+			free = 1; 
 			printf("--> Rechts frei \n");
-		};
-		if (rSum<lSum) {
+		}
+		if (rSum<=lSum) {
 			free = 2;
 			printf("--> Link s frei \n");
-		};
+		}
 		if (lSum+rSum < (SERVO_MAX_US-SERVO_MIN_US)* MIN_DISTANCE) {
 			free = 3;
 			printf("--> Sackgasse   \n");
-				blink(blinkrechtsPin,10,2);
-				blink(blinklinksPin,10,2);
+			Blinker[1].dura = 5;
+			Blinker[1].freq = 2;
+			Blinker[2].dura = 5;
+			Blinker[2].freq = 2;
 		};
 	};
 	printf("free %i\n",free);
@@ -388,10 +393,13 @@ int StickControl(int stick, int value) {
 				steering=(map(value,32767,-32767,10,-10));
 					//Blinker
 				if (steering == 10 ) {
-					blink(blinkrechtsPin,2,2);
+					Blinker[1].dura = 2;
+					Blinker[1].freq = 2;
 				}
 				if (steering == -10 ) {
-					blink(blinklinksPin,3,2);
+					Blinker[2].dura = 2;
+					Blinker[2].freq = 2;
+					
 				}
 		break;
 		case 4 :	//R3 Up/Down
@@ -429,18 +437,19 @@ int ButtonControl (int button, int value) {
 				case 0 :		//	X
 					soundNr = 1;
 					soundLoop = 2;
-					break;
+				break;
 				case 1	:		//	O
 					//Scheinwerfer
-					    blink(frontlightPin,60,0);
-					break;
+					Blinker[3].dura = 60;
+					Blinker[3].freq = 0;
+				break;
 				case 2 :	//Dreieck
 					turret1 = 3;
 					break;
 			
 				case 4	:	//L1
 					gear = -1;
-					break;
+				break;
 					
 				//Turret1 Control
 				case 13 :	//UP
@@ -569,8 +578,9 @@ int Setup () {
 //Joystick init
 	js = open(device, O_RDONLY);
 	while (js == -1) {
-	    js = open(device, O_RDONLY);
-        blink(frontlightPin,2,20);
+	    	js = open(device, O_RDONLY);
+        	Blinker[3].dura = 2;
+		Blinker[3].freq = 20;
 		delay(2000);
 		printf("Warte auf Joystick\n");
 
@@ -666,6 +676,6 @@ int main (int argc, char *argv[]) {
 //End Section
 
     	close(js);
-	motor(0);
+	speed = 0;
 return 0;
 }
