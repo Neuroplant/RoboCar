@@ -25,7 +25,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #include <string.h>
 
 // Pin definitions
-#define motorPin	21	//Motor Vorwärts        out digital
+#define motorPin1	21	//Motor Vorwärts        out digital
 #define motorPin2	22  	//Motor Rückwärts       out digital
 #define enablePin	23  	//Motor Geschwindigkeit out PWM
 #define servoPin_CX	11  	//Camera X              out PWM
@@ -67,6 +67,20 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define MIN_DISTANCE	40		//  cm bis Kollision unvermeidlich
 
 int run      = 1;
+
+int soundNr = 3;
+int soundLoop = 1;
+struct s_Blinker {
+	int pin;
+	int dura;
+	float freq;
+};
+
+struct s_Blinker Blinker[10];
+
+pthread_t t_Blinker[10];
+
+void servoWriteMS(int pin, int ms);
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
@@ -113,8 +127,10 @@ PI_THREAD(motor){
 //	soundNr		-	0..5	-	selects soundfile
 //	soundLoop	-	0..	-	repeat soundfile
 
-int soundNr = 3, soundLoop = 1;
+
+
 void *SoundThread(void *value) {
+	int idNr = (int)value;
 	char soundfile[100];
 	printf("Sound %i on\n", idNr);
 	while (run) {
@@ -194,24 +210,18 @@ void *TurretThread (void *value) {
 			default :	// dont move;
 			break;
 		}
-		servoWriteMS(servoPin_CX,map(x,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
-		servoWriteMS(servoPin_CY,map(y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
+		servoWriteMS(servoPin_CX,map(turr1X,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
+		servoWriteMS(servoPin_CY,map(turr1Y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
 	}
 	printf("Turret1 off\n");
 	return NULL;
 }
 
 //Blinker////////////////////////////////////////////////
-struct s_Blinker {
-	int pin;
-	int dura;
-	float freq;
-}
-struct s_Blinker Blinker[10];
-pthreat_t t_Blinker[10];
+
 
 void *BlinkerThread (void *arg) {
-	int idNr = (int*)arg;
+	int idNr = (int)arg;
 	int cycles,i;
 	pinMode(Blinker[idNr].pin,OUTPUT);
 	printf("Blinker %i on\n", idNr);
@@ -279,19 +289,19 @@ struct timespec rTime;
 
 void StartStopTimer (void) {
 	if (digitalRead(echoPin)==HIGH) {
-		clock_gettime(CLOCK_REALTIME, *rTime);
+		clock_gettime(CLOCK_REALTIME, &rTime);
 		StartTime = rTime.tv_nsec;
 	}else{
-		clock_gettime(CLOCK_REALTIME, *rTime);
+		clock_gettime(CLOCK_REALTIME, &rTime);
 		EndTime = rTime.tv_nsec;
 	}
 }
 		
 float getSonar(void) {
 	// send trigger signal
-	digitalWrite(triggerPin,HIGH);
+	digitalWrite(trigPin,HIGH);
     	delayMicroseconds(10);
-	digitalWrite(triggerPin,LOW);
+	digitalWrite(trigPin,LOW);
     	delayMicroseconds(30);
 	
 	float puls = (StartTime - EndTime);
@@ -522,7 +532,6 @@ void *StickThread (void *value) {
 			case JS_EVENT_AXIS:
 				StickControl(event.number,event.value);
 			break;
-			default:
 		}
 	}
 	printf("StickThread end\n");
@@ -597,11 +606,11 @@ int Setup () {
 
 	return 0;
 //Motor
-	in x = piThreadCreate (myThread) ;
+	int x = piThreadCreate (motor) ;
 	if (x != 0) printf ("it didn't start\n");
 	
 //Sonar
-	wiringPiISR (echoPin, INT_EDGE_BOTH, &StartStopTimer)) ;
+	wiringPiISR (echoPin, INT_EDGE_BOTH, &StartStopTimer) ;
 }
 
 int SubmitMotor( int steeringInput, int speedInput) {
@@ -621,7 +630,7 @@ int SubmitMotor( int steeringInput, int speedInput) {
 	    printf("\nSomething went wrong with the motor Speed_current %i != speedInput %i\n",Speed_current, speedInput);
 	}
 WARTUNG*/
-motor(speedInput);
+//motor(speedInput);
 	
 //Lenkung	
 	servoWriteMS(servoPin_ST,map(steeringInput,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
