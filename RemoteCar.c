@@ -66,7 +66,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define timeOut MAX_DISTANCE*60     	//  calculate timeout according to the maximum measured distance
 #define MIN_DISTANCE	40		//  cm bis Kollision unvermeidlich
 
-int run      = 0;
+int run      = 1;
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
@@ -80,7 +80,7 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 int steering = 0, speed = 0, gear = 1;
 PI_THREAD(motor){
 	printf("Motor on\n");
-	while (run==0) {
+	while (run) {
 		if(gear>0){
 			digitalWrite(motorPin1,HIGH);
 			digitalWrite(motorPin2,LOW);
@@ -117,7 +117,7 @@ int soundNr = 3, soundLoop = 1;
 void *SoundThread(void *value) {
 	char soundfile[100];
 	printf("Sound %i on\n", idNr);
-	while (run==0) {
+	while (run) {
 		if (soundLoop <= 0) soundNr = 0;
 		strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
 		switch (soundNr) {
@@ -159,7 +159,7 @@ void *SoundThread(void *value) {
 int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
 void *TurretThread (void *value) {
 	printf("Turret1 on\n");
-	while (run==0) {
+	while (run) {
 		switch (turret1) {
 			case 0 : 	// dont move
 			break;
@@ -215,7 +215,7 @@ void *BlinkerThread (void *arg) {
 	int cycles,i;
 	pinMode(Blinker[idNr].pin,OUTPUT);
 	printf("Blinker %i on\n", idNr);
-	while (run == 0) {
+	while (run) {
 		if (Blinker[idNr].dura != 0) {
 			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
 			if (Blinker[idNr].freq == 0) {
@@ -433,112 +433,99 @@ int ButtonControl (int button, int value) {
 	PS		Quit
 */
 	if (event.value==1) {
-			switch (button) {
-				case 0 :		//	X
-					soundNr = 1;
-					soundLoop = 2;
-				break;
-				case 1	:		//	O
+		switch (button) {
+			case 0 :		//	X
+				soundNr = 1;
+				soundLoop = 2;
+			break;
+			case 1	:		//	O
 					//Scheinwerfer
-					Blinker[3].dura = 60;
-					Blinker[3].freq = 0;
+				Blinker[3].dura = 60;
+				Blinker[3].freq = 0;
+			break;
+			case 2 :	//Dreieck
+				turret1 = 3;
 				break;
-				case 2 :	//Dreieck
-					turret1 = 3;
-					break;
-			
-				case 4	:	//L1
-					gear = -1;
-				break;
+			case 4	:	//L1
+				gear = -1;
+			break;
 					
-				//Turret1 Control
-				case 13 :	//UP
-					   	turret1 = 8;
-					break;
-				case 14 :	//DOWN
-    						turret1 = 2;
-					break;
-				case 15 :	//LEFT
-					    	turret1 = 4;
-					break;
-				case 16 :	//RIGHT
-    						turret1 = 6;
-					break;
-				case 5 :    //R1
-                    				gear = 0;
-				    break;
-				case 6 :	//L2
-					break;
-				case 10 :	//PS
-						run = 1;
-					break;
-
-				default :	//noch ohne Funktion
-					printf("Button Nr.%i pressed\n", button);
-					break;
-			}
-	}
-//  RELEASE
-    else {
-	    switch (button) {
-				case 0 :		//	X
-
-                    break;
-				case 1	:		//	O
-
-					break;
-				case 2 :	//Dreieck
-    					turret1 = 9;
-					break;
-				case 4	:	//L1
-                    gear = 1;
-					break;
 			//Turret1 Control
-				case 13 :	//UP
-					    turret1 =  0;
-					break;
-				case 14 :	//DOWN
-					    turret1 =  0;
-					break;
-				case 15 :	//LEFT
-					    turret1 =  0;
-					break;
-				case 16 :	//RIGHT
-					    turret1 =  0;
-					break;
-				
-				case 5 :    //R1
-                    gear = 1;
-                    speed = 0;
-				    break;
-				case 10 :	//PS
-
-					break;
-
-				default :	//noch ohne Funktion
-					printf("Button Nr.%i released\n", button);
-					break;
+			case 13 :	//UP
+			   	turret1 = 8;
+			break;
+			case 14 :	//DOWN
+    				turret1 = 2;
+			break;
+			case 15 :	//LEFT
+			    	turret1 = 4;
+			break;
+			case 16 :	//RIGHT
+    				turret1 = 6;
+			break;
+			case 5 :    //R1
+                    		gear = 0;
+			break;
+			case 6 :	//L2
+			break;
+			case 10 :	//PS
+				run = 0;
+			break;
+			default :	//noch ohne Funktion
+				printf("Button Nr.%i pressed\n", button);
 			}
+	} else {
+		switch (button) {
+			case 0 :		//	X
+			break;
+			case 1	:		//	O
+			break;
+			case 2 :	//Dreieck
+    				turret1 = 9;
+			break;
+			case 4	:	//L1
+				gear = 1;
+			break;
+			//Turret1 Control
+			case 13 :	//UP
+				turret1 =  0;
+			break;
+			case 14 :	//DOWN
+				turret1 =  0;
+			break;
+			case 15 :	//LEFT
+				turret1 =  0;
+			break;
+			case 16 :	//RIGHT
+				turret1 =  0;
+			break;
+			case 5 :    //R1
+				gear = 1;
+				speed = 0;
+			break;
+			case 10 :	//PS
+			break;
+			default :	//noch ohne Funktion
+				printf("Button Nr.%i released\n", button);
+		}
+		
 	}
 	return 0;
 }
 
 void *StickThread (void *value) {
-		while ((read_event(js, &event) == 0)&&(run == 0)) {
-        switch (event.type){
-            case JS_EVENT_BUTTON:
-                ButtonControl(event.number,event.value);
-                break;
-            case JS_EVENT_AXIS:
-                StickControl(event.number,event.value);
-                break;
-            default:
-                /* Ignore init events. */
-                break;
-        };
-    }
+	while ((read_event(js, &event) == 0)&&(run)) {
+		switch (event.type){
+			case JS_EVENT_BUTTON:
+				ButtonControl(event.number,event.value);
+			break;
+			case JS_EVENT_AXIS:
+				StickControl(event.number,event.value);
+			break;
+			default:
+		}
+	}
 	printf("StickThread end\n");
-	run=2;
 	return NULL;
 }
 
@@ -658,7 +645,7 @@ int main (int argc, char *argv[]) {
 	Setup();
 	
 //Main-Loop Section
-		while (run == 0) {
+		while (run) {
 			if (steering > 10) 	steering = 10;
 			if (steering <-10) 	steering =-10;
 			if (speed > SPEED_MAX) 	speed = SPEED_MAX;
@@ -677,5 +664,5 @@ int main (int argc, char *argv[]) {
 
     	close(js);
 	speed = 0;
-return 0;
+	return 0;
 }
