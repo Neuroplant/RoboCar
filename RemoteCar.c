@@ -68,16 +68,19 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 int run      = 1;
 
-int soundNr = 3;
-int soundLoop = 1;
+struct s_Sound {
+	int loop = 0;
+	char name[20];	
+}
+struct s_Sound Sound[5];
+pthread_t t_Sound[5]
+
 struct s_Blinker {
 	int pin;
 	int dura;
 	float freq;
 };
-
 struct s_Blinker Blinker[10];
-
 pthread_t t_Blinker[10];
 
 void servoWriteMS(int pin, int ms);
@@ -92,7 +95,7 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 //	gear		-	1/0/-1	-	forward/brake/reverse
 
 int steering = 0, speed = 0, gear = 1;
-PI_THREAD(motor){
+void *MotorThread(void *value){
 	printf("Motor on\n");
 	while (run) {
 		if(gear>0){
@@ -130,41 +133,36 @@ PI_THREAD(motor){
 
 
 void *SoundThread(void *value) {
-	int idNr = (int)value;
+	long idNr = (long)value, i, x;
 	char soundfile[100];
-	printf("Sound %i on\n", idNr);
+	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
+	strcat(soundfile,Sound[idNr].name);
+	printf("Sound %i: %c ready",i,Sound[idNr].name);
 	while (run) {
-		if (soundLoop <= 0) soundNr = 0;
-		strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
-		switch (soundNr) {
-			case 0 :	//engine running
-				strcat(soundfile, "0-idle.mp3");
-			break;
-			case 1 :	//Horn
-				strcat(soundfile, "1-Horn.mp3");
-			break;
-			case 2 :	//RückwärtsBeep
-				strcat(soundfile, "2-BackupBeep.mp3");
-			break;
-			case 3 :    	//Engine start
-				strcat(soundfile, "3-EngineStart.mp3");
-			break;
-			case 4 :    	//Laser 
-				strcat(soundfile, "4-Laser.mp3");
-			break;
-			case 5 :	//???
-				strcat(soundfile, "XXX.mp3");
-			break;
-			default :    //engine running
-				strcat(soundfile, "0-idle.mp3");
+		x = Sound[idNr].loop;
+		for (i=0;i<x;i++) {
+			system(soundfile);
+			Sound[idNr].loop=0;
 		}
-		strcat(soundfile, "&");
-		if (soundLoop > 0) printf("%i. %s\n",soundLoop,soundfile);
-		// system(soundfile);
-		if (soundLoop > 0 ) soundLoop--;
 	}
-	printf("Sound %i off\n", idNr);
-	return NULL;
+	printf("Sound %i: %c ready",i,Sound[idNr].name);
+}
+int init_Sound (void) {
+	int i=0;
+	strcpy(Sound[0].name, "0-idle.mp3"); 
+	strcpy(Sound[1].name, "1-Horn.mp3"); 
+	strcpy(Sound[2].name, "2-BackupBeep.mp3"); 
+	strcpy(Sound[3].name, "3-EngineStart.mp3"); 
+	strcpy(Sound[4].name, "4-Laser.mp3"); 
+
+	
+	
+	for (i=0;i<5;i++) {
+		if(pthread_create(&t_Sound[i], NULL, SoundThread, (void*)i)) {
+	   	printf("Error creating thread t_Sound %i\n",i);
+	   	return 1;
+		}
+	}
 }
 
 // Turret/////////////////////////////////////////////////
@@ -221,9 +219,8 @@ void *TurretThread (void *value) {
 
 
 void *BlinkerThread (void *arg) {
-	int idNr = (int)arg;
+	long idNr = (long)arg;
 	int cycles,i;
-	pinMode(Blinker[idNr].pin,OUTPUT);
 	printf("Blinker %i on\n", idNr);
 	while (run) {
 		if (Blinker[idNr].dura != 0) {
@@ -256,6 +253,7 @@ int init_Blinker (void) {
 	
 	int i=0;
 	for (i=0;i<=4;i++) {
+		pinMode(Blinker[i].pin,OUTPUT);
 		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
 	   	printf("Error creating thread t_Blinker %i\n",i);
 	   	return 1;
@@ -524,6 +522,7 @@ int ButtonControl (int button, int value) {
 }
 
 void *StickThread (void *value) {
+	printf("StickThread start\n");
 	while ((read_event(js, &event) == 0)&&(run)) {
 		switch (event.type){
 			case JS_EVENT_BUTTON:
@@ -551,8 +550,7 @@ int Setup () {
 // Input
 	
 	//Ultraschall
-	pinMode(trigPin, OUTPUT);
-	pinMode(echoPin, INPUT);
+
 	
 // Output
 	//OnOff
@@ -568,6 +566,9 @@ int Setup () {
 	pinMode(motorPin1,OUTPUT);
 	pinMode(motorPin2,OUTPUT);
 	softPwmCreate(enablePin,0,SPEED_MAX);
+
+//Sound
+	init_Sound();
 //Blinker
 	init_Blinker();
 	
@@ -591,56 +592,31 @@ int Setup () {
 		}
 		
 //Sound 
-    pthread_t t_playSound;
-		if(pthread_create(&t_playSound, NULL, SoundThread, NULL)) {
-			printf("Error creating thread t_playSound\n");
-			return 1;
-		}
+	pthread_t t_playSound;
+	if(pthread_create(&t_playSound, NULL, SoundThread, NULL)) {
+		printf("Error creating thread t_playSound\n");
+		return 1;
+	}
 
 //Turret
-    pthread_t t_Turret;
+	pthread_t t_Turret;
         if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
-			printf("Error creating thread t_Turret\n");
-			return 1;
-		}
+		printf("Error creating thread t_Turret\n");
+		return 1;
+	}
 
 	return 0;
 //Motor
-	int x = piThreadCreate (motor) ;
-	if (x != 0) printf ("it didn't start\n");
-	
+	pthread_t t_Motor;
+	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
+		printf("Error creating thread t_Motor\n");
+		return 1;
+	}
+		
 //Sonar
+	pinMode(trigPin, OUTPUT);
+	pinMode(echoPin, INPUT);
 	wiringPiISR (echoPin, INT_EDGE_BOTH, &StartStopTimer) ;
-}
-
-int SubmitMotor( int steeringInput, int speedInput) {
-/* WARTUNG
-//Motor
-	while (Speed_current > speedInput) {    // Rückwärts
-	    Speed_current--;
-		motor(Speed_current);
-		delay(10);
-	}
-	while (Speed_current < speedInput) {    // Vorwärts
-	    Speed_current++;
-		motor(Speed_current);
-		delay(10);
-	}
-	if (Speed_current != speedInput) {
-	    printf("\nSomething went wrong with the motor Speed_current %i != speedInput %i\n",Speed_current, speedInput);
-	}
-WARTUNG*/
-//motor(speedInput);
-	
-//Lenkung	
-	servoWriteMS(servoPin_ST,map(steeringInput,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
-	return 0;
-}
-
-int SubmitTurr1( int x, int y) {
-		servoWriteMS(servoPin_CX,map(x,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
-		servoWriteMS(servoPin_CY,map(y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
-		return 0;
 }
 
 int main (int argc, char *argv[]) {
@@ -648,30 +624,37 @@ int main (int argc, char *argv[]) {
 		device = argv[1];
 	} else {
 		device = "/dev/input/js0";
-	};
-
-//Setup	
+		
+	}	//Setup
 	Setup();
 	
-//Main-Loop Section
-		while (run) {
-			if (steering > 10) 	steering = 10;
-			if (steering <-10) 	steering =-10;
-			if (speed > SPEED_MAX) 	speed = SPEED_MAX;
-			if (speed <0) 		speed =0;
-			//SubmitMotor ( steering, speed);
-		//	printf("Steuer: %i Speed %i", steering,speed);
-			if (turr1X > 10) 	turr1X = 10;
-			if (turr1X <-10) 	turr1X =-10;
-			if (turr1Y > 10) 	turr1Y = 10;
-			if (turr1Y <-10) 	turr1Y =-10;	
-			//SubmitTurr1 ( turr1X, turr1Y);
-		//	printf(" Turm X: %i Turm Y %i \n",turr1X,turr1Y);
+		//Main-Loop Section
+	while (run) {
+		if (steering > 10) steering = 10;
+		if (steering <-10) steering =-10;
+		if (speed > SPEED_MAX) speed = SPEED_MAX;
+		if (speed <0) speed =0;
+		//SubmitMotor ( steering, speed);
+		if (turr1X > 10) turr1X = 10;
+		if (turr1X <-10) turr1X =-10;
+		if (turr1Y > 10) turr1Y = 10;
+		if (turr1Y <-10) turr1Y =-10;
+		//SubmitTurr1 ( turr1X, turr1Y);
+		clrscr();
+		printf("Turm1 %i,%i, Speed %i Lenkrad $i\n", turr1X, turr1Y, speed, steering);
+		for (i=0;i<5;i++) {
+			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		}
+		for (i=0;i<5;i++) {
+			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+		}
+	}
 		
 //End Section
 
     	close(js);
 	speed = 0;
+	printf("\n Wait for threads to close...\n");
+	delay(1000);		       
 	return 0;
 }
