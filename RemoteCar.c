@@ -74,6 +74,7 @@ struct s_Sound {
 }
 struct s_Sound Sound[5];
 pthread_t t_Sound[5]
+int SoundLock =0;
 
 struct s_Blinker {
 	int pin;
@@ -133,16 +134,19 @@ void *MotorThread(void *value){
 
 
 void *SoundThread(void *value) {
-	long idNr = (long)value, i, x;
+	long idNr = (long)value, i;
 	char soundfile[100];
 	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
 	strcat(soundfile,Sound[idNr].name);
 	printf("Sound %i: %c ready",i,Sound[idNr].name);
 	while (run) {
-		x = Sound[idNr].loop;
-		for (i=0;i<x;i++) {
-			system(soundfile);
-			Sound[idNr].loop=0;
+		if (SoundLock == 0 && Sound[idNr].loop>0) {
+			SoundLock=1;
+			while (Sound[idNr].loop>0) {
+				system(soundfile);
+				Sound[idNr].loop--;
+			}
+			SoundLock=0;
 		}
 	}
 	printf("Sound %i: %c ready",i,Sound[idNr].name);
@@ -221,7 +225,7 @@ void *TurretThread (void *value) {
 void *BlinkerThread (void *arg) {
 	long idNr = (long)arg;
 	int cycles,i;
-	printf("Blinker %i on\n", idNr);
+	printf("Blinker %i ready\n", idNr);
 	while (run) {
 		if (Blinker[idNr].dura != 0) {
 			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
