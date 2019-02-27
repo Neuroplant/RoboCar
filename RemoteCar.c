@@ -24,6 +24,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #include <pthread.h>
 #include <string.h>
 
+
 // Pin definitions
 #define motorPin1	21	//Motor Vorwärts        out digital
 #define motorPin2	22  	//Motor Rückwärts       out digital
@@ -69,12 +70,12 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 int run      = 1;
 
 struct s_Sound {
-	int loop = 0;
+	int loop;
 	char name[20];	
-}
+};
 struct s_Sound Sound[5];
-pthread_t t_Sound[5]
-int SoundLock =0;
+pthread_t t_Sound[5];
+int SoundLock = 0;
 
 struct s_Blinker {
 	int pin;
@@ -109,8 +110,7 @@ void *MotorThread(void *value){
 				digitalWrite(motorPin1,LOW);
 				digitalWrite(motorPin2,HIGH);
 		//printf("turn Back...\n");
-				soundNr = 2;
-				soundLoop = 1;
+				Sound[2].loop = 1;
 			}
 		}
 		if (gear == 0 ){
@@ -128,8 +128,8 @@ void *MotorThread(void *value){
 }
 
 //Sound/////////////////////////////////////////////////////////////////
-//	soundNr		-	0..5	-	selects soundfile
-//	soundLoop	-	0..	-	repeat soundfile
+//	sound[]		-	0..5	-	selects soundfile
+//	sound[].Loop	-	0..	-	repeat soundfile
 
 
 
@@ -186,8 +186,7 @@ void *TurretThread (void *value) {
 				turr1Y = -10;
 			break;
 			case 3 :	// Laser on
-				soundNr = 4;
-				soundLoop = 1;
+				Sound[4].loop = 1;
 				digitalWrite(laserPin,HIGH);
 			break;
 			case 9 :	// laser off
@@ -292,10 +291,8 @@ struct timespec Time1, Time2;
 void StartStopTimer (void) {
 	if (digitalRead(echoPin)==HIGH) {
 		clock_gettime(CLOCK_REALTIME, &Time1);
-		StartTime = rTime.tv_nsec;
 	}else{
 		clock_gettime(CLOCK_REALTIME, &Time2);
-		EndTime = rTime.tv_nsec;
 	}
 }
 		
@@ -445,8 +442,7 @@ int ButtonControl (int button, int value) {
 	if (event.value==1) {
 		switch (button) {
 			case 0 :		//	X
-				soundNr = 1;
-				soundLoop = 2;
+				Sound[1].loop = 2;
 			break;
 			case 1	:		//	O
 					//Scheinwerfer
@@ -622,6 +618,7 @@ int Setup () {
 }
 
 int main (int argc, char *argv[]) {
+	int i;
 	if (argc > 1) {
 		device = argv[1];
 	} else {
@@ -642,7 +639,7 @@ int main (int argc, char *argv[]) {
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
 		//SubmitTurr1 ( turr1X, turr1Y);
-		clrscr();
+		system("clear"); //*nix
 		printf("Turm1 %i,%i, Speed %i Lenkrad $i\n", turr1X, turr1Y, speed, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
