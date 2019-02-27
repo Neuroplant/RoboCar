@@ -282,15 +282,15 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 }
 
 // 	Sonar////////////////////////////////////////////////////////////////
-long StartTime, EndTime;
-struct timespec rTime;
+
+struct timespec Time1, Time2;
 
 void StartStopTimer (void) {
 	if (digitalRead(echoPin)==HIGH) {
-		clock_gettime(CLOCK_REALTIME, &rTime);
+		clock_gettime(CLOCK_REALTIME, &Time1);
 		StartTime = rTime.tv_nsec;
 	}else{
-		clock_gettime(CLOCK_REALTIME, &rTime);
+		clock_gettime(CLOCK_REALTIME, &Time2);
 		EndTime = rTime.tv_nsec;
 	}
 }
@@ -300,14 +300,12 @@ float getSonar(void) {
 	digitalWrite(trigPin,HIGH);
     	delayMicroseconds(10);
 	digitalWrite(trigPin,LOW);
-    	delayMicroseconds(30);
+    	delayMicroseconds(5);
 	
-	float puls = (StartTime - EndTime);
+	float puls = Time1.tv_nsec - Time2.tv_nsec;
 	return (puls * 340.0 / 2.0 / 10000.0);
 }
 	
-	
-
 float getSonarP(int angle) {
 	float distance;
 	servoWriteMS(servoPin_US,angle);
@@ -426,11 +424,11 @@ int ButtonControl (int button, int value) {
 	O    	Scheinwerfer (60s)		-
 	Dreieck	Laser Beam on			Laser Beam off			
 	Quadrat	-
-	Up		move Turret1 up			Turret1 Stop
+	Up	move Turret1 up			Turret1 Stop
 	Down	move Turret1 down		Turret1 Stop
 	Left	move Turret1 left		Turret1 Stop
 	Right	move Turret1 right		Turret1 Stop
-	L1		Rückwärts               Vorwärts
+	L1	Rückwärts			Vorwärts
 	L2		
 	L3		-
 	R1		Brake                   Brake off
@@ -480,7 +478,7 @@ int ButtonControl (int button, int value) {
 				run = 0;
 			break;
 			default :	//noch ohne Funktion
-				printf("Button Nr.%i pressed\n", button);
+			printf("Button Nr.%i pressed\n", button);
 			}
 	} else {
 		switch (button) {
@@ -488,33 +486,33 @@ int ButtonControl (int button, int value) {
 			break;
 			case 1	:		//	O
 			break;
-			case 2 :	//Dreieck
+			case 2 :		//Dreieck
     				turret1 = 9;
 			break;
-			case 4	:	//L1
+			case 4	:		//L1
 				gear = 1;
 			break;
 			//Turret1 Control
-			case 13 :	//UP
+			case 13 :		//UP
 				turret1 =  0;
 			break;
-			case 14 :	//DOWN
+			case 14 :		//DOWN
 				turret1 =  0;
 			break;
-			case 15 :	//LEFT
+			case 15 :		//LEFT
 				turret1 =  0;
 			break;
-			case 16 :	//RIGHT
+			case 16 :		//RIGHT
 				turret1 =  0;
 			break;
-			case 5 :    //R1
+			case 5 :    		//R1
 				gear = 1;
 				speed = 0;
 			break;
 			case 10 :	//PS
 			break;
 			default :	//noch ohne Funktion
-				printf("Button Nr.%i released\n", button);
+			printf("Button Nr.%i released\n", button);
 		}
 		
 	}
