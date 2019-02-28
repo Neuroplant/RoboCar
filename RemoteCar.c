@@ -307,80 +307,7 @@ void init_Encoder(void) {
 	}
 }
 
-
-/*// 	Sonar////////////////////////////////////////////////////////////////
-
-struct timespec Time1, Time2;
-
-void StartStopTimer (void) {
-	if (digitalRead(echoPin)==HIGH) {
-		clock_gettime(CLOCK_REALTIME, &Time1);
-	}else{
-		clock_gettime(CLOCK_REALTIME, &Time2);
-	}
-}
-		
-float getSonar(void) {
-	// send trigger signal
-	digitalWrite(trigPin,HIGH);
-    	delayMicroseconds(10);
-	digitalWrite(trigPin,LOW);
-    	delayMicroseconds(5);
-	
-	float puls = Time1.tv_nsec - Time2.tv_nsec;
-	return (puls * 340.0 / 2.0 / 10000.0);
-}
-	
-float getSonarP(int angle) {
-	float distance;
-	servoWriteMS(servoPin_US,angle);
-	delay(10);
-	distance = getSonar();
-	printf(" %3.2f cm an Position %i \n",distance,angle);
-	return distance;
-}
-
-
-// 	Inettigence?
-int freeDirection() {
-	int i, free;
-	float rSum=0, lSum=0;
-	if (getSonarP((SERVO_MIN_US+SERVO_MAX_US)/2) >= MIN_DISTANCE) {
-		free = 0;
-		printf(" vorne %i \n--> Weg frei ",free);
-	}else {
-		gear=0; //Stopp während der messung
-		delay(100);
-		for (i=SERVO_MIN_US;i<(SERVO_MIN_US+SERVO_MAX_US)/2;i++) {
-			rSum=rSum+getSonarP(i);
-		}
-		printf(" Rechts : %6f ",rSum);
-		for (i=SERVO_MAX_US;i>(SERVO_MIN_US+SERVO_MAX_US)/2;i--) {
-			lSum=lSum+getSonarP(i);
-		}
-		printf(" Links : %6f\n",lSum);
-		if (rSum>lSum) {
-			free = 1; 
-			printf("--> Rechts frei \n");
-		}
-		if (rSum<=lSum) {
-			free = 2;
-			printf("--> Link s frei \n");
-		}
-		if (lSum+rSum < (SERVO_MAX_US-SERVO_MIN_US)* MIN_DISTANCE) {
-			free = 3;
-			printf("--> Sackgasse   \n");
-			Blinker[1].dura = 5;
-			Blinker[1].freq = 2;
-			Blinker[2].dura = 5;
-			Blinker[2].freq = 2;
-		};
-	};
-	printf("free %i\n",free);
-	return free;
-}
-*/
-//	JoyStick
+//	JoyStick  ///////////////////////////////////////////////////////////////////////
 const char *device;
 int js;
 struct js_event event;
@@ -559,40 +486,29 @@ void *StickThread (void *value) {
 	return NULL;
 }
 
-
-	
-// Setup
-int Setup () {
+int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
+	int i;
+	if (argc > 1) {
+		device = argv[1];
+	} else {
+		device = "/dev/input/js0";
+		
+	}	
+//Setup
 
 // wiringPi
 	if(wiringPiSetup() == -1){ 
         printf("setup wiringPi faiservo !");
         return 1; 
-    };
-// Input
-	
-	//Ultraschall
-
-	
-// Output
-	//OnOff
-	
-	//Servos
-	servoInit(servoPin_CX);	//Camera X
-	servoInit(servoPin_CY);	//Camera Y
-	servoInit(servoPin_ST);	//Lenkung
-	servoInit(servoPin_US);	//Ultraschall
-	
-	//Motor
-	pinMode(enablePin,OUTPUT);
-	pinMode(motorPin1,OUTPUT);
-	pinMode(motorPin2,OUTPUT);
-	softPwmCreate(enablePin,0,THROTTLE_MAX);
+	};
 
 //Sound
 	init_Sound();
 //Blinker
 	init_Blinker();
+// AB - Encoder
+	init_Encoder();
+	
 	
 //Joystick init
 	js = open(device, O_RDONLY);
@@ -602,9 +518,8 @@ int Setup () {
 		Blinker[3].freq = 20;
 		delay(2000);
 		printf("Warte auf Joystick\n");
-
 	};
-	printf("Joystick ok\n");
+	printf("Joystick ready \n");
 	
 //Joystick
 	pthread_t t_Joystick;
@@ -614,39 +529,30 @@ int Setup () {
 		}
 		
 //Turret
+	servoInit(servoPin_CX);	// X
+	servoInit(servoPin_CY);	// Y
 	pthread_t t_Turret;
         if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
 		printf("Error creating thread t_Turret\n");
 		return 1;
 	}
 
-	return 0;
+	
 //Motor
+	pinMode(enablePin,OUTPUT);
+	pinMode(motorPin1,OUTPUT);
+	pinMode(motorPin2,OUTPUT);
+	servoInit(servoPin_ST);	//Lenkung
+	softPwmCreate(enablePin,0,THROTTLE_MAX);
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
 		printf("Error creating thread t_Motor\n");
 		return 1;
-	}
-// AB - Encoder
-	init_Encoder();
-/*/Sonar
-	pinMode(trigPin, OUTPUT);
-	pinMode(echoPin, INPUT);
-	wiringPiISR (echoPin, INT_EDGE_BOTH, &StartStopTimer) ;
-	*/
-}
-
-int main (int argc, char *argv[]) {
-	int i;
-	if (argc > 1) {
-		device = argv[1];
-	} else {
-		device = "/dev/input/js0";
-		
-	}	//Setup
-	Setup();
+	}	
 	
-		//Main-Loop Section
+
+	
+//Main-Loop Section
 	while (run) {
 		
 		if (steering > 10) steering = 10;
@@ -661,7 +567,7 @@ int main (int argc, char *argv[]) {
 		if (turr1X <-10) turr1X =-10;
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
-		//SubmitTurr1 ( turr1X, turr1Y);
+	
 		system("clear"); //*nix
 		printf("Turm1 %i,%i, Spin_Target %i Lenkrad $i\n", turr1X, turr1Y, Spin_TargetSpin, steering);
 		for (i=0;i<5;i++) {
@@ -676,6 +582,7 @@ int main (int argc, char *argv[]) {
 //End Section
 
     	close(js);
+	run=0;
 	trottle = 0;
 	printf("\n Wait for threads to close...\n");
 	pthread_join(t_Sound[0],NULL);
