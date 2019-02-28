@@ -561,7 +561,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (Spin_Current() > Spin_Target) throttle--;
 		if (Spin_Current() < Spin_Target) throttle++;
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
-		if (throttle < 0) throttle = 0; gear = -gear;
+		if (throttle < 0) grear=-1;
+		if (throttle < -THROTTLE_MAX) throttle = -THROTTLE_MAX;
 		
 		if (turr1X > 10) turr1X = 10;
 		if (turr1X <-10) turr1X =-10;
