@@ -63,7 +63,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define	SERVO_MIN_CY	5+OFFSET_CY
 #define SERVO_MAX_CY	15+OFFSET_CY
 
-#define SPEED_MAX       100         	//  maxmax 128
+#define THROTTLE_MAX       100         	//  maxmax 128
 #define BRAKE           30          	// Bremskraft
 
 #define MAX_DISTANCE 	220         	//  define the maximum measured distance
@@ -71,6 +71,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define MIN_DISTANCE	40		//  cm bis Kollision unvermeidlich
 
 int run      = 1;
+
+float Spin_Target;
 
 struct s_Sound {
 	int loop;
@@ -96,12 +98,13 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 
 //Car Funktions////////////////////////////////////////////////////////
 // 	steering 	-	-10..10	-	left/right
-//	speed		-	0..100	-	motor power
+//	throttle		-	0..100	-	motor power
 //	gear		-	1/0/-1	-	forward/brake/reverse
 
-int steering = 0, speed = 0, gear = 1;
+int steering = 0, throttle = 0, gear = 1;
+
 void *MotorThread(void *value){
-	printf("Motor on\n");
+	printf("Motor ready\n");
 	while (run) {
 		if(gear>0){
 			digitalWrite(motorPin1,HIGH);
@@ -118,10 +121,11 @@ void *MotorThread(void *value){
 		}
 		if (gear == 0 ){
 			softPwmWrite(enablePin,BRAKE);
+			Speed_Target = 0;
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
 		}else{
-			softPwmWrite(enablePin,abs(speed));
+			softPwmWrite(enablePin,abs(throttle));
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
@@ -289,6 +293,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		32	//number of teeth on the encoder wheel
+#define MAX_SPIN	4920 // max 6100r/min
 int PhaseCounter, SpinDirection;
 void PhaseCounter(void){
 	PhaseCounter++;
@@ -298,12 +303,10 @@ void PhaseCounter(void){
 		SpinDirection = -1;
 	}
 }
-
-float Speed_Current (void){
-	
+float Spin_Current (void){
 	PhaseCounter = 0;
 	delay(100);
-	return (PhaseCounter/Teeth)*6000;
+	return (PhaseCounter/(float)Teeth)*6000*SpinDirection;
 }
 void init_Encoder(void) {
 	pinMode(PhaseApin,INPUT);
@@ -442,7 +445,7 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			speed=(map(value,-32767,32767,0,SPEED_MAX));		//Vorwärts
+			Spin_Target=(map(value,-32767,32767,0,(int)SPIN_MAX));		//Vorwärts
 		break;
 	}
 	return 0;
@@ -537,7 +540,7 @@ int ButtonControl (int button, int value) {
 			break;
 			case 5 :    		//R1
 				gear = 1;
-				speed = 0;
+				Spin_Target = 0;
 			break;
 			case 10 :	//PS
 			break;
@@ -593,7 +596,7 @@ int Setup () {
 	pinMode(enablePin,OUTPUT);
 	pinMode(motorPin1,OUTPUT);
 	pinMode(motorPin2,OUTPUT);
-	softPwmCreate(enablePin,0,SPEED_MAX);
+	softPwmCreate(enablePin,0,THROTTLE_MAX);
 
 //Sound
 	init_Sound();
@@ -619,13 +622,6 @@ int Setup () {
 			return 1;
 		}
 		
-//Sound 
-	pthread_t t_playSound;
-	if(pthread_create(&t_playSound, NULL, SoundThread, NULL)) {
-		printf("Error creating thread t_playSound\n");
-		return 1;
-	}
-
 //Turret
 	pthread_t t_Turret;
         if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
@@ -661,32 +657,49 @@ int main (int argc, char *argv[]) {
 	
 		//Main-Loop Section
 	while (run) {
+		
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
-		if (speed > SPEED_MAX) speed = SPEED_MAX;
-		if (speed <0) speed =0;
-		//SubmitMotor ( steering, speed);
+		
+		if (Spin_Current() > Spin_Target) throttle--;
+		if (Spin_Current() < Spin_Target) throttle++;
+		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
+		if (throttle < 0) throttle = 0; gear = -gear;
+		
 		if (turr1X > 10) turr1X = 10;
 		if (turr1X <-10) turr1X =-10;
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
 		//SubmitTurr1 ( turr1X, turr1Y);
 		system("clear"); //*nix
-		printf("Turm1 %i,%i, Speed %i Lenkrad $i\n", turr1X, turr1Y, speed, steering);
+		printf("Turm1 %i,%i, Spin_Target %i Lenkrad $i\n", turr1X, turr1Y, Spin_TargetSpin, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		}
 		for (i=0;i<5;i++) {
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		}
-		printf("Turns per Secound: %5.2f",Speed_Current());
+		printf("Turns per Secound: %5.2f%/5.2f",Spin_Current()/Spin_Target);
 	}
 		
 //End Section
 
     	close(js);
-	speed = 0;
+	trottle = 0;
 	printf("\n Wait for threads to close...\n");
-	delay(1000);		       
+	pthread_join(t_Sound[0],NULL);
+	pthread_join(t_Sound[1],NULL);
+	pthread_join(t_Sound[2],NULL);
+	pthread_join(t_Sound[3],NULL);
+	pthread_join(t_Sound[4],NULL);
+	pthread_join(t_Motor,NULL);
+	pthread_join(t_Turret,NULL);
+	pthread_join(t_Joystick,NULL);
+	pthread_join(t_Blinker[0],NULL);
+	pthread_join(t_Blinker[1],NULL);
+	pthread_join(t_Blinker[2],NULL);
+	pthread_join(t_Blinker[3],NULL);
+	pthread_join(t_Blinker[4],NULL);
+	printf("..OK");		       
 	return 0;
 }
