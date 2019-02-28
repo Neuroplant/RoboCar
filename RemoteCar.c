@@ -32,9 +32,12 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define servoPin_CX	11  	//Camera X              out PWM
 #define	servoPin_CY	10  	//Camera Y              out PWM
 #define servoPin_ST	16  	//Lenkung (Steering)    out PWM
-#define servoPin_US     6   	//Ultraschall-Servo     out PWM
-#define trigPin         4   	//Ultraschall-Trigger   out digital
-#define echoPin         5   	//Ultraschall-Echo      in  digital
+//#define servoPin_US     6   	//Ultraschall-Servo     out PWM
+//#define trigPin         4   	//Ultraschall-Trigger   out digital
+//#define echoPin         5   	//Ultraschall-Echo      in  digital
+#define phaseAPin	4	//Encoder Phase A	in digital
+#define phaseBPin	4	//Encoder Phase B	in digital
+
 #define laserPin	25  	//div LEDs              out digital
 #define blinkrechtsPin  28  	//div LEDs              out digital
 #define blinklinksPin   29  	//div LEDs              out digital
@@ -284,7 +287,34 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 	delay(10);
 }
 
-// 	Sonar////////////////////////////////////////////////////////////////
+// 	AB-Phase-Encoder ////////////////////////////////////////////////////
+#define Teeth		32	//number of teeth on the encoder wheel
+int PhaseCounter, SpinDirection;
+void PhaseCounter(void){
+	PhaseCounter++;
+	if (digitalRead(PhaseBPin)==HIGH) {
+		SpinDirection = 1;
+	}else{
+		SpinDirection = -1;
+	}
+}
+
+float Speed_Current (void){
+	
+	PhaseCounter = 0;
+	delay(100);
+	return (PhaseCounter/Teeth)*6000;
+}
+void init_Encoder(void) {
+	pinMode(PhaseApin,INPUT);
+	pinMode(PhaseBpin,INPUT);
+	if ( wiringPiISR (PhaseApin, INT_EDGE_FALLING, &PhaseCounter()) < 0 ) {
+		printf("CountA failed!");
+	}
+}
+
+
+/*// 	Sonar////////////////////////////////////////////////////////////////
 
 struct timespec Time1, Time2;
 
@@ -355,7 +385,7 @@ int freeDirection() {
 	printf("free %i\n",free);
 	return free;
 }
-
+*/
 //	JoyStick
 const char *device;
 int js;
@@ -610,11 +640,13 @@ int Setup () {
 		printf("Error creating thread t_Motor\n");
 		return 1;
 	}
-		
-//Sonar
+// AB - Encoder
+	init_Encoder();
+/*/Sonar
 	pinMode(trigPin, OUTPUT);
 	pinMode(echoPin, INPUT);
 	wiringPiISR (echoPin, INT_EDGE_BOTH, &StartStopTimer) ;
+	*/
 }
 
 int main (int argc, char *argv[]) {
@@ -647,6 +679,7 @@ int main (int argc, char *argv[]) {
 		for (i=0;i<5;i++) {
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		}
+		printf("Turns per Secound: %5.2f",Speed_Current());
 	}
 		
 //End Section
