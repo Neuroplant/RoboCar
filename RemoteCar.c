@@ -32,11 +32,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define servoPin_CX	11  	//Camera X              out PWM
 #define	servoPin_CY	10  	//Camera Y              out PWM
 #define servoPin_ST	16  	//Lenkung (Steering)    out PWM
-//#define servoPin_US     6   	//Ultraschall-Servo     out PWM
-//#define trigPin         4   	//Ultraschall-Trigger   out digital
-//#define echoPin         5   	//Ultraschall-Echo      in  digital
 #define phaseAPin	4	//Encoder Phase A	in digital
-#define phaseBPin	4	//Encoder Phase B	in digital
+#define phaseBPin	5	//Encoder Phase B	in digital
 
 #define laserPin	25  	//div LEDs              out digital
 #define blinkrechtsPin  28  	//div LEDs              out digital
@@ -47,7 +44,6 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define OFFSET_CX 0
 #define OFFSET_CY 0
 #define OFFSET_ST 0
-#define OFFSET_US 0
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
@@ -55,24 +51,17 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define	SERVO_MIN_ST	10+OFFSET_ST
 #define SERVO_MAX_ST	18+OFFSET_ST
 
-#define	SERVO_MIN_US	7+OFFSET_ST
-#define SERVO_MAX_US	23+OFFSET_ST
-
 #define	SERVO_MIN_CX	5+OFFSET_CX
 #define SERVO_MAX_CX	26+OFFSET_CX
 #define	SERVO_MIN_CY	5+OFFSET_CY
 #define SERVO_MAX_CY	15+OFFSET_CY
 
-#define THROTTLE_MAX       100         	//  maxmax 128
+#define THROTTLE_MAX       100         	//  defines the scale and also the acceleration
 #define BRAKE           30          	// Bremskraft
-
-#define MAX_DISTANCE 	220         	//  define the maximum measured distance
-#define timeOut MAX_DISTANCE*60     	//  calculate timeout according to the maximum measured distance
-#define MIN_DISTANCE	40		//  cm bis Kollision unvermeidlich
 
 int run      = 1;
 
-float Spin_Target;
+float Spin_Target =0;
 
 struct s_Sound {
 	int loop;
@@ -98,7 +87,7 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 
 //Car Funktions////////////////////////////////////////////////////////
 // 	steering 	-	-10..10	-	left/right
-//	throttle		-	0..100	-	motor power
+//	throttle	-	0..100	-	motor power
 //	gear		-	1/0/-1	-	forward/brake/reverse
 
 int steering = 0, throttle = 0, gear = 1;
@@ -179,11 +168,11 @@ int init_Sound (void) {
 // Turret/////////////////////////////////////////////////
 // turr1X	-	10..-10	-	x-axis 
 // turr1Y	-	10..-10	-	y-axis
-// turret1	-	0/1	-	lader off/on
+// turret1	-	0/1	-	laser off/on
 
 int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
 void *TurretThread (void *value) {
-	printf("Turret1 on\n");
+	printf("Turret1 ready\n");
 	while (run) {
 		switch (turret1) {
 			case 0 : 	// dont move
@@ -194,10 +183,12 @@ void *TurretThread (void *value) {
 			break;
 			case 3 :	// Laser on
 				Sound[4].loop = 1;
-				digitalWrite(laserPin,HIGH);
+				Blinker[0].dura = 10;
+				Blinker[0].freq = 0;
 			break;
 			case 9 :	// laser off
-				digitalWrite(laserPin,LOW);
+				Blinker[0].dura = 0;
+				Blinker[0].freq = 0;
 			break;
 			case 8 :	//up
 				turr1Y++;
