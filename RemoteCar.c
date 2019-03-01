@@ -43,7 +43,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
-#define OFFSET_ST 0
+
+#define OFFSET_ST -1
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
@@ -58,6 +59,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 #define THROTTLE_MAX       100         	//  defines the scale and also the acceleration
 #define BRAKE           30          	// Bremskraft
+#define SPIN_MAX	4920 //max 6100
 
 int run      = 1;
 int throttle_mode = 0;
@@ -77,6 +79,8 @@ int throttle_mode_Switch (int value) {
 }
 
 float Spin_Target =0;
+
+float Spin_Target =5;
 
 struct s_Sound {
 	int loop;
@@ -125,12 +129,12 @@ void *MotorThread(void *value){
 		}
 		if (gear == 0 ){
 			softPwmWrite(enablePin,BRAKE);
-			Speed_Target = 0;
+			speed = 0;
+			Spin_Target = 0;
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
 		}else{
 			softPwmWrite(enablePin,abs(throttle));
-			
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
@@ -318,11 +322,11 @@ void PhaseCounter(void){
 	return NULL;
 }
 float Spin_Current (void){
-	int retVal;
+	int rpmin;
 	PhaseCount = 0;
 	delay(100);
-	retVal = (PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
-	return retVal;
+	rpmin = (PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
+	return rpmin;
 }
 void init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
@@ -330,6 +334,7 @@ void init_Encoder(void) {
 	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter(NULL));
 	return NULL;
 }
+
 
 //	JoyStick  ///////////////////////////////////////////////////////////////////////
 const char *device;
@@ -388,6 +393,7 @@ int StickControl(int stick, int value) {
 		case 5 :	//R2 Pull
 			if (throttle_mode) Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
 			else throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+
 		break;
 	}
 	return 0;
@@ -526,12 +532,13 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         printf("setup wiringPi faiservo !");
         return 1; 
 	};
+
+// AB - Encoder
+	init_Encoder();
 //Sound
 	init_Sound();
 //Blinker
 	init_Blinker();
-// AB - Encoder
-	init_Encoder();
 	
 	
 //Joystick init
@@ -584,6 +591,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		
 		if ((Spin_Current() > Spin_Target)&&throttle_mode) throttle--;
 		if ((Spin_Current() < Spin_Target)&&throttle_mode) throttle++;
+
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
 		if (throttle < 0) gear=-1;
 		if (throttle < -THROTTLE_MAX) throttle = -THROTTLE_MAX;
@@ -592,7 +600,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1X <-10) turr1X =-10;
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
-	
+	 
 		system("clear"); //*nix
 		printf("Throttle %i Lenkrad $i\n", throttle, steering);
 		//for (i=0;i<5;i++) {
@@ -602,7 +610,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		//	printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		//}
 		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
-	}
+
 		
 //End Section
 
@@ -623,6 +631,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pthread_join(t_Blinker[2],NULL);
 	pthread_join(t_Blinker[3],NULL);
 	pthread_join(t_Blinker[4],NULL);
-	printf("..OK");		       
+
+	printf("..OK\n");		       
 	return 0;
 }
