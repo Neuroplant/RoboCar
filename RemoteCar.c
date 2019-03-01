@@ -43,6 +43,7 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
+
 #define OFFSET_ST -1
 
 #define	SERVO_MIN_MS	4
@@ -61,6 +62,23 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define SPIN_MAX	4920 //max 6100
 
 int run      = 1;
+int throttle_mode = 0;
+
+int throttle_mode_Switch (int value) {
+	if (throttle_mode==0||value == 1) {
+		throttle_mode = 1;
+		Blinker[1].dura = 30;
+		Blinker[1].freq = 2;
+		Blinker[2].dura = 30;
+		Blinker[2].freq = 2;
+	}
+	if (throttle_mode==1||value == 0) {
+		throttle_mode = 0;
+	}
+	return thottle_mode;
+}
+
+float Spin_Target =0;
 
 float Spin_Target =5;
 
@@ -111,6 +129,7 @@ void *MotorThread(void *value){
 		}
 		if (gear == 0 ){
 			softPwmWrite(enablePin,BRAKE);
+			speed = 0;
 			Spin_Target = 0;
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
@@ -122,6 +141,7 @@ void *MotorThread(void *value){
 	digitalWrite(motorPin1,LOW);
 	digitalWrite(motorPin2,LOW);
 	printf("Motor off\n");	
+	return NULL;
 }
 
 //Sound/////////////////////////////////////////////////////////////////
@@ -147,6 +167,7 @@ void *SoundThread(void *value) {
 		}
 	}
 	printf("Sound %i: %c ready",i,Sound[idNr].name);
+	return NULL;
 }
 int init_Sound (void) {
 	int i=0;
@@ -164,6 +185,7 @@ int init_Sound (void) {
 	   	return 1;
 		}
 	}
+	return 0;
 }
 
 // Turret/////////////////////////////////////////////////
@@ -261,13 +283,15 @@ int init_Blinker (void) {
 	   	return 1;
 		}
 	}
+	return 0;
 }
 
 // 	Servo//////////////////////////////////////////////////////
-void servoInit(int pin){        		//initialization function for servo PMW pins
+int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
 	softPwmCreate(pin,  0, 200);
 	printf("Pin %i OK\n",pin);
+	return 0;
 }
 
 void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
@@ -281,6 +305,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
     };
     softPwmWrite(pin,ms);
 	delay(10);
+	return NULL;
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
@@ -294,19 +319,20 @@ void PhaseCounter(void){
 	}else{
 		SpinDirection = -1;
 	}
+	return NULL;
 }
 float Spin_Current (void){
-	float rpmin;
+	int rpmin;
 	PhaseCount = 0;
 	delay(100);
-	rpmin = (PhaseCount/Teeth) * 6000 * SpinDirection; 
-	//printf("\n rpmin %f\n",rpmin);
+	rpmin = (PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
 	return rpmin;
 }
 void init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
 	pinMode(phaseBPin,INPUT);
-	wiringPiISR (phaseAPin, INT_EDGE_BOTH, &PhaseCounter);
+	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter(NULL));
+	return NULL;
 }
 
 
@@ -319,8 +345,7 @@ size_t axis;
 int read_event(int fd, struct js_event *event) {
     ssize_t bytes;
     bytes = read(fd, event, sizeof(*event));
-    if (bytes == sizeof(*event))
-        return 0;
+    if (bytes == sizeof(*event)) return 0;
     /* Error, could not read full event. */
     return -1;
 }
@@ -366,7 +391,9 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			Spin_Target=(map(value,-32767,32767,0,SPIN_MAX));		//Vorwärts
+			if (throttle_mode) Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
+			else throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+
 		break;
 	}
 	return 0;
@@ -378,7 +405,7 @@ int ButtonControl (int button, int value) {
 	X		Hupe					-
 	O    	Scheinwerfer (60s)		-
 	Dreieck	Laser Beam on			Laser Beam off			
-	Quadrat	-
+	Quadrat	throttle_mode on/off
 	Up	move Turret1 up			Turret1 Stop
 	Down	move Turret1 down		Turret1 Stop
 	Left	move Turret1 left		Turret1 Stop
@@ -403,9 +430,12 @@ int ButtonControl (int button, int value) {
 				Blinker[3].dura = 60;
 				Blinker[3].freq = 0;
 			break;
-			case 2 :	//Dreieck
+			case 2 :		//Dreieck
 				turret1 = 3;
-				break;
+			break;
+			case 3 :		//quadrat
+				throttle_mode_Switch(-1);
+			break;
 			case 4	:	//L1
 				gear = -1;
 			break;
@@ -494,10 +524,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		device = argv[1];
 	} else {
 		device = "/dev/input/js0";
-		
 	}	
 //Setup
-
 
 // wiringPi
 	if(wiringPiSetup() == -1){ 
@@ -505,14 +533,12 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         return 1; 
 	};
 
-	// AB - Encoder
+// AB - Encoder
 	init_Encoder();
-	
 //Sound
 	init_Sound();
 //Blinker
 	init_Blinker();
-
 	
 	
 //Joystick init
@@ -563,8 +589,9 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
 		
-		if (Spin_Current() > Spin_Target) throttle--;
-		if (Spin_Current() < Spin_Target) throttle++;
+		if ((Spin_Current() > Spin_Target)&&throttle_mode) throttle--;
+		if ((Spin_Current() < Spin_Target)&&throttle_mode) throttle++;
+
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
 		if (throttle < 0) gear=-1;
 		if (throttle < -THROTTLE_MAX) throttle = -THROTTLE_MAX;
@@ -573,17 +600,17 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1X <-10) turr1X =-10;
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
-	
-		//system("clear"); //*nix
-		//printf("Spin_Target %f \n Lenkrad %i\n", Spin_Target, steering);
-		/*for (i=0;i<5;i++) {
-			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		}
-		for (i=0;i<5;i++) {
-			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-		}*/
-		printf("\n Turns per Secound: %5.2f/%5.2f  Throttle %i PhaseCount %i  ",Spin_Current(),Spin_Target,throttle,PhaseCount);
-	}
+	 
+		system("clear"); //*nix
+		printf("Throttle %i Lenkrad $i\n", throttle, steering);
+		//for (i=0;i<5;i++) {
+		//	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
+		//}
+		//for (i=0;i<5;i++) {
+		//	printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+		//}
+		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
+
 		
 //End Section
 
@@ -604,6 +631,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pthread_join(t_Blinker[2],NULL);
 	pthread_join(t_Blinker[3],NULL);
 	pthread_join(t_Blinker[4],NULL);
+
 	printf("..OK\n");		       
 	return 0;
 }
