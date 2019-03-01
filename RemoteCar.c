@@ -60,6 +60,21 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define BRAKE           30          	// Bremskraft
 
 int run      = 1;
+int throttle_mode = 0;
+
+int throttle_mode_Switch (int value) {
+	if (throttle_mode==0||value == 1) {
+		throttle_mode = 1;
+		Blinker[1].dura = 30;
+		Blinker[1].freq = 2;
+		Blinker[2].dura = 30;
+		Blinker[2].freq = 2;
+	}
+	if (throttle_mode==1||value == 0) {
+		throttle_mode = 0;
+	}
+	return thottle_mode;
+}
 
 float Spin_Target =0;
 
@@ -115,6 +130,7 @@ void *MotorThread(void *value){
 			Blinker[4].freq = 0;
 		}else{
 			softPwmWrite(enablePin,abs(throttle));
+			
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
@@ -285,7 +301,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		32	//number of teeth on the encoder wheel
 #define MAX_SPIN	4920 // max 6100r/min
-int PhaseCounter, SpinDirection;
+int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCounter++;
 	if (digitalRead(PhaseBPin)==HIGH) {
@@ -295,15 +311,14 @@ void PhaseCounter(void){
 	}
 }
 float Spin_Current (void){
-	PhaseCounter = 0;
+	PhaseCount = 0;
 	delay(100);
-	return (PhaseCounter/(float)Teeth)*6000*SpinDirection;
+	return (PhaseCount/(float)Teeth)*6000*SpinDirection;
 }
 void init_Encoder(void) {
 	pinMode(PhaseApin,INPUT);
 	pinMode(PhaseBpin,INPUT);
-	if ( wiringPiISR (PhaseApin, INT_EDGE_FALLING, &PhaseCounter()) < 0 ) {
-		printf("CountA failed!");
+	wiringPiISR (PhaseApin, INT_EDGE_BOTH, *PhaseCounter(NULL));
 	}
 }
 
@@ -363,7 +378,8 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			Spin_Target=(map(value,-32767,32767,0,(int)SPIN_MAX));		//Vorwärts
+			if (throttle_mode) Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
+			else throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
 		break;
 	}
 	return 0;
@@ -375,7 +391,7 @@ int ButtonControl (int button, int value) {
 	X		Hupe					-
 	O    	Scheinwerfer (60s)		-
 	Dreieck	Laser Beam on			Laser Beam off			
-	Quadrat	-
+	Quadrat	throttle_mode on/off
 	Up	move Turret1 up			Turret1 Stop
 	Down	move Turret1 down		Turret1 Stop
 	Left	move Turret1 left		Turret1 Stop
@@ -400,9 +416,12 @@ int ButtonControl (int button, int value) {
 				Blinker[3].dura = 60;
 				Blinker[3].freq = 0;
 			break;
-			case 2 :	//Dreieck
+			case 2 :		//Dreieck
 				turret1 = 3;
-				break;
+			break;
+			case 3 :		//quadrat
+				throttle_mode_Switch(-1);
+			break;
 			case 4	:	//L1
 				gear = -1;
 			break;
@@ -458,7 +477,6 @@ int ButtonControl (int button, int value) {
 			break;
 			case 5 :    		//R1
 				gear = 1;
-				Spin_Target = 0;
 			break;
 			case 10 :	//PS
 			break;
@@ -558,10 +576,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
 		
-		if (Spin_Current() > Spin_Target) throttle--;
-		if (Spin_Current() < Spin_Target) throttle++;
+		if ((Spin_Current() > Spin_Target)&&throttle_mode) throttle--;
+		if ((Spin_Current() < Spin_Target)&&throttle_mode) throttle++;
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
-		if (throttle < 0) grear=-1;
+		if (throttle < 0) gear=-1;
 		if (throttle < -THROTTLE_MAX) throttle = -THROTTLE_MAX;
 		
 		if (turr1X > 10) turr1X = 10;
@@ -570,21 +588,21 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1Y <-10) turr1Y =-10;
 	
 		system("clear"); //*nix
-		printf("Turm1 %i,%i, Spin_Target %i Lenkrad $i\n", turr1X, turr1Y, Spin_TargetSpin, steering);
-		for (i=0;i<5;i++) {
-			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		}
-		for (i=0;i<5;i++) {
-			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-		}
-		printf("Turns per Secound: %5.2f%/5.2f",Spin_Current()/Spin_Target);
+		printf("Throttle %i Lenkrad $i\n", throttle, steering);
+		//for (i=0;i<5;i++) {
+		//	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
+		//}
+		//for (i=0;i<5;i++) {
+		//	printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+		//}
+		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
 	}
 		
 //End Section
 
     	close(js);
 	run=0;
-	trottle = 0;
+	throttle = 0;
 	printf("\n Wait for threads to close...\n");
 	pthread_join(t_Sound[0],NULL);
 	pthread_join(t_Sound[1],NULL);
