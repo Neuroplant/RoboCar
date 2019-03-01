@@ -26,15 +26,14 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 
 // Pin definitions
-#define motorPin1	21	//Motor Vorwärts        out digital
+#define motorPin1	21		//Motor Vorwärts        out digital
 #define motorPin2	22  	//Motor Rückwärts       out digital
 #define enablePin	23  	//Motor Geschwindigkeit out PWM
 #define servoPin_CX	11  	//Camera X              out PWM
 #define	servoPin_CY	10  	//Camera Y              out PWM
 #define servoPin_ST	16  	//Lenkung (Steering)    out PWM
-#define phaseAPin	4	//Encoder Phase A	in digital
-#define phaseBPin	5	//Encoder Phase B	in digital
-
+#define phaseAPin	4		//Encoder Phase A	in digital
+#define phaseBPin	5		//Encoder Phase B	in digital
 #define laserPin	25  	//div LEDs              out digital
 #define blinkrechtsPin  28  	//div LEDs              out digital
 #define blinklinksPin   29  	//div LEDs              out digital
@@ -63,24 +62,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 int run      = 1;
 int throttle_mode = 0;
-
-int throttle_mode_Switch (int value) {
-	if (throttle_mode==0||value == 1) {
-		throttle_mode = 1;
-		Blinker[1].dura = 30;
-		Blinker[1].freq = 2;
-		Blinker[2].dura = 30;
-		Blinker[2].freq = 2;
-	}
-	if (throttle_mode==1||value == 0) {
-		throttle_mode = 0;
-	}
-	return thottle_mode;
-}
-
 float Spin_Target =0;
-
-float Spin_Target =5;
+int thottle_mode = 1;
 
 struct s_Sound {
 	int loop;
@@ -99,6 +82,21 @@ struct s_Blinker Blinker[10];
 pthread_t t_Blinker[10];
 
 void servoWriteMS(int pin, int ms);
+
+int throttle_mode_Switch (int value) {
+	if (throttle_mode==0||value == 1) {
+		throttle_mode = 1;
+		Blinker[1].dura = 30;
+		Blinker[1].freq = 2;
+		Blinker[2].dura = 30;
+		Blinker[2].freq = 2;
+	}
+	if (throttle_mode==1||value == 0) {
+		throttle_mode = 0;
+	}
+	return thottle_mode;
+}
+
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
@@ -128,20 +126,20 @@ void *MotorThread(void *value){
 			}
 		}
 		if (gear == 0 ){
-			softPwmWrite(enablePin,BRAKE);
-			speed = 0;
+			//softPwmWrite(enablePin,BRAKE);
+			//throttle = 0;
 			Spin_Target = 0;
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
 		}else{
 			softPwmWrite(enablePin,abs(throttle));
+			printf("Throttle %i \n",throttle);
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
 	digitalWrite(motorPin1,LOW);
 	digitalWrite(motorPin2,LOW);
 	printf("Motor off\n");	
-	return NULL;
 }
 
 //Sound/////////////////////////////////////////////////////////////////
@@ -305,7 +303,6 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
     };
     softPwmWrite(pin,ms);
 	delay(10);
-	return NULL;
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
@@ -319,20 +316,18 @@ void PhaseCounter(void){
 	}else{
 		SpinDirection = -1;
 	}
-	return NULL;
 }
 float Spin_Current (void){
 	int rpmin;
 	PhaseCount = 0;
 	delay(100);
-	rpmin = (PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
+	rpmin = ((PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
 	return rpmin;
 }
 void init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
 	pinMode(phaseBPin,INPUT);
-	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter(NULL));
-	return NULL;
+	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter);
 }
 
 
@@ -605,12 +600,12 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Throttle %i Lenkrad $i\n", throttle, steering);
 		//for (i=0;i<5;i++) {
 		//	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		//}
+		// }
 		//for (i=0;i<5;i++) {
 		//	printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-		//}
+		// }
 		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
-
+	}
 		
 //End Section
 
@@ -634,4 +629,5 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 	printf("..OK\n");		       
 	return 0;
+
 }
