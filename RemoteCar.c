@@ -137,6 +137,7 @@ void *MotorThread(void *value){
 	digitalWrite(motorPin1,LOW);
 	digitalWrite(motorPin2,LOW);
 	printf("Motor off\n");	
+	return NULL;
 }
 
 //Sound/////////////////////////////////////////////////////////////////
@@ -162,6 +163,7 @@ void *SoundThread(void *value) {
 		}
 	}
 	printf("Sound %i: %c ready",i,Sound[idNr].name);
+	return NULL;
 }
 int init_Sound (void) {
 	int i=0;
@@ -179,6 +181,7 @@ int init_Sound (void) {
 	   	return 1;
 		}
 	}
+	return 0;
 }
 
 // Turret/////////////////////////////////////////////////
@@ -276,13 +279,15 @@ int init_Blinker (void) {
 	   	return 1;
 		}
 	}
+	return 0;
 }
 
 // 	Servo//////////////////////////////////////////////////////
-void servoInit(int pin){        		//initialization function for servo PMW pins
+int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
 	softPwmCreate(pin,  0, 200);
 	printf("Pin %i OK\n",pin);
+	return 0;
 }
 
 void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
@@ -296,6 +301,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
     };
     softPwmWrite(pin,ms);
 	delay(10);
+	return NULL;
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
@@ -303,23 +309,26 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 #define MAX_SPIN	4920 // max 6100r/min
 int PhaseCount, SpinDirection;
 void PhaseCounter(void){
-	PhaseCounter++;
-	if (digitalRead(PhaseBPin)==HIGH) {
+	PhaseCount++;
+	if (digitalRead(phaseBPin)==HIGH) {
 		SpinDirection = 1;
 	}else{
 		SpinDirection = -1;
 	}
+	return NULL;
 }
 float Spin_Current (void){
+	int retVal;
 	PhaseCount = 0;
 	delay(100);
-	return (PhaseCount/(float)Teeth)*6000*SpinDirection;
+	retVal = (PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
+	return retVal;
 }
 void init_Encoder(void) {
-	pinMode(PhaseApin,INPUT);
-	pinMode(PhaseBpin,INPUT);
-	wiringPiISR (PhaseApin, INT_EDGE_BOTH, *PhaseCounter(NULL));
-	}
+	pinMode(phaseAPin,INPUT);
+	pinMode(phaseBPin,INPUT);
+	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter(NULL));
+	return NULL;
 }
 
 //	JoyStick  ///////////////////////////////////////////////////////////////////////
@@ -331,8 +340,7 @@ size_t axis;
 int read_event(int fd, struct js_event *event) {
     ssize_t bytes;
     bytes = read(fd, event, sizeof(*event));
-    if (bytes == sizeof(*event))
-        return 0;
+    if (bytes == sizeof(*event)) return 0;
     /* Error, could not read full event. */
     return -1;
 }
@@ -510,7 +518,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		device = argv[1];
 	} else {
 		device = "/dev/input/js0";
-		
 	}	
 //Setup
 
@@ -519,7 +526,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         printf("setup wiringPi faiservo !");
         return 1; 
 	};
-
 //Sound
 	init_Sound();
 //Blinker
