@@ -34,9 +34,9 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define motorPin1	0 + PIN_BASE0		//Motor Vorwärts        out digital
 #define motorPin2	1 + PIN_BASE0	  	//Motor Rückwärts       out digital
 #define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
-#define servoPin_CX	3 + PIN_BASE0  		//Camera X              out PWM
-#define	servoPin_CY	4 + PIN_BASE0  		//Camera Y              out PWM
-#define servoPin_ST	5 + PIN_BASE0  		//Lenkung (Steering)    out PWM
+#define servoPin_ST	3 + PIN_BASE0  		//Lenkung (Steering)    out PWM
+#define servoPin_CX	4 + PIN_BASE0  		//Camera X              out PWM
+#define	servoPin_CY	5 + PIN_BASE0  		//Camera Y              out PWM
 #define laserPin	6 + PIN_BASE0  		//div LEDs              out digital
 #define blinkrechtsPin  7 + PIN_BASE0  		//div LEDs              out digital
 #define blinklinksPin   8 + PIN_BASE0  		//div LEDs              out digital
