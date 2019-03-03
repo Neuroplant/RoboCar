@@ -13,7 +13,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
  
  // Include Section
 #include <wiringPi.h>
-#include <softPwm.h>
+#include <wiringPiI2C.h>
+#include <pca9685.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <math.h>
@@ -24,21 +25,25 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #include <pthread.h>
 #include <string.h>
 
+#define DEVID		0x40
+#define PIN_BASE0 	64
+#define MAX_PWM 	4096
+#define HERTZ 		50
 
 // Pin definitions
-#define motorPin1	21		//Motor Vorwärts        out digital
-#define motorPin2	22  	//Motor Rückwärts       out digital
-#define enablePin	23  	//Motor Geschwindigkeit out PWM
-#define servoPin_CX	11  	//Camera X              out PWM
-#define	servoPin_CY	10  	//Camera Y              out PWM
-#define servoPin_ST	16  	//Lenkung (Steering)    out PWM
-#define phaseAPin	4		//Encoder Phase A	in digital
-#define phaseBPin	5		//Encoder Phase B	in digital
-#define laserPin	25  	//div LEDs              out digital
-#define blinkrechtsPin  28  	//div LEDs              out digital
-#define blinklinksPin   29  	//div LEDs              out digital
-#define frontlightPin   27  	//div LEDs              out digital
-#define rearlightPin    26  	//div LEDs              out digital
+#define motorPin1	0 + PIN_BASE0		//Motor Vorwärts        out digital
+#define motorPin2	1 + PIN_BASE0	  	//Motor Rückwärts       out digital
+#define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
+#define servoPin_CX	3 + PIN_BASE0  		//Camera X              out PWM
+#define	servoPin_CY	4 + PIN_BASE0  		//Camera Y              out PWM
+#define servoPin_ST	5 + PIN_BASE0  		//Lenkung (Steering)    out PWM
+#define phaseAPin	14 + PIN_BASE0		//Encoder Phase A	in digital
+#define phaseBPin	15 + PIN_BASE0		//Encoder Phase B	in digital
+#define laserPin	6 + PIN_BASE0  		//div LEDs              out digital
+#define blinkrechtsPin  7 + PIN_BASE0  		//div LEDs              out digital
+#define blinklinksPin   8 + PIN_BASE0  		//div LEDs              out digital
+#define frontlightPin   9 + PIN_BASE0 	 	//div LEDs              out digital
+#define rearlightPin    10 + PIN_BASE0  	//div LEDs              out digital
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
@@ -56,14 +61,14 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define	SERVO_MIN_CY	5+OFFSET_CY
 #define SERVO_MAX_CY	15+OFFSET_CY
 
-#define THROTTLE_MAX       100         	//  defines the scale and also the acceleration
+#define THROTTLE_MAX    PWM_MAX         	//  defines the scale and also the acceleration
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-int run      = 1;
-int throttle_mode = 0;
-float Spin_Target =0;
-int thottle_mode = 1;
+int run			= 1;
+int throttle_mode 	= 0;
+float Spin_Target 	= 0;
+int thottle_mode 	= 1;
 
 struct s_Sound {
 	int loop;
@@ -301,7 +306,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
         printf("Pin: %i ms: %i too small\n",pin,ms);
         ms = SERVO_MIN_MS;
     };
-    softPwmWrite(pin,ms);
+    softPwmWrite(pin,map(ms,0,200,0,PWM_MAX);
 	delay(10);
 }
 
@@ -311,7 +316,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
-	if (digitalRead(phaseBPin)==HIGH) {
+	if (digitalRead(phaseBPin) & 0x1000==HIGH) {
 		SpinDirection = 1;
 	}else{
 		SpinDirection = -1;
@@ -527,6 +532,16 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         printf("setup wiringPi faiservo !");
         return 1; 
 	};
+	if(wiringPiI2CSetup(DE_ID0) == -1){ 
+       	printf("setup wiringPi I2C faiservo !");
+       	return 1; 
+	};
+	
+	int fd = pca9685Setup(PIN_BASE0, DEVID0, HERTZ);
+	if (fd < 0)	{
+		printf("Error in setup\n");
+		return fd;
+	}
 
 // AB - Encoder
 	init_Encoder();
@@ -565,11 +580,11 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 	
 //Motor
-	pinMode(enablePin,OUTPUT);
-	pinMode(motorPin1,OUTPUT);
-	pinMode(motorPin2,OUTPUT);
-	servoInit(servoPin_ST);	//Lenkung
-	softPwmCreate(enablePin,0,THROTTLE_MAX);
+//	pinMode(enablePin,OUTPUT);
+//	pinMode(motorPin1,OUTPUT);
+//	pinMode(motorPin2,OUTPUT);
+//	servoInit(servoPin_ST);	//Lenkung
+//	softPwmCreate(enablePin,0,THROTTLE_MAX);
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
 		printf("Error creating thread t_Motor\n");
