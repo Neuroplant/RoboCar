@@ -25,9 +25,9 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #include <pthread.h>
 #include <string.h>
 
-#define DEVID		0x40
+#define DEV_ID0		0x40
 #define PIN_BASE0 	64
-#define MAX_PWM 	4096
+#define PWM_MAX 	4096
 #define HERTZ 		50
 
 // Pin definitions
@@ -37,8 +37,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define servoPin_CX	3 + PIN_BASE0  		//Camera X              out PWM
 #define	servoPin_CY	4 + PIN_BASE0  		//Camera Y              out PWM
 #define servoPin_ST	5 + PIN_BASE0  		//Lenkung (Steering)    out PWM
-#define phaseAPin	14 + PIN_BASE0		//Encoder Phase A	in digital
-#define phaseBPin	15 + PIN_BASE0		//Encoder Phase B	in digital
+#define phaseAPin	4 		//Encoder Phase A	in digital
+#define phaseBPin	5 		//Encoder Phase B	in digital
 #define laserPin	6 + PIN_BASE0  		//div LEDs              out digital
 #define blinkrechtsPin  7 + PIN_BASE0  		//div LEDs              out digital
 #define blinklinksPin   8 + PIN_BASE0  		//div LEDs              out digital
@@ -137,7 +137,7 @@ void *MotorThread(void *value){
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
 		}else{
-			softPwmWrite(enablePin,abs(throttle));
+			pwmWrite(enablePin,abs(throttle));
 			printf("Throttle %i \n",throttle);
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
@@ -292,7 +292,7 @@ int init_Blinker (void) {
 // 	Servo//////////////////////////////////////////////////////
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
-	softPwmCreate(pin,  0, 200);
+	//softPwmCreate(pin,  0, 200);
 	printf("Pin %i OK\n",pin);
 	return 0;
 }
@@ -306,7 +306,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
         printf("Pin: %i ms: %i too small\n",pin,ms);
         ms = SERVO_MIN_MS;
     };
-    softPwmWrite(pin,map(ms,0,200,0,PWM_MAX);
+    pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
 	delay(10);
 }
 
@@ -532,12 +532,12 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         printf("setup wiringPi faiservo !");
         return 1; 
 	};
-	if(wiringPiI2CSetup(DE_ID0) == -1){ 
+	if(wiringPiI2CSetup(DEV_ID0) == -1){ 
        	printf("setup wiringPi I2C faiservo !");
        	return 1; 
 	};
 	
-	int fd = pca9685Setup(PIN_BASE0, DEVID0, HERTZ);
+	int fd = pca9685Setup(PIN_BASE0, DEV_ID0, HERTZ);
 	if (fd < 0)	{
 		printf("Error in setup\n");
 		return fd;
