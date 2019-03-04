@@ -285,8 +285,8 @@ int init_Blinker (void) {
 	Blinker[0].pin = laserPin; 
 	Blinker[1].pin = blinkrechtsPin;
 	Blinker[2].pin = blinklinksPin;
-	Blinker[3].pin = blinkrechtsVPin;
-	Blinker[4].pin = blinklinksVPin;
+	Blinker[3].pin = blinkrechtsvPin;
+	Blinker[4].pin = blinklinksvPin;
 	Blinker[5].pin = frontlightPin;
 	Blinker[6].pin = rearlightPin;
 
