@@ -5,10 +5,10 @@
  * Reads joystick(Sixaxis3) events and controls Car.
  *
  * Compile:
-gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
+*  make Remote
  *
  * Run:
- * ./Remote [/dev/input/jsX]
+ * sudo ./Remote [/dev/input/jsX]
  */
  
  // Include Section
@@ -36,8 +36,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
 #define servoPin_ST	3 + PIN_BASE0  		//Lenkung (Steering)    out PWM
 
-#define servoPin_CX	4 + PIN_BASE0  		//Camera X              out PWM
-#define	servoPin_CY	5 + PIN_BASE0  		//Camera Y              out PWM
+#define servoPin_CX	5 + PIN_BASE0  		//Camera X              out PWM
+#define	servoPin_CY	4 + PIN_BASE0  		//Camera Y              out PWM
 //#define	xxx	6 + PIN_BASE0 
 //#define	xxx	7 + PIN_BASE0 
 
@@ -52,8 +52,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 //#define	xxx	15 + PIN_BASE0 
 
 
-#define phaseAPin	9 		//Encoder Phase A	in digital
-#define phaseBPin	11 		//Encoder Phase B	in digital
+#define phaseAPin	2 		//Encoder Phase A	in digital
+#define phaseBPin	3 		//Encoder Phase B	in digital
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
@@ -128,14 +128,14 @@ void *MotorThread(void *value){
 	printf("Motor ready\n");
 	while (run) {
 		if(gear>0){
-			digitalWrite(motorPin1,HIGH);
-			digitalWrite(motorPin2,LOW);
+			digitalWrite(motorPin1,LOW);
+			digitalWrite(motorPin2,HIGH);
 		//printf("turn Forward...\n");
 		}
 		else{
 			if (gear<=0){
-				digitalWrite(motorPin1,LOW);
-				digitalWrite(motorPin2,HIGH);
+				digitalWrite(motorPin1,HIGH);
+				digitalWrite(motorPin2,LOW);
 		//printf("turn Back...\n");
 				Sound[2].loop = 1;
 			}
@@ -148,7 +148,7 @@ void *MotorThread(void *value){
 			Blinker[4].freq = 0;
 		}else{
 			pwmWrite(enablePin,abs(throttle));
-			printf("Throttle %i \n",throttle);
+			//printf("Throttle %i \n",throttle);
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
@@ -168,7 +168,7 @@ void *SoundThread(void *value) {
 	char soundfile[100];
 	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
 	strcat(soundfile,Sound[idNr].name);
-	printf("Sound %i: %c ready",i,Sound[idNr].name);
+	printf("Sound %i: %c ready\n",i,Sound[idNr].name);
 	while (run) {
 		if (SoundLock == 0 && Sound[idNr].loop>0) {
 			SoundLock=1;
@@ -179,7 +179,7 @@ void *SoundThread(void *value) {
 			SoundLock=0;
 		}
 	}
-	printf("Sound %i: %c ready",i,Sound[idNr].name);
+	printf("Sound %i end\n",i,Sound[idNr].name);
 	return NULL;
 }
 int init_Sound (void) {
@@ -628,13 +628,13 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1Y <-10) turr1Y =-10;
 	 
 		system("clear"); //*nix
-		printf("Throttle %i Lenkrad $i\n", throttle, steering);
-		//for (i=0;i<5;i++) {
-		//	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		// }
-		//for (i=0;i<5;i++) {
-		//	printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-		// }
+		printf("Throttle %i Lenkrad %i\n", throttle, steering);
+		for (i=0;i<5;i++) {
+			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
+		 }
+		for (i=0;i<5;i++) {
+			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+		 }
 		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
 	}
 		
