@@ -109,7 +109,7 @@ int throttle_mode_Switch (int value) {
 	if (throttle_mode==1||value == 0) {
 		throttle_mode = 0;
 	}
-	return thottle_mode;
+	return throttle_mode;
 }
 
 
