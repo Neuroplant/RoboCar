@@ -43,8 +43,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define frontlightPin   9 + PIN_BASE0 	 	//div LEDs              out digital
 #define rearlightPin    10 + PIN_BASE0  	//div LEDs              out digital
 
-#define phaseAPin	4 		//Encoder Phase A	in digital
-#define phaseBPin	5 		//Encoder Phase B	in digital
+#define phaseAPin	9 		//Encoder Phase A	in digital
+#define phaseBPin	11 		//Encoder Phase B	in digital
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
@@ -68,8 +68,8 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 
 int run			= 1;
 int throttle_mode 	= 0;
+
 float Spin_Target 	= 0;
-int thottle_mode 	= 1;
 
 struct s_Sound {
 	int loop;
