@@ -35,13 +35,22 @@ gcc RemoteCar.c -o Remote -lwiringPi -lm -lpthread
 #define motorPin2	1 + PIN_BASE0	  	//Motor Rückwärts       out digital
 #define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
 #define servoPin_ST	3 + PIN_BASE0  		//Lenkung (Steering)    out PWM
+
 #define servoPin_CX	4 + PIN_BASE0  		//Camera X              out PWM
 #define	servoPin_CY	5 + PIN_BASE0  		//Camera Y              out PWM
-#define laserPin	6 + PIN_BASE0  		//div LEDs              out digital
-#define blinkrechtsPin  7 + PIN_BASE0  		//div LEDs              out digital
-#define blinklinksPin   8 + PIN_BASE0  		//div LEDs              out digital
-#define frontlightPin   9 + PIN_BASE0 	 	//div LEDs              out digital
-#define rearlightPin    10 + PIN_BASE0  	//div LEDs              out digital
+//#define	xxx	6 + PIN_BASE0 
+//#define	xxx	7 + PIN_BASE0 
+
+#define blinkrechtsPin  8 + PIN_BASE0  		//div LEDs              out digital
+#define blinklinksPin   9 + PIN_BASE0  		//div LEDs              out digital
+#define blinkrechtsvPin 10 + PIN_BASE0  	//div LEDs              out digital
+#define blinklinksvPin  11 + PIN_BASE0  	//div LEDs              out digital
+
+#define frontlightPin   12 + PIN_BASE0 	 	//div LEDs              out digital
+#define rearlightPin    13 + PIN_BASE0  	//div LEDs              out digital
+#define laserPin	14 + PIN_BASE0  	//div LEDs              out digital
+//#define	xxx	15 + PIN_BASE0 
+
 
 #define phaseAPin	9 		//Encoder Phase A	in digital
 #define phaseBPin	11 		//Encoder Phase B	in digital
@@ -276,11 +285,14 @@ int init_Blinker (void) {
 	Blinker[0].pin = laserPin; 
 	Blinker[1].pin = blinkrechtsPin;
 	Blinker[2].pin = blinklinksPin;
-	Blinker[3].pin = frontlightPin;
-	Blinker[4].pin = rearlightPin;
+	Blinker[3].pin = blinkrechtsVPin;
+	Blinker[4].pin = blinklinksVPin;
+	Blinker[5].pin = frontlightPin;
+	Blinker[6].pin = rearlightPin;
+
 	
 	int i=0;
-	for (i=0;i<=4;i++) {
+	for (i=0;i<=6;i++) {
 		pinMode(Blinker[i].pin,OUTPUT);
 		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
 	   	printf("Error creating thread t_Blinker %i\n",i);
@@ -382,11 +394,14 @@ int StickControl(int stick, int value) {
 				if (steering == 10 ) {
 					Blinker[1].dura = 2;
 					Blinker[1].freq = 2;
+					Blinker[3].dura = 2;
+					Blinker[3].freq = 2;
 				}
 				if (steering == -10 ) {
 					Blinker[2].dura = 2;
 					Blinker[2].freq = 2;
-					
+					Blinker[4].dura = 2;
+					Blinker[4].freq = 2;					
 				}
 		break;
 		case 4 :	//R3 Up/Down
@@ -428,8 +443,8 @@ int ButtonControl (int button, int value) {
 			break;
 			case 1	:		//	O
 					//Scheinwerfer
-				Blinker[3].dura = 60;
-				Blinker[3].freq = 0;
+				Blinker[5].dura = 60;
+				Blinker[5].freq = 0;
 			break;
 			case 2 :		//Dreieck
 				turret1 = 3;
@@ -556,8 +571,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	js = open(device, O_RDONLY);
 	while (js == -1) {
 	    	js = open(device, O_RDONLY);
-        	Blinker[3].dura = 2;
-		Blinker[3].freq = 20;
+        	Blinker[5].dura = 2;
+		Blinker[5].freq = 20;
 		delay(2000);
 		printf("Warte auf Joystick\n");
 	};
@@ -642,6 +657,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pthread_join(t_Blinker[2],NULL);
 	pthread_join(t_Blinker[3],NULL);
 	pthread_join(t_Blinker[4],NULL);
+	pthread_join(t_Blinker[5],NULL);
+	pthread_join(t_Blinker[6],NULL);
 
 	printf("..OK\n");		       
 	return 0;
