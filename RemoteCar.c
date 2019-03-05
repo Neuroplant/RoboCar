@@ -8,7 +8,7 @@
 *  make Remote
  *
  * Run:
- * sudo ./Remote [/dev/input/jsX]
+ * sudo ./Remote [m]
  */
  
  // Include Section
@@ -128,14 +128,14 @@ void *MotorThread(void *value){
 	printf("Motor ready\n");
 	while (run) {
 		if(gear>0){
-			digitalWrite(motorPin1,LOW);
-			digitalWrite(motorPin2,HIGH);
+			pwmWrite(motorPin1,0);
+			pwmWrite(motorPin2,PWM_MAX);
 		//printf("turn Forward...\n");
 		}
 		else{
 			if (gear<=0){
-				digitalWrite(motorPin1,HIGH);
-				digitalWrite(motorPin2,LOW);
+				pwmWrite(motorPin1,PWM_MAX);
+				pwmWrite(motorPin2,0);
 		//printf("turn Back...\n");
 				Sound[2].loop = 1;
 			}
@@ -152,8 +152,8 @@ void *MotorThread(void *value){
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
-	digitalWrite(motorPin1,LOW);
-	digitalWrite(motorPin2,LOW);
+	pwmWrite(motorPin1,0);
+	pwmWrite(motorPin2,0);
 	printf("Motor off\n");	
 }
 
@@ -163,12 +163,13 @@ void *MotorThread(void *value){
 
 
 
-void *SoundThread(void *value) {
-	long idNr = (long)value, i;
+void *SoundThread(void *arg) {
+	long idNr = (long)arg;
+	int i;
 	char soundfile[100];
 	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
 	strcat(soundfile,Sound[idNr].name);
-	printf("Sound %i: %c ready\n",i,Sound[idNr].name);
+	printf("Sound %i ready\n",idNr);
 	while (run) {
 		if (SoundLock == 0 && Sound[idNr].loop>0) {
 			SoundLock=1;
@@ -195,6 +196,7 @@ int init_Sound (void) {
 	for (i=0;i<5;i++) {
 		if(pthread_create(&t_Sound[i], NULL, SoundThread, (void*)i)) {
 	   	printf("Error creating thread t_Sound %i\n",i);
+
 	   	return 1;
 		}
 	}
@@ -263,14 +265,14 @@ void *BlinkerThread (void *arg) {
 		if (Blinker[idNr].dura != 0) {
 			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
 			if (Blinker[idNr].freq == 0) {
-				digitalWrite(Blinker[idNr].pin,HIGH);
+				pwmWrite(Blinker[idNr].pin,PWM_MAX);
 	    			delay(Blinker[idNr].dura * 1000);
-	    			digitalWrite(Blinker[idNr].pin,LOW);
+	    			pwmWrite(Blinker[idNr].pin,0);
 			} else {
 				for (i=0;i<cycles;i++) {
-					digitalWrite(Blinker[idNr].pin,HIGH);
+					pwmWrite(Blinker[idNr].pin,PWM_MAX);
 					delay(500 / Blinker[idNr].freq);
-					digitalWrite(Blinker[idNr].pin,LOW);
+					pwmWrite(Blinker[idNr].pin,0);
 					delay(500 / Blinker[idNr].freq);
 				}
 			}
@@ -306,7 +308,7 @@ int init_Blinker (void) {
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
 	//softPwmCreate(pin,  0, 200);
-	printf("Pin %i OK\n",pin);
+	printf("Servo Pin %i OK\n",pin);
 	return 0;
 }
 
@@ -329,7 +331,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
-	if (digitalRead(phaseBPin) & 0x1000==HIGH) {
+	if (digitalRead(phaseBPin) == HIGH) {
 		SpinDirection = 1;
 	}else{
 		SpinDirection = -1;
@@ -339,18 +341,18 @@ float Spin_Current (void){
 	int rpmin;
 	PhaseCount = 0;
 	delay(100);
-	rpmin = ((PhaseCount/(float)Teeth)*6000*SpinDirection)/2;
+	rpmin = ((PhaseCount/(float)Teeth)*6000*SpinDirection);
 	return rpmin;
 }
 void init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
 	pinMode(phaseBPin,INPUT);
-	wiringPiISR (phaseAPin, INT_EDGE_BOTH, *PhaseCounter);
+	wiringPiISR (phaseAPin, INT_EDGE_FALLING, *PhaseCounter);
 }
 
 
 //	JoyStick  ///////////////////////////////////////////////////////////////////////
-const char *device;
+const char *device = "/dev/input/js0";
 int js;
 struct js_event event;
 size_t axis;
@@ -487,7 +489,7 @@ int ButtonControl (int button, int value) {
 			case 1	:		//	O
 			break;
 			case 2 :		//Dreieck
-    				turret1 = 9;
+    			turret1 = 9;
 			break;
 			case 4	:		//L1
 				gear = 1;
@@ -536,11 +538,15 @@ void *StickThread (void *value) {
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
+	char select[10];
 	if (argc > 1) {
-		device = argv[1];
+		strcpy(select,argv[1]);
 	} else {
-		device = "/dev/input/js0";
+	    strcpy(select,"manual");
 	}	
+	throttle_mode=0;
+	if ((strcmp(select,"m")==0) || (strcmp(select,"manual")==0)) throttle_mode=1;
+	
 //Setup
 
 // wiringPi
@@ -596,9 +602,9 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 	
 //Motor
-//	pinMode(enablePin,OUTPUT);
-//	pinMode(motorPin1,OUTPUT);
-//	pinMode(motorPin2,OUTPUT);
+	pinMode(enablePin,OUTPUT);
+	pinMode(motorPin1,OUTPUT);
+	pinMode(motorPin2,OUTPUT);
 //	servoInit(servoPin_ST);	//Lenkung
 //	softPwmCreate(enablePin,0,THROTTLE_MAX);
 	pthread_t t_Motor;
@@ -635,7 +641,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		for (i=0;i<5;i++) {
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		 }
-		printf("Turns per Secound: %5.2f/%5.2f = %5.2f\n",Spin_Current(),Spin_Target,(Spin_Current()/Spin_Target));
+		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
 		
 //End Section
@@ -643,24 +649,39 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
     	close(js);
 	run=0;
 	throttle = 0;
-	printf("\n Wait for threads to close...\n");
+	printf("\n Wait for threads to close\n");
 	pthread_join(t_Sound[0],NULL);
+	printf(".");
 	pthread_join(t_Sound[1],NULL);
+	printf(".");
 	pthread_join(t_Sound[2],NULL);
+	printf(".");
 	pthread_join(t_Sound[3],NULL);
+	printf(".");
 	pthread_join(t_Sound[4],NULL);
+	printf(".");
 	pthread_join(t_Motor,NULL);
+	printf(".");
 	pthread_join(t_Turret,NULL);
+	printf(".");
 	pthread_join(t_Joystick,NULL);
+	printf(".");
 	pthread_join(t_Blinker[0],NULL);
+	printf(".");
 	pthread_join(t_Blinker[1],NULL);
+	printf(".");
 	pthread_join(t_Blinker[2],NULL);
+	printf(".");
 	pthread_join(t_Blinker[3],NULL);
+	printf(".");
 	pthread_join(t_Blinker[4],NULL);
+	printf(".");
 	pthread_join(t_Blinker[5],NULL);
+	printf(".");
 	pthread_join(t_Blinker[6],NULL);
+	printf(".");
 
-	printf("..OK\n");		       
+	printf("OK\n");		       
 	return 0;
 
 }
