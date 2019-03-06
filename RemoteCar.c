@@ -51,7 +51,7 @@
 #define laserPin	14 + PIN_BASE0  	//div LEDs              out digital
 //#define	xxx	15 + PIN_BASE0 
 
-
+#define I2CenablePin	7		//be sure to be LOW
 #define phaseAPin	2 		//Encoder Phase A	in digital
 #define phaseBPin	3 		//Encoder Phase B	in digital
 
@@ -564,6 +564,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error in setup\n");
 		return fd;
 	}
+	pinMode(I2CenablePin,OUTPUT);
+	digitalWrite(I2CenablePin,LOW);
 
 // AB - Encoder
 	init_Encoder();
