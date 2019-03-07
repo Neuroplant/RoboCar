@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define DEV_ID0		0x40
 #define PIN_BASE0 	64
@@ -51,9 +52,10 @@
 #define laserPin	14 + PIN_BASE0  	//div LEDs              out digital
 //#define	xxx	15 + PIN_BASE0 
 
-#define I2CenablePin	7		//be sure to be LOW
+
 #define phaseAPin	2 		//Encoder Phase A	in digital
 #define phaseBPin	3 		//Encoder Phase B	in digital
+#define ACCELERATION	10		//acceleration per cycle 
 
 #define OFFSET_CX 0
 #define OFFSET_CY 0
@@ -75,10 +77,24 @@
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-int run			= 1;
-int throttle_mode 	= 0;
+bool run			= true;
+bool encoder_mode 	= false;
 
 float Spin_Target 	= 0;
+
+
+long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
+    return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
+
+bool InArray(char array[][], char value[]) {
+    int i;
+    bool ret = false;
+    for (i = 0; i < argc); i++) {
+        if (strcmp(value,array[i])==0) ret=true;
+        }
+    }
+    return ret;
+}
 
 struct s_Sound {
 	int loop;
@@ -86,7 +102,7 @@ struct s_Sound {
 };
 struct s_Sound Sound[5];
 pthread_t t_Sound[5];
-int SoundLock = 0;
+boolean SoundLock = false;
 
 struct s_Blinker {
 	int pin;
@@ -98,23 +114,22 @@ pthread_t t_Blinker[10];
 
 void servoWriteMS(int pin, int ms);
 
-int throttle_mode_Switch (int value) {
-	if (throttle_mode==0||value == 1) {
-		throttle_mode = 1;
+void encoder_mode_Switch (int value) {
+	if (encoder_mode==false||value == 1) {
+		encoder_mode = true;
 		Blinker[1].dura = 30;
 		Blinker[1].freq = 2;
 		Blinker[2].dura = 30;
 		Blinker[2].freq = 2;
+		printf("\nEncoder_Mode ON\n");
 	}
-	if (throttle_mode==1||value == 0) {
-		throttle_mode = 0;
+	if (encoder_mode==true||value == 0) {
+		encoder_mode = false;
+		printf("\nEncoder_Mode OFF\n");
+
 	}
-	return throttle_mode;
+	return;
 }
-
-
-long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
-    return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
 
 
 //Car Funktions////////////////////////////////////////////////////////
@@ -169,16 +184,18 @@ void *SoundThread(void *arg) {
 	char soundfile[100];
 	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
 	strcat(soundfile,Sound[idNr].name);
-	printf("Sound %i ready\n",idNr);
+	printf("Sound %i: %s ready\n",idNr,Sound[idNr].name);
 	while (run) {
-		if (SoundLock == 0 && Sound[idNr].loop>0) {
-			SoundLock=1;
+		if (!SoundLock  && Sound[idNr].loop>0) {
+			SoundLock=true;
 			while (Sound[idNr].loop>0) {
 				system(soundfile);
 				Sound[idNr].loop--;
 			}
-			SoundLock=0;
+			SoundLock=false;
+			
 		}
+		if (SoundLock) Sound[idNr].loop=0;
 	}
 	printf("Sound %i end\n",i,Sound[idNr].name);
 	return NULL;
@@ -261,13 +278,16 @@ void *BlinkerThread (void *arg) {
 	long idNr = (long)arg;
 	int cycles,i;
 	printf("Blinker %i ready\n", idNr);
+	for (int i=0; i <= PWM_MAX; i=i+10) pwmWrite(Blinker[idNr].pin,i);
+	for (int i=PWM_MAX; i => 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
+	
 	while (run) {
 		if (Blinker[idNr].dura != 0) {
 			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
 			if (Blinker[idNr].freq == 0) {
 				pwmWrite(Blinker[idNr].pin,PWM_MAX);
-	    			delay(Blinker[idNr].dura * 1000);
-	    			pwmWrite(Blinker[idNr].pin,0);
+	    		delay(Blinker[idNr].dura * 1000);
+	    		pwmWrite(Blinker[idNr].pin,0);
 			} else {
 				for (i=0;i<cycles;i++) {
 					pwmWrite(Blinker[idNr].pin,PWM_MAX);
@@ -307,7 +327,6 @@ int init_Blinker (void) {
 // 	Servo//////////////////////////////////////////////////////
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
-	//softPwmCreate(pin,  0, 200);
 	printf("Servo Pin %i OK\n",pin);
 	return 0;
 }
@@ -328,7 +347,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		32	//number of teeth on the encoder wheel
 #define MAX_SPIN	4920 // max 6100r/min
-int PhaseCount, SpinDirection;
+static volatile int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
 	if (digitalRead(phaseBPin) == HIGH) {
@@ -347,7 +366,7 @@ float Spin_Current (void){
 void init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
 	pinMode(phaseBPin,INPUT);
-	wiringPiISR (phaseAPin, INT_EDGE_FALLING, *PhaseCounter);
+	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
 }
 
 
@@ -409,8 +428,11 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			if (throttle_mode) Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
-			else throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+			if (encoder_mode) {
+			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
+			}else{
+			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+			}
 
 		break;
 	}
@@ -423,7 +445,7 @@ int ButtonControl (int button, int value) {
 	X		Hupe					-
 	O    	Scheinwerfer (60s)		-
 	Dreieck	Laser Beam on			Laser Beam off			
-	Quadrat	throttle_mode on/off
+	Quadrat	encoder_mode on/off
 	Up	move Turret1 up			Turret1 Stop
 	Down	move Turret1 down		Turret1 Stop
 	Left	move Turret1 left		Turret1 Stop
@@ -452,7 +474,7 @@ int ButtonControl (int button, int value) {
 				turret1 = 3;
 			break;
 			case 3 :		//quadrat
-				throttle_mode_Switch(-1);
+				encoder_mode_Switch(-1);
 			break;
 			case 4	:	//L1
 				gear = -1;
@@ -538,15 +560,12 @@ void *StickThread (void *value) {
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
-	char select[10];
-	if (argc > 1) {
-		strcpy(select,argv[1]);
-	} else {
-	    strcpy(select,"manual");
-	}	
-	throttle_mode=0;
-	if ((strcmp(select,"m")==0) || (strcmp(select,"manual")==0)) throttle_mode=1;
-	
+	if (argc == 0) {
+	    encoder_mode=FALSE;
+	}else{
+	    if (InArray(argv,"encoder")||InArray(argv,"e")) encoder_mode=true;
+	}
+
 //Setup
 
 // wiringPi
@@ -564,8 +583,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error in setup\n");
 		return fd;
 	}
-	pinMode(I2CenablePin,OUTPUT);
-	digitalWrite(I2CenablePin,LOW);
 
 // AB - Encoder
 	init_Encoder();
@@ -623,8 +640,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
 		
-		if ((Spin_Current() > Spin_Target)&&throttle_mode) throttle--;
-		if ((Spin_Current() < Spin_Target)&&throttle_mode) throttle++;
+		if ((Spin_Current() > Spin_Target)&&encoder_mode) throttle=trottle-ACCELERATION;
+		if ((Spin_Current() < Spin_Target)&&encoder_mode) throttle=trottle+ACCELERATION;
 
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
 		if (throttle < 0) gear=-1;
@@ -635,7 +652,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1Y > 10) turr1Y = 10;
 		if (turr1Y <-10) turr1Y =-10;
 	 
-		system("clear"); //*nix
+		system("clear"); 
 		printf("Throttle %i Lenkrad %i\n", throttle, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
