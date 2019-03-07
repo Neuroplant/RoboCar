@@ -77,7 +77,7 @@
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-bool run			= true;
+bool run		= true;
 bool encoder_mode 	= false;
 
 float Spin_Target 	= 0;
@@ -134,7 +134,7 @@ void encoder_mode_Switch (int value) {
 
 //Car Funktions////////////////////////////////////////////////////////
 // 	steering 	-	-10..10	-	left/right
-//	throttle	-	0..100	-	motor power
+//	throttle	-	0..PWM_MAX	-	motor power
 //	gear		-	1/0/-1	-	forward/brake/reverse
 
 int steering = 0, throttle = 0, gear = 1;
