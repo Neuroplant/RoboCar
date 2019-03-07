@@ -60,7 +60,7 @@
 #define OFFSET_CX 0
 #define OFFSET_CY 0
 
-#define OFFSET_ST -1
+#define OFFSET_ST 0
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
@@ -86,15 +86,6 @@ float Spin_Target 	= 0;
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
 
-bool InArray(char array[][], char value[]) {
-    int i;
-    bool ret = false;
-    for (i = 0; i < argc); i++) {
-        if (strcmp(value,array[i])==0) ret=true;
-        }
-    }
-    return ret;
-}
 
 struct s_Sound {
 	int loop;
@@ -102,7 +93,7 @@ struct s_Sound {
 };
 struct s_Sound Sound[5];
 pthread_t t_Sound[5];
-boolean SoundLock = false;
+bool SoundLock = false;
 
 struct s_Blinker {
 	int pin;
@@ -279,7 +270,7 @@ void *BlinkerThread (void *arg) {
 	int cycles,i;
 	printf("Blinker %i ready\n", idNr);
 	for (int i=0; i <= PWM_MAX; i=i+10) pwmWrite(Blinker[idNr].pin,i);
-	for (int i=PWM_MAX; i => 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
+	for (int i=PWM_MAX; i >= 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
 	
 	while (run) {
 		if (Blinker[idNr].dura != 0) {
@@ -499,7 +490,7 @@ int ButtonControl (int button, int value) {
 			case 6 :	//L2
 			break;
 			case 10 :	//PS
-				run = 0;
+				run = false;
 			break;
 			default :	//noch ohne Funktion
 			printf("Button Nr.%i pressed\n", button);
@@ -562,8 +553,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	int i;
 	if (argc == 0) {
 	    encoder_mode=FALSE;
-	}else{
-	    if (InArray(argv,"encoder")||InArray(argv,"e")) encoder_mode=true;
 	}
 
 //Setup
@@ -640,8 +629,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
 		
-		if ((Spin_Current() > Spin_Target)&&encoder_mode) throttle=trottle-ACCELERATION;
-		if ((Spin_Current() < Spin_Target)&&encoder_mode) throttle=trottle+ACCELERATION;
+		if ((Spin_Current() > Spin_Target)&&encoder_mode) throttle=throttle-ACCELERATION;
+		if ((Spin_Current() < Spin_Target)&&encoder_mode) throttle=throttle+ACCELERATION;
 
 		if (throttle > THROTTLE_MAX) throttle = THROTTLE_MAX;
 		if (throttle < 0) gear=-1;
@@ -666,7 +655,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //End Section
 
     	close(js);
-	run=0;
+	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
 	pthread_join(t_Sound[0],NULL);
@@ -702,5 +691,4 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 	printf("OK\n");		       
 	return 0;
-
 }
