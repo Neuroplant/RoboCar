@@ -572,7 +572,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error in setup\n");
 		return fd;
 	}
-
+	pinMode(7,OUTPUT);
+	digitalWrite(7,LOW);
 // AB - Encoder
 	init_Encoder();
 //Sound
