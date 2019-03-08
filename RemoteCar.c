@@ -580,26 +580,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	init_Sound();
 //Blinker
 	init_Blinker();
-	
-	
-//Joystick init
-	js = open(device, O_RDONLY);
-	while (js == -1) {
-	    	js = open(device, O_RDONLY);
-        	Blinker[5].dura = 2;
-		Blinker[5].freq = 20;
-		delay(2000);
-		printf("Warte auf Joystick\n");
-	};
-	printf("Joystick ready \n");
-	
-//Joystick
-	pthread_t t_Joystick;
-		if(pthread_create(&t_Joystick, NULL, StickThread, NULL)) {
-			printf("Error creating thread t_Joystick\n");
-			return 1;
-		}
-		
 //Turret
 	servoInit(servoPin_CX);	// X
 	servoInit(servoPin_CY);	// Y
@@ -608,8 +588,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error creating thread t_Turret\n");
 		return 1;
 	}
-
-	
 //Motor
 	pinMode(enablePin,OUTPUT);
 	pinMode(motorPin1,OUTPUT);
@@ -621,7 +599,22 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error creating thread t_Motor\n");
 		return 1;
 	}	
-	
+//Joystick init
+	js = open(device, O_RDONLY);
+	while (js == -1) {
+	    	js = open(device, O_RDONLY);
+        	Blinker[5].dura = 2;
+		Blinker[5].freq = 20;
+		delay(2000);
+		printf("Warte auf Joystick\n");
+	};
+	printf("Joystick ready \n");
+//Joystick
+	pthread_t t_Joystick;
+		if(pthread_create(&t_Joystick, NULL, StickThread, NULL)) {
+			printf("Error creating thread t_Joystick\n");
+			return 1;
+		}	
 
 	
 //Main-Loop Section
