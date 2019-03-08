@@ -21,6 +21,7 @@ Dadurch soll ein bischen Ordnung geschaffen werden und die Hardware flexibel auc
 # Encoder
 Im Encoder-Modus gibt die Stellung des Stick die Drehzahl vor und das Programm versucht diese zu erreichen, indem es die Spannung des Motors nachregelt.
 Hierduch sollen auch langsame Fahrten und ein Tempomat-Effect ermöglicht werden.
+-> Ich bekomme z.Z. kein Signal vom Encoder, entweder ein HW Defekt (s. https://neuroplant.spdns.de/blog/roboter/1015/) oder ich habe etwas bei der Programmierung falsch
 
 # Tastenbelegung
 
