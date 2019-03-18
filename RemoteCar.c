@@ -28,7 +28,7 @@
 
 #define DEV_ID0		0x40
 #define PIN_BASE0 	64
-#define PWM_MAX 	4096
+#define PWM_MAX 	4095
 #define HERTZ 		50
 
 // Pin definitions
