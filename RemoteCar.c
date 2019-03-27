@@ -135,26 +135,20 @@ void *MotorThread(void *value){
 	while (run) {
 		if(gear>0){
 			pwmWrite(motorPin1,0);
-			pwmWrite(motorPin2,PWM_MAX);
+			pwmWrite(motorPin2,abs(throttle));
 		//printf("turn Forward...\n");
 		}
-		else{
-			if (gear<=0){
-				pwmWrite(motorPin1,PWM_MAX);
-				pwmWrite(motorPin2,0);
+		if (gear<0){
+			pwmWrite(motorPin1,abs(throttle));
+			pwmWrite(motorPin2,0);
 		//printf("turn Back...\n");
-				Sound[2].loop = 1;
-			}
+			Sound[2].loop = 1;
 		}
 		if (gear == 0 ){
-			//softPwmWrite(enablePin,BRAKE);
-			//throttle = 0;
-			Spin_Target = 0;
+			pwmWrite(motorPin1,BRAKE);
+			pwmWrite(motorPin2,0);
 			Blinker[4].dura = 1;
 			Blinker[4].freq = 0;
-		}else{
-			pwmWrite(enablePin,abs(throttle));
-			//printf("Throttle %i \n",throttle);
 		}
 		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
 	}
