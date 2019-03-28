@@ -1,0 +1,33 @@
+#define motorPin1	0 + PIN_BASE0		//Motor Vorwärts        out digital
+#define motorPin2	1 + PIN_BASE0	  	//Motor Rückwärts       out digital
+
+
+void *MotorThread(void *value){
+	pinMode(motorPin1,OUTPUT);
+	pinMode(motorPin2,OUTPUT);
+
+	printf("Motor ready\n");
+	while (run) {
+		if(gear>0){
+			pwmWrite(motorPin1,0);
+			pwmWrite(motorPin2,abs(throttle));
+		//printf("turn Forward...\n");
+		}
+		if (gear<0){
+			pwmWrite(motorPin1,abs(throttle));
+			pwmWrite(motorPin2,0);
+		//printf("turn Back...\n");
+			Sound[2].loop = 1;
+		}
+		if (gear == 0 ){
+			pwmWrite(motorPin1,BRAKE);
+			pwmWrite(motorPin2,0);
+			Blinker[4].dura = 1;
+			Blinker[4].freq = 0;
+		}
+		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
+	}
+	pwmWrite(motorPin1,0);
+	pwmWrite(motorPin2,0);
+	printf("Motor off\n");	
+}
