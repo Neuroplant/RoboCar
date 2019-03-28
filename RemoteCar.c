@@ -130,32 +130,7 @@ void encoder_mode_Switch (int value) {
 
 int steering = 0, throttle = 0, gear = 1;
 
-void *MotorThread(void *value){
-	printf("Motor ready\n");
-	while (run) {
-		if(gear>0){
-			pwmWrite(motorPin1,0);
-			pwmWrite(motorPin2,abs(throttle));
-		//printf("turn Forward...\n");
-		}
-		if (gear<0){
-			pwmWrite(motorPin1,abs(throttle));
-			pwmWrite(motorPin2,0);
-		//printf("turn Back...\n");
-			Sound[2].loop = 1;
-		}
-		if (gear == 0 ){
-			pwmWrite(motorPin1,BRAKE);
-			pwmWrite(motorPin2,0);
-			Blinker[4].dura = 1;
-			Blinker[4].freq = 0;
-		}
-		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
-	}
-	pwmWrite(motorPin1,0);
-	pwmWrite(motorPin2,0);
-	printf("Motor off\n");	
-}
+void *MotorThread(void *value);
 
 //Sound/////////////////////////////////////////////////////////////////
 //	sound[]		-	0..5	-	selects soundfile
@@ -583,11 +558,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		return 1;
 	}
 //Motor
-	pinMode(enablePin,OUTPUT);
-	pinMode(motorPin1,OUTPUT);
-	pinMode(motorPin2,OUTPUT);
-//	servoInit(servoPin_ST);	//Lenkung
-//	softPwmCreate(enablePin,0,THROTTLE_MAX);
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
 		printf("Error creating thread t_Motor\n");
@@ -680,3 +650,5 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf("OK\n");		       
 	return 0;
 }
+
+#include "motor.sub"
