@@ -1,0 +1,38 @@
+#define motorPin1	0 + PIN_BASE0		//Motor Vorwärts        out digital
+#define ESCenable	1 + PIN_BASE0		//Relais for ESC		out digital
+
+void *MotorThread(void *value){
+	pinMode(motorPin1,OUTPUT);
+	pinMode(ESCenable,OUTPUT);
+	
+	int esc_trottle;
+	printf("Init ESC\n");
+	pwmWrite(ESCenable,PWM_MAX);
+	pwmWrite(motorPin1,PWM_MAX);
+	delay (3000);
+	pwmWrite(motorPin1,PWM_MAX/2);
+	delay (2000);
+	printf("ESC ready\n");
+
+	while (run) {
+		esc_trottle=map(throttle,0,PWM_MAX,0,PWM_MAX/2);	
+		if(gear>0){
+			pwmWrite(motorPin1,PWM_MAX/2+esc_trottle);
+		//printf("turn Forward...\n");
+		}
+		if (gear<0){
+			pwmWrite(motorPin1,PWM_MAX/2-esc_trottle);
+		//printf("turn Back...\n");
+			Sound[2].loop = 1;
+		}
+		if (gear == 0 ){
+			pwmWrite(motorPin1,PWM_MAX/2);
+			Blinker[4].dura = 1;
+			Blinker[4].freq = 0;
+		}
+		servoWriteMS(servoPin_ST,map(steering,10,-10,SERVO_MIN_ST,SERVO_MAX_ST));
+	}
+	pwmWrite(motorPin1,0);
+	pwmWrite(ESCenable,0);
+	printf("Motor off\n");	
+}
