@@ -32,20 +32,20 @@
 #define HERTZ 		50
 
 // Pin definitions
-#define motorPin1	14 + PIN_BASE0		//Motor Vorwärts        out digital
-#define motorPin2	13 + PIN_BASE0	  	//Motor Rückwärts       out digital
+#define motorPin1	13 + PIN_BASE0		//Motor Vorwärts        out digital
+#define motorPin2	14 + PIN_BASE0	  	//Motor Rückwärts       out digital
 //#define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
 #define servoPin_ST	15 + PIN_BASE0  		//Lenkung (Steering)    out PWM
 
-#define servoPin_CX	10 + PIN_BASE0  		//Camera X              out PWM
-#define	servoPin_CY	11 + PIN_BASE0  		//Camera Y              out PWM
+#define servoPin_CX	11 + PIN_BASE0  		//Camera X              out PWM
+#define	servoPin_CY	10 + PIN_BASE0  		//Camera Y              out PWM
 //#define	xxx	6 + PIN_BASE0 
 //#define	xxx	7 + PIN_BASE0 
 
 #define blinkrechtsPin  0 + PIN_BASE0  		//div LEDs              out digital
 #define blinklinksPin   1 + PIN_BASE0  		//div LEDs              out digital
-#define blinkrechtsvPin 3 + PIN_BASE0  	//div LEDs              out digital
-#define blinklinksvPin  4 + PIN_BASE0  	//div LEDs              out digital
+#define blinkrechtsvPin 4 + PIN_BASE0  	//div LEDs              out digital
+#define blinklinksvPin  3 + PIN_BASE0  	//div LEDs              out digital
 
 #define frontlightPin   5 + PIN_BASE0 	 	//div LEDs              out digital
 #define rearlightPin    2 + PIN_BASE0  	//div LEDs              out digital
