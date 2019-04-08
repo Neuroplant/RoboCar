@@ -624,7 +624,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		system("clear"); 
 			lcdPosition(lcdhd,0,0);
 		printf("Throttle %6i Lenkrad %6i\n", throttle, steering); 
-			lcdPrintf(lcdhd,"T%6i L%6i\n", throttle, steering
+			lcdPrintf(lcdhd,"T%6i L%6i\n", throttle, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
