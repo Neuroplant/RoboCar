@@ -1,5 +1,5 @@
-#define motorPin1	14 + PIN_BASE0		//Motor Vorwärts        out digital
-#define motorPin2	15 + PIN_BASE0	  	//Motor Rückwärts       out digital
+//#define motorPin1	14 + PIN_BASE0		//Motor Vorwärts        out digital
+//#define motorPin2	15 + PIN_BASE0	  	//Motor Rückwärts       out digital
 
 
 void *MotorThread(void *value){
