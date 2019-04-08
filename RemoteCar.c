@@ -79,7 +79,7 @@
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-#define LCD_ID0		0x3F
+#define LCD_ID0		0x70
 #define LCD_BASE 	128
 #define RS 		LCD_BASE+0 
 #define RW 		LCD_BASE+1 
