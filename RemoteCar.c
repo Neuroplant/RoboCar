@@ -55,8 +55,8 @@
 //#define	xxx	15 + PIN_BASE0 
 
 
-#define phaseAPin	2 		//Encoder Phase A	in digital
-#define phaseBPin	3 		//Encoder Phase B	in digital
+#define phaseAPin	9 		//Encoder Phase A	in digital
+#define phaseBPin	10 		//Encoder Phase B	in digital
 #define ACCELERATION	10		//acceleration per cycle 
 
 #define OFFSET_CX 0
@@ -79,7 +79,7 @@
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-#define LCD_ID0		0x70
+#define LCD_ID0		0x27 // alt:0x3F
 #define LCD_BASE 	128
 #define RS 		LCD_BASE+0 
 #define RW 		LCD_BASE+1 
@@ -318,7 +318,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
-#define Teeth		32	//number of teeth on the encoder wheel
+#define Teeth		11	//number of teeth on the encoder wheel
 #define MAX_SPIN	4920 // max 6100r/min
 static volatile int PhaseCount, SpinDirection;
 void PhaseCounter(void){
