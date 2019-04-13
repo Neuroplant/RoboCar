@@ -28,7 +28,7 @@
 #include <lcd.h>
 #include <pcf8574.h>
 
-#define DEV_ID0		0x40
+#define DEV_ID0		0x70
 #define PIN_BASE0 	64
 #define PWM_MAX 	4095
 #define HERTZ 		50
