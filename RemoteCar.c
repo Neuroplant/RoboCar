@@ -25,10 +25,8 @@
 #include <pthread.h>
 #include <string.h>
 #include <stdbool.h>
-#include <lcd.h>
-#include <pcf8574.h>
 
-#define DEV_ID0		0x70
+#define DEV_ID0		0x40
 #define PIN_BASE0 	64
 #define PWM_MAX 	4095
 #define HERTZ 		50
@@ -55,8 +53,8 @@
 //#define	xxx	15 + PIN_BASE0 
 
 
-#define phaseAPin	9 		//Encoder Phase A	in digital
-#define phaseBPin	10 		//Encoder Phase B	in digital
+#define phaseAPin	2 		//Encoder Phase A	in digital
+#define phaseBPin	3 		//Encoder Phase B	in digital
 #define ACCELERATION	10		//acceleration per cycle 
 
 #define OFFSET_CX 0
@@ -79,22 +77,11 @@
 #define BRAKE           30          	// Bremskraft
 #define SPIN_MAX	4920 //max 6100
 
-#define LCD_ID0		0x27 // alt:0x3F
-#define LCD_BASE 	128
-#define RS 		LCD_BASE+0 
-#define RW 		LCD_BASE+1 
-#define EN 		LCD_BASE+2 
-#define LED 		LCD_BASE+3 
-#define D4 		LCD_BASE+4 
-#define D5 		LCD_BASE+5 
-#define D6 		LCD_BASE+6 
-#define D7 		LCD_BASE+7
-
 bool run		= true;
 bool encoder_mode 	= false;
 
 float Spin_Target 	= 0;
-int lcdhd;
+
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
@@ -318,7 +305,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
-#define Teeth		11	//number of teeth on the encoder wheel
+#define Teeth		32	//number of teeth on the encoder wheel
 #define MAX_SPIN	4920 // max 6100r/min
 static volatile int PhaseCount, SpinDirection;
 void PhaseCounter(void){
@@ -554,19 +541,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error in setup\n");
 		return fd;
 	}
-	pca9685PWMReset(fd);
-	
 	pinMode(7,OUTPUT);
 	digitalWrite(7,LOW);
-	
-	pcf8574Setup(LCD_BASE,LCD_ID0);
-	for(i=0;i<8;i++){ pinMode(LCD_BASE+i,OUTPUT);
-			} 
-	digitalWrite(LED,HIGH); // turn on LCD backlight 
-	digitalWrite(RW,LOW); // allow writing to LCD 
-	lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
-	if(lcdhd == -1){ printf("lcdInit failed !"); return 1; }
-		
 // AB - Encoder
 	init_Encoder();
 //Sound
@@ -624,18 +600,14 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1Y <-10) turr1Y =-10;
 	 
 		system("clear"); 
-			lcdPosition(lcdhd,0,0);
-		printf("Throttle %6i Lenkrad %6i\n", throttle, steering); 
-			lcdPrintf(lcdhd,"T%6i L%6i\n", throttle, steering);
+		printf("Throttle %i Lenkrad %i\n", throttle, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
 		for (i=0;i<5;i++) {
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		 }
-		printf("Turns per Secound: %5.2f/%5.2f\n",Spin_Current(),Spin_Target);
-			lcdPrintf(lcdhd,"Turns:%4f/%4f",Spin_Current(),Spin_Target);
-		
+		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
 		
 //End Section
