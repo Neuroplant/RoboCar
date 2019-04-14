@@ -32,50 +32,46 @@
 #define HERTZ 		50
 
 // Pin definitions
-#define motorPin1	13 + PIN_BASE0		//Motor Vorwärts        out digital
-#define motorPin2	14 + PIN_BASE0	  	//Motor Rückwärts       out digital
-//#define enablePin	2 + PIN_BASE0  		//Motor Geschwindigkeit out PWM
-#define servoPin_ST	15 + PIN_BASE0  		//Lenkung (Steering)    out PWM
+#define servoPin_ST	15 + PIN_BASE0  //Lenkung (Steering)    out PWM
+#define motorPin2	14 + PIN_BASE0	//Motor Rückwärts       out PWM
+#define motorPin1	13 + PIN_BASE0	//Motor Vorwärts        out PWM
+//#define enablePin	12 + PIN_BASE0  //Motor Geschwindigkeit out PWM
 
-#define servoPin_CX	11 + PIN_BASE0  		//Camera X              out PWM
-#define	servoPin_CY	10 + PIN_BASE0  		//Camera Y              out PWM
-//#define	xxx	6 + PIN_BASE0 
+#define servoPin_CX	11 + PIN_BASE0  //Camera X              out PWM
+#define	servoPin_CY	10 + PIN_BASE0  //Camera Y              out PWM
+//#define	xxx	9 + PIN_BASE0 
+//#define	xxx	8 + PIN_BASE0 
+
 //#define	xxx	7 + PIN_BASE0 
-
-#define blinkrechtsPin  0 + PIN_BASE0  		//div LEDs              out digital
-#define blinklinksPin   1 + PIN_BASE0  		//div LEDs              out digital
-#define blinkrechtsvPin 4 + PIN_BASE0  	//div LEDs              out digital
-#define blinklinksvPin  3 + PIN_BASE0  	//div LEDs              out digital
-
-#define frontlightPin   5 + PIN_BASE0 	 	//div LEDs              out digital
-#define rearlightPin    2 + PIN_BASE0  	//div LEDs              out digital
 #define laserPin	6 + PIN_BASE0  	//div LEDs              out digital
-//#define	xxx	15 + PIN_BASE0 
+#define blinklinksvPin  5 + PIN_BASE0 	//div LEDs              out digital
+#define blinkrechtsvPin 4 + PIN_BASE0  	//div LEDs              out digital
 
+#define frontlightPin   3 + PIN_BASE0  	//div LEDs              out digital
+#define rearlightPin    2 + PIN_BASE0  	//div LEDs              out digital
+#define blinklinksPin   1 + PIN_BASE0  	//div LEDs              out digital
+#define blinkrechtsPin  0 + PIN_BASE0  	//div LEDs              out digital
 
-#define phaseAPin	2 		//Encoder Phase A	in digital
-#define phaseBPin	3 		//Encoder Phase B	in digital
+#define DEV_ID0_enable	7
+#define phaseAPin	12 		//Encoder Phase A	in digital
+#define phaseBPin	13 		//Encoder Phase B	in digital
+
 #define ACCELERATION	10		//acceleration per cycle 
-
-#define OFFSET_CX 0
-#define OFFSET_CY 0
-
-#define OFFSET_ST 0
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
 
-#define	SERVO_MIN_ST	10+OFFSET_ST
-#define SERVO_MAX_ST	18+OFFSET_ST
+#define	SERVO_MIN_ST	10
+#define SERVO_MAX_ST	18
 
-#define	SERVO_MIN_CX	5+OFFSET_CX
-#define SERVO_MAX_CX	26+OFFSET_CX
-#define	SERVO_MIN_CY	5+OFFSET_CY
-#define SERVO_MAX_CY	15+OFFSET_CY
+#define	SERVO_MIN_CX	5
+#define SERVO_MAX_CX	26
+#define	SERVO_MIN_CY	5
+#define SERVO_MAX_CY	15
 
-#define THROTTLE_MAX    PWM_MAX         	//  defines the scale and also the acceleration
-#define BRAKE           30          	// Bremskraft
-#define SPIN_MAX	4920 //max 6100
+#define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
+#define BRAKE           30          	//Bremskraft
+#define SPIN_MAX	4920 		//max 6100
 
 bool run		= true;
 bool encoder_mode 	= false;
@@ -541,8 +537,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		printf("Error in setup\n");
 		return fd;
 	}
-	pinMode(7,OUTPUT);
-	digitalWrite(7,LOW);
+	pinMode(DEV_ID0_enable,OUTPUT);
+	digitalWrite(DEV_ID0_enable,LOW);
 // AB - Encoder
 	init_Encoder();
 //Sound
