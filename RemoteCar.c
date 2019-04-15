@@ -49,8 +49,8 @@
 
 #define frontlightPin   3 + PIN_BASE0  	//div LEDs              out digital
 #define rearlightPin    2 + PIN_BASE0  	//div LEDs              out digital
-#define blinklinksPin   1 + PIN_BASE0  	//div LEDs              out digital
-#define blinkrechtsPin  0 + PIN_BASE0  	//div LEDs              out digital
+#define blinkrechtsPin  1 + PIN_BASE0  	//div LEDs              out digital
+#define blinklinksPin   0 + PIN_BASE0  	//div LEDs              out digital
 
 #define DEV_ID0_enable	7
 #define phaseAPin	12 		//Encoder Phase A	in digital
