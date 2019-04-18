@@ -14,7 +14,9 @@
  // Include Section
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
-#include <pca9685.h>
+#include <pca9685.h>	//PWM
+#include <pcf8574.h>	//for LCD
+#include <lcd.h>	
 #include <fcntl.h>
 #include <stdio.h>
 #include <math.h>
@@ -55,6 +57,18 @@
 #define DEV_ID0_enable	7
 #define phaseAPin	12 		//Encoder Phase A	in digital
 #define phaseBPin	13 		//Encoder Phase B	in digital
+
+#define DEV_ID1		0x27
+#define PIN_BASE1 	128
+#define RS PIN_BASE1+0 
+#define RW PIN_BASE1+1 
+#define EN PIN_BASE1+2 
+#define LED PIN_BASE1+3 
+#define D4 PIN_BASE1+4 
+#define D5 PIN_BASE1+5 
+#define D6 PIN_BASE1+6 
+#define D7 PIN_BASE1+7 
+
 
 #define ACCELERATION	10		//acceleration per cycle 
 
@@ -533,12 +547,25 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	};
 	
 	int fd = pca9685Setup(PIN_BASE0, DEV_ID0, HERTZ);
-	if (fd < 0)	{
+	if (fd < 0) {
 		printf("Error in setup\n");
 		return fd;
 	}
 	pinMode(DEV_ID0_enable,OUTPUT);
 	digitalWrite(DEV_ID0_enable,LOW);
+	
+	pcf8574Setup(PIN_BASE1,DEV_ID1);// initialize PCF8574 
+	for(i=0;i<8;i++){ 
+		pinMode(PIN_BASE1+i,OUTPUT); // set PCF8574 port to output mode 
+	}
+	digitalWrite(LED,HIGH); // turn on LCD backlight 
+	digitalWrite(RW,LOW); // allow writing to LCD 
+	int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);// initialize LCD and return “handle” used to handle LCD 
+	if(lcdhd == < 0) {
+		printf("lcdInit failed !"); 
+		return lcdhd; 
+	} 
+
 // AB - Encoder
 	init_Encoder();
 //Sound
@@ -596,7 +623,9 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (turr1Y <-10) turr1Y =-10;
 	 
 		system("clear"); 
+		lcdPosition(lcdhd,0,0);
 		printf("Throttle %i Lenkrad %i\n", throttle, steering);
+		lcdprintf(lcdhd,"TR %4i ST %4i\n", throttle, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
@@ -604,6 +633,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		 }
 		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
+		lcdprintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
 	}
 		
 //End Section
