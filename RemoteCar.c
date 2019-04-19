@@ -561,7 +561,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	digitalWrite(LED,HIGH); // turn on LCD backlight 
 	digitalWrite(RW,LOW); // allow writing to LCD 
 	int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);// initialize LCD and return “handle” used to handle LCD 
-	if(lcdhd == < 0) {
+	if(lcdhd < 0) {
 		printf("lcdInit failed !"); 
 		return lcdhd; 
 	} 
@@ -625,7 +625,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		system("clear"); 
 		lcdPosition(lcdhd,0,0);
 		printf("Throttle %i Lenkrad %i\n", throttle, steering);
-		lcdprintf(lcdhd,"TR %4i ST %4i\n", throttle, steering);
+		lcdPrintf(lcdhd,"TR %4i ST %4i\n", throttle, steering);
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
@@ -633,7 +633,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
 		 }
 		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
-		lcdprintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
+		lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
 	}
 		
 //End Section
