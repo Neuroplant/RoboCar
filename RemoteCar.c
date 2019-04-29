@@ -315,8 +315,8 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 }
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
-#define Teeth		32	//number of teeth on the encoder wheel
-#define MAX_SPIN	4920 // max 6100r/min
+#define Teeth		11	//number of teeth on the encoder wheel
+#define MAX_SPIN	240 // max 260/min
 static volatile int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
@@ -327,10 +327,10 @@ void PhaseCounter(void){
 	}
 }
 float Spin_Current (void){
-	int rpmin;
+	float rpmin;
 	PhaseCount = 0;
 	delay(100);
-	rpmin = ((PhaseCount/(float)Teeth)*6000*SpinDirection);
+	rpmin = ((PhaseCount/(float)Teeth)*600*SpinDirection);
 	return rpmin;
 }
 void init_Encoder(void) {
