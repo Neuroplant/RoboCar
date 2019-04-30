@@ -177,6 +177,11 @@ void *TurretThread (void *value) {
 			default :	// dont move;
 			break;
 		}
+		if (turr1X > 10) turr1X = 10;
+		if (turr1X <-10) turr1X =-10;
+		if (turr1Y > 10) turr1Y = 10;
+		if (turr1Y <-10) turr1Y =-10;
+		
 		servoWriteMS(servoPin_CX,map(turr1X,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
 		servoWriteMS(servoPin_CY,map(turr1Y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
 	}
@@ -471,6 +476,35 @@ void *StickThread (void *value) {
 	return NULL;
 }
 
+//Ultrasonic Obstacle avoidance
+struct timespec Time1;
+long StartTime, EndTime;   
+long PulseLen (int inpin) {
+	while (digitalRead(inpin) == LOW) {
+		clock_gettime(CLOCK_REALTIME, &Time1);
+		StartTime  = Time1.tv_nsec;
+	}
+	while (digitalRead(inpin)) == HIGH {
+		clock_gettime(CLOCK_REALTIME, &Time1);
+		EndTime = Time1.tv_nsec;
+		if (EndTime-StartTime >= 13200) return 13200;
+	}
+	return (EndTime-StartTime);
+}
+
+float getSonar() {
+	digitalWrite(trigPin,HIGH);
+	delayMicroseconds(10);
+	digitalWrite(trigPin,LOW);
+	
+	return ((float)PulseLen(echoPin) * 340.0 / 2.0 / 10000.0);
+}
+float getSonarP(int angle) {
+	servoWriteMS(servoPin_US,angle);
+	delay(100);
+	return getSonar();
+}
+
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
 	if (argc == 0) {
@@ -546,7 +580,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			return 1;
 		}	
 
-	
+//Ultraschall
+	pinMode(trigPin, OUTPUT);
+	pinMode(echoPin, INPUT);
+	pinMode(servoPin_US,OUTPUT);
 //Main-Loop Section
 	while (run) {
 		
@@ -560,15 +597,14 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (throttle < 0) gear=-1;
 		if (throttle < -THROTTLE_MAX) throttle = -THROTTLE_MAX;
 		
-		if (turr1X > 10) turr1X = 10;
-		if (turr1X <-10) turr1X =-10;
-		if (turr1Y > 10) turr1Y = 10;
-		if (turr1Y <-10) turr1Y =-10;
+		if (getSonar() < 20) gear=0;
+		
+		
 	 
 		system("clear"); 
 		lcdPosition(lcdhd,0,0);
-		printf("Throttle %i Lenkrad %i\n", throttle, steering);
-		lcdPrintf(lcdhd,"TR %4i ST %4i\n", throttle, steering);
+		printf("Throttle %i Distance %fcm\n", throttle, getSonar());
+		lcdPrintf(lcdhd,"TR %4i US %4f\n", throttle, getSonar());
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
