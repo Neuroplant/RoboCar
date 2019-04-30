@@ -13,7 +13,8 @@
 
 #define servoPin_CX	11 + PIN_BASE0  //Camera X              out PWM
 #define	servoPin_CY	10 + PIN_BASE0  //Camera Y              out PWM
-//#define	xxx	9 + PIN_BASE0 
+#define servoPin_US  9 + PIN_BASE0   	//Ultraschall-Servo     out PWM
+
 //#define	xxx	8 + PIN_BASE0 
 
 //#define	xxx	7 + PIN_BASE0 
@@ -58,3 +59,11 @@
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
 #define BRAKE           30          	//Bremskraft
 #define SPIN_MAX	4920 		//max 6100
+
+
+//Ultraschall
+#define trigPin         2   	//Ultraschall-Trigger   out digital
+#define echoPin         0   	//Ultraschall-Echo      in  digital
+
+#define	SERVO_MIN_US	5
+#define SERVO_MAX_US	27
