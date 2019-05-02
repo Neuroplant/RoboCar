@@ -20,7 +20,7 @@ void *MotorThread(void *value){
 			Sound[2].loop = 1;
 		}
 		if (gear == 0 ){
-			pwmWrite(motorPin1,BRAKE);
+			pwmWrite(motorPin1,0);
 			pwmWrite(motorPin2,0);
 			Blinker[6].dura = 1;
 			Blinker[6].freq = 0;
