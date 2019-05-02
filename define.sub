@@ -67,3 +67,7 @@
 
 #define	SERVO_MIN_US	5
 #define SERVO_MAX_US	27
+
+//Linefollower
+#define lineRPin 		4
+#define lineLPin		6
