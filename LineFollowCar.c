@@ -436,6 +436,7 @@ int ButtonControl (int button, int value) {
 	}
 	return 0;
 }
+float getSonar();
 
 void *MCPThread (void *value) {
 	printf("MCPThread start\n");
@@ -480,6 +481,7 @@ void *MCPThread (void *value) {
 			Blinker[4].freq = 2;
 			Sound[1].loop=1;
 		}
+	
 	}
 	printf("MCPThread end\n");
 	return NULL;
@@ -518,7 +520,7 @@ float getSonarP(int angle) {
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
 	if (argc == 0) {
-	    encoder_mode=FALSE;
+	    int encoder_mode=FALSE;
 	}
 
 //Setup
