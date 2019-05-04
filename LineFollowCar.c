@@ -448,7 +448,7 @@ void *MCPThread (void *value) {
 			Blinker[3].dura = 2;
 			Blinker[3].freq = 2;
 		}
-		if ((digitalRead(lineRPin)==LOW)&&(digitalRead(lineLPin)==HIGH)// rechts Streifen verlassen und links aus Streifen	-> turn left
+		if ((digitalRead(lineRPin)==LOW)&&(digitalRead(lineLPin)==HIGH))// rechts Streifen verlassen und links aus Streifen	-> turn left
 		{
 			steering = -10;
 			Blinker[2].dura = 2;
@@ -456,12 +456,12 @@ void *MCPThread (void *value) {
 			Blinker[4].dura = 2;
 			Blinker[4].freq = 2;					
 		}
-		if ((digitalRead(lineRPin)==LOW)&&(digitalRead(lineLPin)==LOW)// beide auf streifen 								-> go straight
+		if ((digitalRead(lineRPin)==LOW)&&(digitalRead(lineLPin)==LOW))// beide auf streifen 								-> go straight
 		{
 			gear = 1;
 			Spin_Target = 2*(SPIN_MAX/3);
 		}
-		if ((digitalRead(lineRPin)==HIGH)&&(digitalRead(lineLPin)==HIGH)// beide Streifen verlassen							-> go backward
+		if ((digitalRead(lineRPin)==HIGH)&&(digitalRead(lineLPin)==HIGH))// beide Streifen verlassen							-> go backward
 		{
 			gear = -1;
 			Spin_Target = SPIN_MAX/2;
