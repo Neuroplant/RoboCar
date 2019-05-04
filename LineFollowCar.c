@@ -440,7 +440,7 @@ int ButtonControl (int button, int value) {
 void *MCPThread (void *value) {
 	printf("MCPThread start\n");
 	while (run) {
-		if ((digitalRead(lineRPin)==HIGH)&&(digitalRead(lineLPin)==LOW) // links streifen verlassen und rechts auf treifen 	-> turn right
+		if ((digitalRead(lineRPin)==HIGH)&&(digitalRead(lineLPin)==LOW)) // links streifen verlassen und rechts auf treifen 	-> turn right
 		{
 			steering = 10;
 			Blinker[1].dura = 2;
