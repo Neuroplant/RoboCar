@@ -495,7 +495,7 @@ long PulseLen (int inpin) {
 		clock_gettime(CLOCK_REALTIME, &Time1);
 		StartTime  = Time1.tv_nsec;
 	}
-	while (digitalRead(inpin)) == HIGH {
+	while (digitalRead(inpin) == HIGH) {
 		clock_gettime(CLOCK_REALTIME, &Time1);
 		EndTime = Time1.tv_nsec;
 		if (EndTime-StartTime >= 13200) return 13200;
