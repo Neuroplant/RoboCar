@@ -513,6 +513,7 @@ float getSonarP(int angle) {
 	delay(100);
 	return getSonar();
 }
+#include "motor.sub"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
@@ -664,5 +665,3 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf("OK\n");		       
 	return 0;
 }
-
-#include "motor.sub"
