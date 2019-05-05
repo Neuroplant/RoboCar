@@ -62,12 +62,12 @@
 
 
 //Ultraschall
-#define trigPin         2   	//Ultraschall-Trigger   out digital
-#define echoPin         0   	//Ultraschall-Echo      in  digital
+#define trigPin         4   	//Ultraschall-Trigger   out digital
+#define echoPin         5   	//Ultraschall-Echo      in  digital
 
 #define	SERVO_MIN_US	5
 #define SERVO_MAX_US	27
 
 //Linefollower
-#define lineRPin 		4
-#define lineLPin		6
+#define LinePinR 2
+#define LinePinL 3
