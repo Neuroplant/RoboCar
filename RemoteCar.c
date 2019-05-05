@@ -585,6 +585,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pinMode(echoPin, INPUT);
 	pinMode(servoPin_US,OUTPUT);
 //Main-Loop Section
+	printf("\n All Threads up: RemoteCar starting \n");
 	while (run) {
 		
 		if (steering > 10) steering = 10;
