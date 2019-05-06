@@ -310,7 +310,7 @@ int ButtonControl (int button, int value) {
 				Blinker[5].freq = 0;
 			break;
 			case 2 :		//Dreieck
-				turret1 = 3;
+				//turret1 = 3;
 			break;
 			case 3 :		//quadrat
 			break;
@@ -507,11 +507,11 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Turret
 	servoInit(servoPin_CX);	// X
 	servoInit(servoPin_CY);	// Y
-	pthread_t t_Turret;
-        if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
-		printf("Error creating thread t_Turret\n");
-		return 1;
-	}
+	//pthread_t t_Turret;
+        //if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
+	//		printf("Error creating thread t_Turret\n");
+	//	return 1;
+	//}
 //Motor
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
