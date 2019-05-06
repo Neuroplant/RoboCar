@@ -520,14 +520,14 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	}	
 //Joystick init
 	js = open(device, O_RDONLY);
-	while (js == -1) {
+	/*while (js == -1) {
 	    	js = open(device, O_RDONLY);
         	Blinker[5].dura = 2;
 		Blinker[5].freq = 20;
 		delay(2000);
 		printf("Warte auf Joystick\n");
 	};
-	printf("Joystick ready \n");
+	printf("Joystick ready \n");*/
 //Joystick
 	pthread_t t_Joystick;
 		if(pthread_create(&t_Joystick, NULL, MCPThread, NULL)) {
