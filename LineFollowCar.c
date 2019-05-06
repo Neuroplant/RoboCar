@@ -590,7 +590,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Motor,NULL);
 	printf(".");
-	pthread_join(t_Turret,NULL);
+//	pthread_join(t_Turret,NULL);
 	printf(".");
 	pthread_join(t_Joystick,NULL);
 	printf(".");
