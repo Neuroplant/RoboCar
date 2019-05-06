@@ -43,7 +43,7 @@
 #define D7 PIN_BASE1+7 
 
 
-#define ACCELERATION	10		//acceleration per cycle 
+#define ACCELERATION	32		//acceleration per cycle 
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
