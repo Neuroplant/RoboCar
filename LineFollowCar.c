@@ -320,16 +320,16 @@ int ButtonControl (int button, int value) {
 					
 			//Turret1 Control
 			case 13 :	//UP
-			   	turret1 = 8;
+			//   	turret1 = 8;
 			break;
 			case 14 :	//DOWN
-    				turret1 = 2;
+    			//	turret1 = 2;
 			break;
 			case 15 :	//LEFT
-			    	turret1 = 4;
+			 //   	turret1 = 4;
 			break;
 			case 16 :	//RIGHT
-    				turret1 = 6;
+    			//	turret1 = 6;
 			break;
 			case 5 :    //R1
                     		gear = 0;
