@@ -349,23 +349,23 @@ int ButtonControl (int button, int value) {
 			case 1	:		//	O
 			break;
 			case 2 :		//Dreieck
-    			turret1 = 9;
+    			//turret1 = 9;
 			break;
 			case 4	:		//L1
 				gear = 1;
 			break;
 			//Turret1 Control
 			case 13 :		//UP
-				turret1 =  0;
+			//	turret1 =  0;
 			break;
 			case 14 :		//DOWN
-				turret1 =  0;
+			//	turret1 =  0;
 			break;
 			case 15 :		//LEFT
-				turret1 =  0;
+			//	turret1 =  0;
 			break;
 			case 16 :		//RIGHT
-				turret1 =  0;
+			//	turret1 =  0;
 			break;
 			case 5 :    		//R1
 				gear = 1;
