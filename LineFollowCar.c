@@ -28,7 +28,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "define.sub"
+#include "constants.h"
 
 bool run		= true;
 
@@ -293,7 +293,7 @@ float getSonarP(int angle) {
 	delay(100);
 	return getSonar();
 }
-#include "motor.sub"
+#include "motor.h"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
