@@ -606,7 +606,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Main-Loop Section
 	printf("\n All Threads up: LineFollower starting \n");
 	Spin_Target = 60;
-	throttle=100;
+	throttle=1000;
 	while (run) {
 		
 		if (steering > 10) steering = 10;
