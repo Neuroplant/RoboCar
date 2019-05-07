@@ -54,6 +54,25 @@ int steering = 0, throttle = 0, gear = 1;
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
 
+int servoInit(int pin){        		//initialization function for servo PMW pins
+	pinMode(pin,OUTPUT);
+	printf("Servo Pin %i OK\n",pin);
+	return 0;
+}
+
+void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
+    if(ms > SERVO_MAX_MS) {
+        printf("Pin: %i ms: %i too big\n",pin,ms);
+        ms = SERVO_MAX_MS;
+    };
+    if(ms < SERVO_MIN_MS) {
+        printf("Pin: %i ms: %i too small\n",pin,ms);
+        ms = SERVO_MIN_MS;
+    };
+    pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
+	delay(10);
+}
+
 
 struct s_Sound {
 	int loop;
@@ -239,24 +258,6 @@ int init_Turret() {
 }
 
 
-int servoInit(int pin){        		//initialization function for servo PMW pins
-	pinMode(pin,OUTPUT);
-	printf("Servo Pin %i OK\n",pin);
-	return 0;
-}
-
-void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
-    if(ms > SERVO_MAX_MS) {
-        printf("Pin: %i ms: %i too big\n",pin,ms);
-        ms = SERVO_MAX_MS;
-    };
-    if(ms < SERVO_MIN_MS) {
-        printf("Pin: %i ms: %i too small\n",pin,ms);
-        ms = SERVO_MIN_MS;
-    };
-    pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
-	delay(10);
-}
 
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		11	//number of teeth on the encoder wheel
