@@ -609,14 +609,16 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
-		
+		printf("\n %i",steering);
 		if (Spin_Current() > Spin_Target)	throttle=throttle-ACCELERATION;
 		if (Spin_Current() < Spin_Target) 	throttle=throttle+ACCELERATION;
 
 		if (throttle > THROTTLE_MAX) 		throttle = THROTTLE_MAX;
 		if (throttle < 0) 					gear=-1;
 		if (throttle < -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
-		
+
+		printf("\n %i",throttle);
+
 		if (getSonar() < 20) gear=0;
 		
 		//OUTPUT
@@ -636,7 +638,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		
 //End Section
 
-    	close(js);
+ //   	close(js);
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
