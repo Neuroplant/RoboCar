@@ -276,6 +276,7 @@ float Spin_Current (void){
 	PhaseCount = 0;
 	delay(100);
 	rpmin = ((PhaseCount/(float)Teeth)*600*SpinDirection);
+	printf("\n rpmin %f",rpmin);
 	return rpmin;
 }
 void init_Encoder(void) {
