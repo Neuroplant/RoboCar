@@ -320,12 +320,8 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			if (encoder_mode) {
 			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
-			}else{
-			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
-			}
-
+			   // throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
 		break;
 	}
 	return 0;
@@ -655,9 +651,9 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Motor,NULL);
 	printf(".");
-	pthread_join(t_Turret,NULL);
+	//pthread_join(t_Turret,NULL);
 	printf(".");
-	pthread_join(t_Joystick,NULL);
+	//pthread_join(t_Joystick,NULL);
 	printf(".");
 	pthread_join(t_Blinker[0],NULL);
 	printf(".");
