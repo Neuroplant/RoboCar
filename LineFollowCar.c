@@ -291,6 +291,46 @@ int js;
 struct js_event event;
 size_t axis;
 
+int StickControl(int stick, int value) {
+	switch (stick) {
+		case 0 :	//L3 Left/Right
+		break;
+		case 1 :	//L3 Up/Down
+				
+		break;
+		case 2 :	//L2 Pull
+		//	speed=(map(value,-32767,32767,-SPEED_MAX,0));		//Rückwärts
+		break;
+		case 3 :	//R3 Left/Right
+				steering=(map(value,32767,-32767,10,-10));
+					//Blinker
+				if (steering == 10 ) {
+					Blinker[1].dura = 2;
+					Blinker[1].freq = 2;
+					Blinker[3].dura = 2;
+					Blinker[3].freq = 2;
+				}
+				if (steering == -10 ) {
+					Blinker[2].dura = 2;
+					Blinker[2].freq = 2;
+					Blinker[4].dura = 2;
+					Blinker[4].freq = 2;					
+				}
+		break;
+		case 4 :	//R3 Up/Down
+		break;
+		case 5 :	//R2 Pull
+			if (encoder_mode) {
+			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
+			}else{
+			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+			}
+
+		break;
+	}
+	return 0;
+}
+
 int read_event(int fd, struct js_event *event) {
     ssize_t bytes;
     bytes = read(fd, event, sizeof(*event));
@@ -347,45 +387,7 @@ int init_Joystick(void) {
 		}	
 }
 
-int StickControl(int stick, int value) {
-	switch (stick) {
-		case 0 :	//L3 Left/Right
-		break;
-		case 1 :	//L3 Up/Down
-				
-		break;
-		case 2 :	//L2 Pull
-		//	speed=(map(value,-32767,32767,-SPEED_MAX,0));		//Rückwärts
-		break;
-		case 3 :	//R3 Left/Right
-				steering=(map(value,32767,-32767,10,-10));
-					//Blinker
-				if (steering == 10 ) {
-					Blinker[1].dura = 2;
-					Blinker[1].freq = 2;
-					Blinker[3].dura = 2;
-					Blinker[3].freq = 2;
-				}
-				if (steering == -10 ) {
-					Blinker[2].dura = 2;
-					Blinker[2].freq = 2;
-					Blinker[4].dura = 2;
-					Blinker[4].freq = 2;					
-				}
-		break;
-		case 4 :	//R3 Up/Down
-		break;
-		case 5 :	//R2 Pull
-			if (encoder_mode) {
-			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
-			}else{
-			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
-			}
 
-		break;
-	}
-	return 0;
-}
 
 int ButtonControl (int button, int value) {
 //  PRESS							RELEASE
