@@ -28,7 +28,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "define.sub"
+#include "constants.h"
 
 bool run		= true;
 bool encoder_mode 	= false;
@@ -657,4 +657,4 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	return 0;
 }
 
-#include "motor.sub"
+#include "motor.h"
