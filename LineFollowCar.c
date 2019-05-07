@@ -605,11 +605,12 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Main-Loop Section
 	printf("\n All Threads up: LineFollower starting \n");
 	Spin_Target = 60;
+	throttle=100;
 	while (run) {
 		
 		if (steering > 10) steering = 10;
 		if (steering <-10) steering =-10;
-		printf("\n %i",steering);
+		printf("\n Steering %i",steering);
 		if (Spin_Current() > Spin_Target)	throttle=throttle-ACCELERATION;
 		if (Spin_Current() < Spin_Target) 	throttle=throttle+ACCELERATION;
 
@@ -617,7 +618,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (throttle < 0) 					gear=-1;
 		if (throttle < -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
 
-		printf("\n %i",throttle);
+		printf("\n Throttle %i",throttle);
 
 		if (getSonar() < 20) gear=0;
 		
