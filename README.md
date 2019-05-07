@@ -2,10 +2,10 @@
 JJRC Q60 mit Raspberrysteuerung
 Als Zwischenschritt erstmal "RemoteCar" in dem die Steuerung nicht anhand von Sensoren etc erfolgt, sondern mit einem PS3-Controller.
 
-# RemoteCar
-Alle Ausgänge der Steuerung erfolgen über ein 16 Channel PWM Board via I²C.
-Nur die beiden Eingänge für den Drehzahl-Encoder sind direkt mit dem RPI verbunden.
-Dadurch soll ein bischen Ordnung geschaffen werden und die Hardware flexibel auch mit einem Arduino gesteuert werden können.
+# RemoteCar/LineFollowCar
+Phase 1 des Projectes war die Steuerung mit einem PS3 Controller.
+Es sollen jetzt verschiedene Varianten des autonomen Fahrens probiert werden.
+Derzeit ist die Variante Line Follower in Arbeit.
 
 # Install
 
