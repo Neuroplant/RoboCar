@@ -518,6 +518,29 @@ float getSonarP(int angle) {
 	return getSonar();
 }
 
+//LineFollower
+void Line_Turn_R(void) {
+	while (linePinR == LOW) {
+		if (linePinL == LOW) gear=-1;
+		if (linePinL == HIGH) {steering = -10; gear=1;}
+	}
+	steering = 0; gear=1;
+}
+void Line_Turn_L(void) {
+	while (linePinL == LOW) {
+		if (linePinR == LOW) gear=-1;
+		if (linePinR == HIGH) {steering = 10; gear=1;}
+	}
+	steering = 0; gear=1;
+}
+
+int init_LineFollow() {
+	pinMode(linePinR ,INPUT);
+	pinMode(linePinL ,INPUT);
+	wiringPiISR (linePinR , INT_EDGE_FALLING, &Line_Turn_R);
+	wiringPiISR (linePinL , INT_EDGE_FALLING, &Line_Turn_L);
+}
+
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
 	
@@ -572,14 +595,16 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	}	
 	
 	
-	init_Joystick();
+//	init_Joystick();
+	init_LineFollow();
 
 //Ultraschall
 	pinMode(trigPin, OUTPUT);
 	pinMode(echoPin, INPUT);
 	pinMode(servoPin_US,OUTPUT);
 //Main-Loop Section
-	printf("\n All Threads up: RemoteCar starting \n");
+	printf("\n All Threads up: LineFollower starting \n");
+	Spin_Target = 60;
 	while (run) {
 		
 		if (steering > 10) steering = 10;
