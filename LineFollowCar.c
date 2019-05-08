@@ -73,226 +73,18 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 	delay(10);
 }
 
+#include "sound.h"
 
-struct s_Sound {
-	int loop;
-	char name[20];	
-};
-struct s_Sound Sound[5];
-pthread_t t_Sound[5];
-bool SoundLock = false;
+#include "blinker.h"
 
-void *SoundThread(void *arg) {
-	long idNr = (long)arg;
-	int i;
-	char soundfile[100];
-	strcpy (soundfile, "omxplayer --no-keys -o local /home/pi/RoboCar/Sounds/");
-	strcat(soundfile,Sound[idNr].name);
-	printf("Sound %i: %s ready\n",idNr,Sound[idNr].name);
-	while (run) {
-		if (!SoundLock  && Sound[idNr].loop>0) {
-			SoundLock=true;
-			while (Sound[idNr].loop>0) {
-				system(soundfile);
-				Sound[idNr].loop--;
-			}
-			SoundLock=false;
-			
-		}
-		if (SoundLock) Sound[idNr].loop=0;
-	}
-	printf("Sound %i end\n",i,Sound[idNr].name);
-	return NULL;
-}
-int init_Sound (void) {
-	int i=0;
-	strcpy(Sound[0].name, "0-idle.mp3"); 
-	strcpy(Sound[1].name, "1-Horn.mp3"); 
-	strcpy(Sound[2].name, "2-BackupBeep.mp3"); 
-	strcpy(Sound[3].name, "3-EngineStart.mp3"); 
-	strcpy(Sound[4].name, "4-Laser.mp3"); 
+#include "motor.h"
 
-	
-	
-	for (i=0;i<5;i++) {
-		if(pthread_create(&t_Sound[i], NULL, SoundThread, (void*)i)) {
-	   	printf("Error creating thread t_Sound %i\n",i);
+#include "turret.h"
 
-	   	return 1;
-		}
-	}
-	return 0;
-}
+#include "encoder.h"
 
-
-
-
-struct s_Blinker {
-	int pin;
-	int dura;
-	float freq;
-};
-struct s_Blinker Blinker[10];
-pthread_t t_Blinker[10];
-
-
-void *BlinkerThread (void *arg) {
-	long idNr = (long)arg;
-	int cycles,i;
-	printf("Blinker %i ready\n", idNr);
-	for (int i=0; i <= PWM_MAX; i=i+10) pwmWrite(Blinker[idNr].pin,i);
-	for (int i=PWM_MAX; i >= 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
-	
-	while (run) {
-		if (Blinker[idNr].dura != 0) {
-			cycles = (Blinker[idNr].freq * Blinker[idNr].dura);
-			if (Blinker[idNr].freq == 0) {
-				pwmWrite(Blinker[idNr].pin,PWM_MAX);
-	    		delay(Blinker[idNr].dura * 1000);
-	    		pwmWrite(Blinker[idNr].pin,0);
-			} else {
-				for (i=0;i<cycles;i++) {
-					pwmWrite(Blinker[idNr].pin,PWM_MAX);
-					delay(500 / Blinker[idNr].freq);
-					pwmWrite(Blinker[idNr].pin,0);
-					delay(500 / Blinker[idNr].freq);
-				}
-			}
-		}
-		Blinker[idNr].dura = 0;
-	}
-	printf("Blinker %i off\n", idNr);
-	return NULL;
-}
-
-int init_Blinker (void) {
-	Blinker[0].pin = laserPin; 
-	Blinker[1].pin = blinkrechtsPin;
-	Blinker[2].pin = blinklinksPin;
-	Blinker[3].pin = blinkrechtsvPin;
-	Blinker[4].pin = blinklinksvPin;
-	Blinker[5].pin = frontlightPin;
-	Blinker[6].pin = rearlightPin;
-
-	
-	int i=0;
-	for (i=0;i<=6;i++) {
-		pinMode(Blinker[i].pin,OUTPUT);
-		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
-	   	printf("Error creating thread t_Blinker %i\n",i);
-	   	return 1;
-		}
-	}
-	return 0;
-}
-
-
-void servoWriteMS(int pin, int ms);
-
-
-
-
-
-void *MotorThread(void *value);
-
-
-int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
-void *TurretThread (void *value) {
-	printf("Turret1 ready\n");
-	while (run) {
-		switch (turret1) {
-			case 0 : 	// dont move
-			break;
-			case 1 : // center
-				turr1X	 = 0;
-				turr1Y = -10;
-			break;
-			case 3 :	// Laser on
-				Sound[4].loop = 1;
-				Blinker[0].dura = 10;
-				Blinker[0].freq = 0;
-			break;
-			case 9 :	// laser off
-				Blinker[0].dura = 0;
-				Blinker[0].freq = 0;
-			break;
-			case 8 :	//up
-				turr1Y++;
-				delay(50);
-			break;
-			case 2 :	//down
-				turr1Y--;
-				delay(50);
-			break;
-			case 4 :	//left
-				turr1X--;
-				delay(100);
-			break;
-			case 6 :	//right
-				turr1X++;
-				delay(100);
-			break;
-			default :	// dont move;
-			break;
-		}
-		if (turr1X > 10) turr1X = 10;
-		if (turr1X <-10) turr1X =-10;
-		if (turr1Y > 10) turr1Y = 10;
-		if (turr1Y <-10) turr1Y =-10;
-		
-		servoWriteMS(servoPin_CX,map(turr1X,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
-		servoWriteMS(servoPin_CY,map(turr1Y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
-	}
-	printf("Turret1 off\n");
-	return NULL;
-}
-
-int init_Turret() {
-	servoInit(servoPin_CX);	// X
-	servoInit(servoPin_CY);	// Y
-	pthread_t t_Turret;
-        if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
-		printf("Error creating thread t_Turret\n");
-		return 1;
-	}
-}
-
-
-
-// 	AB-Phase-Encoder ////////////////////////////////////////////////////
-#define Teeth		11	//number of teeth on the encoder wheel
-#define MAX_SPIN	240 // max 260/min
-static volatile int PhaseCount, SpinDirection;
-void PhaseCounter(void){
-	PhaseCount++;
-	if (digitalRead(phaseBPin) == HIGH) {
-		SpinDirection = 1;
-	}else{
-		SpinDirection = -1;
-	}
-}
-float Spin_Current (void){
-	float rpmin;
-	PhaseCount = 0;
-	delay(100);
-	rpmin = ((PhaseCount/(float)Teeth)*600*SpinDirection);
-	printf("\n rpmin %f",rpmin);
-	return rpmin;
-}
-void init_Encoder(void) {
-	pinMode(phaseAPin,INPUT);
-	pinMode(phaseBPin,INPUT);
-	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
-}
-
-
-//	JoyStick  ///////////////////////////////////////////////////////////////////////
-const char *device = "/dev/input/js0";
-int js;
-struct js_event event;
-size_t axis;
-
-int StickControl(int stick, int value) {
+#include "line.h"
+int AnalogControl(int stick, int value) {
 	switch (stick) {
 		case 0 :	//L3 Left/Right
 		break;
@@ -321,14 +113,18 @@ int StickControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
+			if (encoder_mode) {
 			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
-			   // throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+			}else{
+			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
+			}
+
 		break;
 	}
 	return 0;
 }
 
-int ButtonControl (int button, int value) {
+int DigitalControl (int button, int value) {
 //  PRESS							RELEASE
 /*
 	X		Hupe					-
@@ -363,6 +159,7 @@ int ButtonControl (int button, int value) {
 				turret1 = 3;
 			break;
 			case 3 :		//quadrat
+				encoder_mode_Switch(-1);
 			break;
 			case 4	:	//L1
 				gear = -1;
@@ -430,117 +227,9 @@ int ButtonControl (int button, int value) {
 	return 0;
 }
 
-int read_event(int fd, struct js_event *event) {
-    ssize_t bytes;
-    bytes = read(fd, event, sizeof(*event));
-    if (bytes == sizeof(*event)) return 0;
-    /* Error, could not read full event. */
-    return -1;
-}
+#include "ps3_control.h"
 
-size_t get_axis_count(int fd) {
-    __u8 axes;
-    if (ioctl(fd, JSIOCGAXES, &axes) == -1)
-        return 0;
-    return axes;
-}
-
-size_t get_button_count(int fd) {
-    __u8 buttons;
-    if (ioctl(fd, JSIOCGBUTTONS, &buttons) == -1)
-        return 0;
-    return buttons;
-}
-
-void *StickThread (void *value) {
-	printf("StickThread start\n");
-	while ((read_event(js, &event) == 0)&&(run)) {
-		switch (event.type){
-			case JS_EVENT_BUTTON:
-				ButtonControl(event.number,event.value);
-			break;
-			case JS_EVENT_AXIS:
-				StickControl(event.number,event.value);
-			break;
-		}
-	}
-	printf("StickThread end\n");
-	return NULL;
-}
-
-int init_Joystick(void) {
-	js = open(device, O_RDONLY);
-	while (js == -1) {
-	    	js = open(device, O_RDONLY);
-        	Blinker[5].dura = 2;
-		Blinker[5].freq = 20;
-		delay(2000);
-		printf("Warte auf Joystick\n");
-	};
-	printf("Joystick ready \n");
-
-	pthread_t t_Joystick;
-		if(pthread_create(&t_Joystick, NULL, StickThread, NULL)) {
-			printf("Error creating thread t_Joystick\n");
-			return 1;
-		}	
-}
-
-
-
-
-
-//Ultrasonic Obstacle avoidance
-struct timespec Time1;
-long StartTime, EndTime;   
-long PulseLen (int inpin) {
-	while (digitalRead(inpin) == LOW) {
-		clock_gettime(CLOCK_REALTIME, &Time1);
-		StartTime  = Time1.tv_nsec;
-	}
-	while (digitalRead(inpin) == HIGH) {
-		clock_gettime(CLOCK_REALTIME, &Time1);
-		EndTime = Time1.tv_nsec;
-		if (EndTime-StartTime >= 13200) return 13200;
-	}
-	return (EndTime-StartTime);
-}
-
-float getSonar() {
-	digitalWrite(trigPin,HIGH);
-	delayMicroseconds(10);
-	digitalWrite(trigPin,LOW);
-	
-	return ((float)PulseLen(echoPin) * 340.0 / 2.0 / 10000.0);
-}
-float getSonarP(int angle) {
-	servoWriteMS(servoPin_US,angle);
-	delay(100);
-	return getSonar();
-}
-
-//LineFollower
-void Line_Turn_R(void) {
-	while (linePinR == LOW) {
-		if (linePinL == LOW) gear=-1;
-		if (linePinL == HIGH) {steering = -10; gear=1;}
-	}
-	steering = 0; gear=1;
-}
-void Line_Turn_L(void) {
-	while (linePinL == LOW) {
-		if (linePinR == LOW) gear=-1;
-		if (linePinR == HIGH) {steering = 10; gear=1;}
-	}
-	steering = 0; gear=1;
-}
-
-int init_LineFollow() {
-	pinMode(linePinR ,INPUT);
-	pinMode(linePinL ,INPUT);
-	wiringPiISR (linePinR , INT_EDGE_FALLING, &Line_Turn_R);
-	wiringPiISR (linePinL , INT_EDGE_FALLING, &Line_Turn_L);
-}
+#include "sonar.h"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
@@ -573,8 +262,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	}
 	digitalWrite(LED,HIGH); // turn on LCD backlight 
 	digitalWrite(RW,LOW); // allow writing to LCD 
-// bwiringPi LCD
-	int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);// initialize LCD and return “handle” used to handle LCD 
+//  wiringPi LCD
+	int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
 	if(lcdhd < 0) {
 		printf("lcdInit failed !"); 
 		return lcdhd; 
@@ -595,52 +284,83 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		return 1;
 	}	
 	
-	
+//Joystick	
 //	init_Joystick();
-	init_LineFollow();
 
-//Ultraschall
+//Sonar
 	pinMode(trigPin, OUTPUT);
 	pinMode(echoPin, INPUT);
 	pinMode(servoPin_US,OUTPUT);
+//Line detect
+	init_LineDetect();
+	
 //Main-Loop Section
-	printf("\n All Threads up: LineFollower starting \n");
-	Spin_Target = 60;
-	throttle=3000;
+	printf("\n All Threads up: RemoteCar starting \n");
 	while (run) {
+		//Steuerung via LineDetect
 		
-		if (steering > 10) steering = 10;
-		if (steering <-10) steering =-10;
-		printf("\n Steering %i",steering);
-		if (Spin_Current() > Spin_Target)	throttle=throttle-ACCELERATION;
-		if (Spin_Current() < Spin_Target) 	throttle=throttle+ACCELERATION;
+		if (LineDetect() = 0) { gear = 	1; 	steering = 	0;	Spin_Target = MAX_SPIN/2;}
+		if (LineDetect() = 1) { gear = 	1; 	steering = 	10;	Spin_Target = MAX_SPIN/3;}
+		if (LineDetect() = 2) { gear = 	1; 	steering = 	-10;Spin_Target = MAX_SPIN/3;}
+		if (LineDetect() = 3) { gear = 	-1; steering = 	0;	Spin_Target = MAX_SPIN2/5;}
 
-		if (throttle > THROTTLE_MAX) 		throttle = THROTTLE_MAX;
-		if (throttle < 0) 					gear=-1;
-		if (throttle < -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
-
-		printf("\n Throttle %i",throttle);
-
-		if (getSonar() < 20) gear=0;
+		if (getSonar() < 10) gear=0; //Emergency Break
+		
+		if (gear == 0) {
+			sound[1].loop=1;
+			Blinker[1].dura = 2;
+			Blinker[1].freq = 2;
+			Blinker[2].dura = 2;
+			Blinker[2].freq = 2;
+			Blinker[3].dura = 2;
+			Blinker[3].freq = 2;
+			Blinker[4].dura = 2;
+			Blinker[4].freq = 2;
+		}
+		if (gear == -1) {
+			sound[2].loop=1;
+			Blinker[6].dura = 2;
+			Blinker[6].freq = 0;
+		}
+		if (steering == -10) {
+			Blinker[1].dura = 2;
+			Blinker[1].freq = 2;
+			Blinker[3].dura = 2;
+			Blinker[3].freq = 2;
+		}
+		if (steering == 10) {
+			Blinker[2].dura = 2;
+			Blinker[2].freq = 2;
+			Blinker[4].dura = 2;
+			Blinker[4].freq = 2;
+		}
+		if (gear == 1) {
+			sound[0].loop=1;
+			Blinker[5].dura = 4;
+			Blinker[5].freq = 0;
+		}
+		
 		
 		//OUTPUT
-		system("clear"); 
+
 		lcdPosition(lcdhd,0,0);
-		printf("Throttle %i Distance %fcm\n", throttle, getSonar());
 		lcdPrintf(lcdhd,"TR %4i US %4f\n", throttle, getSonar());
+		lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
+
+		system("clear"); 
+		printf("Throttle %i Distance %fcm\n", throttle, getSonar());
 		for (i=0;i<5;i++) {
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
 		for (i=0;i<5;i++) {
-			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+			printf("Sound:%s %i Loop: %i \n",Sound.[i].name,i,Sound[i].loop);
 		 }
 		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
-		lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
 	}
 		
 //End Section
 
- //   	close(js);
+    //close(js);
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
@@ -656,7 +376,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Motor,NULL);
 	printf(".");
-	//pthread_join(t_Turret,NULL);
+	pthread_join(t_Turret,NULL);
 	printf(".");
 	//pthread_join(t_Joystick,NULL);
 	printf(".");
@@ -678,5 +398,3 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf("OK\n");		       
 	return 0;
 }
-
-#include "motor.h"

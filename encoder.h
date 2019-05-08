@@ -1,6 +1,6 @@
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		11	//number of teeth on the encoder wheel
-#define MAX_SPIN	240 // max 260/min
+#define MAX_SPIN	100 // max 260/min
 static volatile int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
