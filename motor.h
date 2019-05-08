@@ -4,6 +4,17 @@ void *MotorThread(void *value){
 
 	printf("Motor ready\n");
 	while (run) {
+				if (steering > 10) steering = 10;
+		if (steering <-10) steering =-10;
+		
+		if (Spin_Current() > Spin_Target)	throttle=throttle-ACCELERATION;
+		if (Spin_Current() < Spin_Target) 	throttle=throttle+ACCELERATION;
+
+		if (throttle > THROTTLE_MAX) 		throttle = THROTTLE_MAX;
+		if (throttle < 0) 					gear=-1;
+		if (throttle < -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
+		
+		
 		if(gear>0){
 			pwmWrite(motorPin1,0);
 			pwmWrite(motorPin2,abs(throttle));

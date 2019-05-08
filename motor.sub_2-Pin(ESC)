@@ -13,9 +13,9 @@ void *MotorThread(void *value){
 	pwmWrite(motorPin1,PWM_MAX/2);
 	delay (2000);
 	printf("ESC ready\n");
+	esc_trottle=map(throttle,0,PWM_MAX,0,PWM_MAX/2);	
 
 	while (run) {
-		esc_trottle=map(throttle,0,PWM_MAX,0,PWM_MAX/2);	
 		if(gear>0){
 			pwmWrite(motorPin1,PWM_MAX/2+esc_trottle);
 		//printf("turn Forward...\n");
