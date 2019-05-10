@@ -18,6 +18,17 @@ Derzeit ist die Variante Line Follower in Arbeit.
   	
 	sudo ./RemoteCar [encoder]
 
+# gyro.h
+	int init_Gyro(int Addr,int *gyrohd)
+	int gyroskop_xout(int *gyrohd)
+	int gyroskop_yout(int *gyrohd)
+	int gyroskop_zout(int *gyrohd)
+	int beschleunigung_xout(int *gyrohd)
+	int beschleunigung_yout(int *gyrohd)
+	int beschleunigung_zout(int *gyrohd)
+	int get_x_rotation(int *gyrohd)
+	int get_x_rotation(int *gyrohd)
+
 # Encoder
 Im Encoder-Modus gibt die Stellung des Stick die Drehzahl vor und das Programm versucht diese zu erreichen, indem es die Spannung des Motors nachregelt.
 Hierduch sollen auch langsame Fahrten und ein Tempomat-Effect ermöglicht werden.
