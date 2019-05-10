@@ -31,6 +31,18 @@ Libary for using an MPU6050 Gyroskop
 	int get_x_rotation(int *gyrohd)
 	int get_y_rotation(int *gyrohd)
 
+# line.h
+Libary for using Linedetector
+
+	int init_LineDetect(void)
+	int LineDetect(void)
+	
+	needs:
+	#define	linePinR [pin of right detector]
+	#define	linePinL [pin of left detector]
+	
+
+	
 # Encoder
 Im Encoder-Modus gibt die Stellung des Stick die Drehzahl vor und das Programm versucht diese zu erreichen, indem es die Spannung des Motors nachregelt.
 Hierduch sollen auch langsame Fahrten und ein Tempomat-Effect ermöglicht werden.
