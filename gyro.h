@@ -1,5 +1,7 @@
 // Gyroskop
-/*
+/* with help from to https://tutorials-raspberrypi.de/rotation-und-beschleunigung-mit-dem-raspberry-pi-messen/
+
+
 int init_Gyro(int Addr,int *gyrohd)
 int gyroskop_xout(int *gyrohd)
 int gyroskop_yout(int *gyrohd)
@@ -57,6 +59,7 @@ int init_Gyro(int Addr,int *gyrohd) {
 	wiringPiI2CWriteReg8 (gyrohd, 107, 0);
 	wiringPiI2CWriteReg8 (gyrohd, 28, 0);
 	wiringPiI2CWriteReg8 (gyrohd, 27, 0);
+	wiringPiI2CWriteReg8 (gyrohd, 26, 6); //LowPass filter
 	return gyrohd
 }
  
