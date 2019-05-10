@@ -8,7 +8,7 @@ int beschleunigung_xout(int *gyrohd)
 int beschleunigung_yout(int *gyrohd)
 int beschleunigung_zout(int *gyrohd)
 int get_x_rotation(int *gyrohd)
-int get_x_rotation(int *gyrohd)
+int get_y_rotation(int *gyrohd)
 */
 #include <math.h>
 #include <stdio.h>
@@ -77,6 +77,6 @@ int beschleunigung_yout(int *gyrohd) {
 	return readWord_2c(gyrohd,0x3d);
 }
 int beschleunigung_zout(int *gyrohd) {
-		return readWord_2c(0x3f);
+	return readWord_2c(0x3f);
 }
  
