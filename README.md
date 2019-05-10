@@ -19,6 +19,8 @@ Derzeit ist die Variante Line Follower in Arbeit.
 	sudo ./RemoteCar [encoder]
 
 # gyro.h
+Libary for using an MPU6050 Gyroskop
+
 	int init_Gyro(int Addr,int *gyrohd)
 	int gyroskop_xout(int *gyrohd)
 	int gyroskop_yout(int *gyrohd)
@@ -27,7 +29,7 @@ Derzeit ist die Variante Line Follower in Arbeit.
 	int beschleunigung_yout(int *gyrohd)
 	int beschleunigung_zout(int *gyrohd)
 	int get_x_rotation(int *gyrohd)
-	int get_x_rotation(int *gyrohd)
+	int get_y_rotation(int *gyrohd)
 
 # Encoder
 Im Encoder-Modus gibt die Stellung des Stick die Drehzahl vor und das Programm versucht diese zu erreichen, indem es die Spannung des Motors nachregelt.
