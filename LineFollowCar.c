@@ -270,7 +270,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Blinker
 	init_Blinker();
 //Turret
-	init_Turret();
+//	init_Turret();
 //Motor
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
