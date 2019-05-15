@@ -301,7 +301,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (getSonar() < 10) gear=0; //Emergency Break
 		
 		if (gear == 0) {
-			sound[1].loop=1;
+			Sound[1].loop=1;
 			Blinker[1].dura = 2;
 			Blinker[1].freq = 2;
 			Blinker[2].dura = 2;
@@ -312,7 +312,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			Blinker[4].freq = 2;
 		}
 		if (gear == -1) {
-			sound[2].loop=1;
+			Sound[2].loop=1;
 			Blinker[6].dura = 2;
 			Blinker[6].freq = 0;
 		}
@@ -329,7 +329,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			Blinker[4].freq = 2;
 		}
 		if (gear == 1) {
-			sound[0].loop=1;
+			Sound[0].loop=1;
 			Blinker[5].dura = 4;
 			Blinker[5].freq = 0;
 		}
@@ -347,7 +347,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
 		 }
 		for (i=0;i<5;i++) {
-			printf("Sound:%s %i Loop: %i \n",Sound.[i].name,i,Sound[i].loop);
+			printf("Sound:%s %i Loop: %i \n",Sound[i].name,i,Sound[i].loop);
 		 }
 		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
@@ -370,7 +370,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Motor,NULL);
 	printf(".");
-	pthread_join(t_Turret,NULL);
+	//pthread_join(t_Turret,NULL);
 	printf(".");
 	//pthread_join(t_Joystick,NULL);
 	printf(".");
