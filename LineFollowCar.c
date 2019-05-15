@@ -154,7 +154,6 @@ int DigitalControl (int button, int value) {
 				turret1 = 3;
 			break;
 			case 3 :		//quadrat
-				encoder_mode_Switch(-1);
 			break;
 			case 4	:	//L1
 				gear = -1;
