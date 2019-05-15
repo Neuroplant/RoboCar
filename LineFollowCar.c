@@ -265,17 +265,13 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 // AB - Encoder
 	init_Encoder();
-	printf("init_Encoder ..OK\n");
 //Sound
 	init_Sound();
-	printf("init_Sound ..OK\n");
 //Blinker
 	init_Blinker();
-	printf("init_Blinker ..OK\n");
 
 //Turret
 	init_Turret();
-	printf("init_Turret ..OK\n");
 //Motor
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
@@ -292,7 +288,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pinMode(servoPin_US,OUTPUT);
 //Line detect
 	init_LineDetect();
-	printf("int_LineDetect ..OK\n");
 	
 //Main-Loop Section
 	printf("\n All Threads up: LineCar starting \n");
