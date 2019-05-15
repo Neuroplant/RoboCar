@@ -77,11 +77,11 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 
 #include "blinker.h"
 
+#include "encoder.h"
+
 #include "motor.h"
 
 #include "turret.h"
-
-#include "encoder.h"
 
 #include "line.h"
 int AnalogControl(int stick, int value) {
