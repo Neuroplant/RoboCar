@@ -113,12 +113,7 @@ int AnalogControl(int stick, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			if (encoder_mode) {
 			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
-			}else{
-			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
-			}
-
 		break;
 	}
 	return 0;
