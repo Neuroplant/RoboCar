@@ -293,10 +293,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	while (run) {
 		//Steuerung via LineDetect
 		
-		if (LineDetect() == 0) { gear = 	1; 	steering = 	0;	Spin_Target = MAX_SPIN/2;}
-		if (LineDetect() == 1) { gear = 	1; 	steering = 	10;	Spin_Target = MAX_SPIN/3;}
-		if (LineDetect() == 2) { gear = 	1; 	steering = 	-10;	Spin_Target = MAX_SPIN/3;}
-		if (LineDetect() == 3) { gear = 	-1; 	steering = 	0;	Spin_Target = MAX_SPIN/5;}
+		if (LineDetect() == 0) { gear = 	1; 	steering = 	0;	Spin_Target = 0*MAX_SPIN/2;}
+		if (LineDetect() == 1) { gear = 	1; 	steering = 	10;	Spin_Target = 0*MAX_SPIN/3;}
+		if (LineDetect() == 2) { gear = 	1; 	steering = 	-10;	Spin_Target = 0*MAX_SPIN/3;}
+		if (LineDetect() == 3) { gear = 	-1; 	steering = 	0;	Spin_Target = 0*MAX_SPIN/5;}
 
 		if (getSonar() < 10) gear=0; //Emergency Break
 		
