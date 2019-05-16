@@ -58,7 +58,6 @@
 
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
 #define BRAKE           30          	//Bremskraft
-#define SPIN_MAX	4920 		//max 6100
 
 
 //Ultraschall

@@ -1,16 +1,18 @@
 //Ultrasonic Obstacle avoidance 
+#include <sys/time.h>
 struct timespec Time1; 
-long StartTime, EndTime;    
+long StartTime, EndTime; 
+
 long PulseLen (int inpin) { 
 	while (digitalRead(inpin) == LOW) { 
 		clock_gettime(CLOCK_REALTIME, &Time1); 
 		StartTime  = Time1.tv_nsec; 
-		if (EndTime-StartTime >= 13200) return 13201; 
+		if (EndTime-StartTime >= 13200) {return 13201; break}
 	} 
 	while (digitalRead(inpin) == HIGH) { 
 		clock_gettime(CLOCK_REALTIME, &Time1); 
 		EndTime = Time1.tv_nsec; 
-		if (EndTime-StartTime >= 13200) return 13200; 
+		if (EndTime-StartTime >= 13200) {return 13200; break}
 	} 
 	return (EndTime-StartTime); 
 }
@@ -27,3 +29,10 @@ float getSonarP(int angle) {
 	delay(100); 
 	return getSonar(); 
 } 
+
+int init_Sonar(void) {
+	pinMode(trigPin, OUTPUT);
+	pinMode(echoPin, INPUT);
+	pinMode(servoPin_US,OUTPUT);   
+	return 0;
+}

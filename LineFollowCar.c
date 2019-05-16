@@ -11,20 +11,6 @@
  * sudo ./Line 
  */
  
- //Car Funktions////////////////////////////////////////////////////////
-// 	steering 	-	-10..10	-	left/right
-//	throttle	-	0..PWM_MAX	-	motor power
-//	gear		-	1/0/-1	-	forward/brake/reverse
- 
- //Sound/////////////////////////////////////////////////////////////////
-//	sound[]		-	0..5	-	selects soundfile
-//	sound[].Loop	-	0..	-	repeat soundfile
-
-// Turret/////////////////////////////////////////////////
-// turr1X	-	10..-10	-	x-axis 
-// turr1Y	-	10..-10	-	y-axis
-// turret1	-	0/1	-	laser off/on
- 
 // Include Section
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
@@ -36,8 +22,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/joystick.h>
-#include <sys/time.h>
+
 #include <pthread.h>
 #include <string.h>
 #include <stdbool.h>
@@ -46,29 +31,12 @@
 
 bool run			= true;
 float Spin_Target 	= 0;
-int steering = 0, throttle = 0, gear = 1;
+int steering = 0, throttle = 0, gear = 0;
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
 
-int servoInit(int pin){        		//initialization function for servo PMW pins
-	pinMode(pin,OUTPUT);
-	printf("Servo Pin %i OK\n",pin);
-	return 0;
-}
-
-void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
-    if(ms > SERVO_MAX_MS) {
-        printf("Pin: %i ms: %i too big\n",pin,ms);
-        ms = SERVO_MAX_MS;
-    };
-    if(ms < SERVO_MIN_MS) {
-        printf("Pin: %i ms: %i too small\n",pin,ms);
-        ms = SERVO_MIN_MS;
-    };
-    pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
-	delay(10);
-}
+#include "servo.h"
 
 #include "sound.h"
 
@@ -76,7 +44,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 
 #include "encoder.h"
 
-#include "motor.h"
+#include "engine.h"
 
 #include "line.h"
 
@@ -126,17 +94,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	init_Sound();
 //Blinker
 	init_Blinker();
-//Motor
-	pthread_t t_Motor;
-	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
-		printf("Error creating thread t_Motor\n");
-		return 1;
-	}	
-
+//engine
+	init_Engine();
 //Sonar
-	pinMode(trigPin, OUTPUT);
-	pinMode(echoPin, INPUT);
-	pinMode(servoPin_US,OUTPUT);
+	init_Sonar();
 //Line detect
 	init_LineDetect();
 	
@@ -145,47 +106,12 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	while (run) {
 		//Steuerung via LineDetect
 		
-		if (LineDetect() == 0) { gear = 	1; 	steering = 	0;	Spin_Target = 0*MAX_SPIN/2;}
-		if (LineDetect() == 1) { gear = 	1; 	steering = 	10;	Spin_Target = 0*MAX_SPIN/3;}
-		if (LineDetect() == 2) { gear = 	1; 	steering = 	-10;	Spin_Target = 0*MAX_SPIN/3;}
-		if (LineDetect() == 3) { gear = 	-1; 	steering = 	0;	Spin_Target = 0*MAX_SPIN/5;}
+		if (LineDetect() == 0) { gear = 1; 	steering = 0;	Spin_Target = 0*SPIN_MAX/2;}
+		if (LineDetect() == 1) { gear = 1; 	steering = 10;	Spin_Target = 0*SPIN_MAX/3;}
+		if (LineDetect() == 2) { gear = 1; 	steering = -10;	Spin_Target = 0*SPIN_MAX/3;}
+		if (LineDetect() == 3) { gear = -1;	steering = 0;	Spin_Target = 0*SPIN_MAX/5;}
 
 		if (getSonar() < 10) gear=0; //Emergency Break
-		
-		if (gear == 0) {
-			Sound[1].loop=1;
-			Blinker[1].dura = 2;
-			Blinker[1].freq = 2;
-			Blinker[2].dura = 2;
-			Blinker[2].freq = 2;
-			Blinker[3].dura = 2;
-			Blinker[3].freq = 2;
-			Blinker[4].dura = 2;
-			Blinker[4].freq = 2;
-		}
-		if (gear == -1) {
-			Sound[2].loop=1;
-			Blinker[6].dura = 2;
-			Blinker[6].freq = 0;
-		}
-		if (steering == -10) {
-			Blinker[1].dura = 2;
-			Blinker[1].freq = 2;
-			Blinker[3].dura = 2;
-			Blinker[3].freq = 2;
-		}
-		if (steering == 10) {
-			Blinker[2].dura = 2;
-			Blinker[2].freq = 2;
-			Blinker[4].dura = 2;
-			Blinker[4].freq = 2;
-		}
-		if (gear == 1) {
-			Sound[0].loop=1;
-			Blinker[5].dura = 4;
-			Blinker[5].freq = 0;
-		}
-		
 		
 		//OUTPUT
 
@@ -195,12 +121,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 
 		system("clear"); 
 		printf("Throttle %i Distance %fcm\n", throttle, getSonar());
-		for (i=0;i<5;i++) {
-			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		 }
-		for (i=0;i<5;i++) {
-			printf("Sound:%s %i Loop: %i \n",Sound[i].name,i,Sound[i].loop);
-		 }
+		printf("LineDetect: %i Steering: %i\n",LineDetect(),steering);
 		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
 		
@@ -210,36 +131,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
-	pthread_join(t_Sound[0],NULL);
-	printf(".");
-	pthread_join(t_Sound[1],NULL);
-	printf(".");
-	pthread_join(t_Sound[2],NULL);
-	printf(".");
-	pthread_join(t_Sound[3],NULL);
-	printf(".");
-	pthread_join(t_Sound[4],NULL);
-	printf(".");
-	pthread_join(t_Motor,NULL);
-	printf(".");
-	//pthread_join(t_Turret,NULL);
-	printf(".");
-	//pthread_join(t_Joystick,NULL);
-	printf(".");
-	pthread_join(t_Blinker[0],NULL);
-	printf(".");
-	pthread_join(t_Blinker[1],NULL);
-	printf(".");
-	pthread_join(t_Blinker[2],NULL);
-	printf(".");
-	pthread_join(t_Blinker[3],NULL);
-	printf(".");
-	pthread_join(t_Blinker[4],NULL);
-	printf(".");
-	pthread_join(t_Blinker[5],NULL);
-	printf(".");
-	pthread_join(t_Blinker[6],NULL);
-	printf(".");
+
+	delay(2000);
 
 	printf("OK\n");		       
 	return 0;

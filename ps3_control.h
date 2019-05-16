@@ -1,4 +1,6 @@
 //	JoyStick  ///////////////////////////////////////////////////////////////////////
+#include <linux/joystick.h>
+
 const char *device = "/dev/input/js0";
 int js;
 struct js_event event;

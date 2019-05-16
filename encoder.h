@@ -1,7 +1,11 @@
+#include <wiringPi.h>
+#include <pthread.h>
+#include "constants.h"
+
 // 	AB-Phase-Encoder ////////////////////////////////////////////////////
 #define Teeth		11	//number of teeth on the encoder wheel
-#define MAX_SPIN	100 // max 260/min
-static volatile int PhaseCount, SpinDirection;
+#define SPIN_MAX	100 // max 260/min
+int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
 	if (digitalRead(phaseBPin) == HIGH) {
@@ -14,11 +18,12 @@ float Spin_Current (void){
 	float rpmin;
 	PhaseCount = 0;
 	delay(100);
-	rpmin = ((PhaseCount/(float)Teeth)*600*SpinDirection);
-	return rpmin;
+	//rpmin = ((PhaseCount/(float)Teeth)*600*SpinDirection);
+	return PhaseCount*SpinDirection;
 }
-void init_Encoder(void) {
+int init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
 	pinMode(phaseBPin,INPUT);
 	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
+	return 0;
 }
