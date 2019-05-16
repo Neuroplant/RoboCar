@@ -1,3 +1,4 @@
+#include <stdlib.h>
 
 struct s_Sound {
 	int loop;
