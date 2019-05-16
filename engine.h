@@ -49,6 +49,6 @@ void *EngineThread(void *value){
 }
 
 int init_Engine(void){
-	return pthread_create(&t_Engine, NULL, MotorThread, NULL);
+	return pthread_create(&t_Engine, NULL, EngineThread, NULL);
 }
 
