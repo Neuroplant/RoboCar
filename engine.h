@@ -1,7 +1,7 @@
 #include <wiringPi.h>
 #include <pthread.h>
 #include "constants.h"
-#include "servo.h"
+//#include "servo.h"
 
 pthread_t t_Engine;
 
