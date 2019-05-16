@@ -111,7 +111,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (LineDetect() == 2) { gear = 1; 	steering = -10;	Spin_Target = SPIN_MAX/3;}
 		if (LineDetect() == 3) { gear = -1;	steering = 0;	Spin_Target = SPIN_MAX/5;}
 
-		if (getSonar() < 10) gear=0; //Emergency Break
+		//if (getSonar() < 10) gear=0; //Emergency Break
 		
 		//OUTPUT
 
