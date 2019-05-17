@@ -1,3 +1,6 @@
+#ifndef PS3_CONTROL_H
+#define PS3_CONTROL_H
+
 //	JoyStick  ///////////////////////////////////////////////////////////////////////
 #include <linux/joystick.h>
 
@@ -204,3 +207,5 @@ int init_Joystick(void) {
 			return 1;
 		}	
 }
+
+#endif
