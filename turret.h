@@ -1,3 +1,7 @@
+#ifndef TURRET_H
+#define TURRET_H
+
+
 int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
 void *TurretThread (void *value) {
 	printf("Turret1 ready\n");
@@ -59,3 +63,4 @@ int init_Turret() {
 	}
 }
 
+#endif
