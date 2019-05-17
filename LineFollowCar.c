@@ -2,7 +2,7 @@
  * Author: Neuroplant
  *
  * Description:
- * Reads joystick(Sixaxis3) events and controls Car.
+ *Car follows Line..what did you expect?
  *
  * Compile:
 *  make Line
@@ -29,8 +29,8 @@
 
 #include "constants.h"
 
-bool run			= true;
-float Spin_Target 	= 0;
+bool run = true;
+float Spin_Target = 0;
 int steering = 0, throttle = 0, gear = 0;
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
@@ -106,10 +106,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	while (run) {
 		//Steuerung via LineDetect
 		
-		if (LineDetect() == 0) { gear = 1; 	steering = 0;	Spin_Target = SPIN_MAX/2;}
-		if (LineDetect() == 1) { gear = 1; 	steering = 10;	Spin_Target = SPIN_MAX/3;}
-		if (LineDetect() == 2) { gear = 1; 	steering = -10;	Spin_Target = SPIN_MAX/3;}
-		if (LineDetect() == 3) { gear = -1;	steering = 0;	Spin_Target = SPIN_MAX/5;}
+		if (LineDetect() == 0) { steering = 0;	Spin_Target = SPIN_MAX/2;}
+		if (LineDetect() == 1) { steering = 10;	Spin_Target = SPIN_MAX/3;}
+		if (LineDetect() == 2) { steering = -10;Spin_Target = SPIN_MAX/3;}
+		if (LineDetect() == 3) { steering = 0;	Spin_Target = -SPIN_MAX/5;}
 
 		//if (getSonar() < 10) gear=0; //Emergency Break
 		
