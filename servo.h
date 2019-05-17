@@ -1,3 +1,6 @@
+#ifndef SERVO_H
+#define SERVO_H
+
 #include <wiringPi.h>
 #include <pthread.h>
 #include "constants.h"
@@ -20,3 +23,5 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
     pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
 	delay(10);
 }
+
+#endif
