@@ -36,7 +36,7 @@ long PulseLen (int inpin, int level, int timeout) {
 	long val;
 	clock_gettime(CLOCK_REALTIME, &Time0);
 	OutTime = Time0.tv_nsec;
-	while (digitalRead(inpin) <> level) { 
+	while (digitalRead(inpin) != level) { 
 		clock_gettime(CLOCK_REALTIME, &Time1); 
 		StartTime  = Time1.tv_nsec; 
 		if (StartTime-OutTime >= timeout) {val = 13201; break;}
@@ -55,9 +55,9 @@ float getSonar() {
 	digitalWrite(trigPin,HIGH); 
 	delayMicroseconds(10); 
 	digitalWrite(trigPin,LOW); 
-	pingTime = pulseIn(echoPin,HIGH,13200);   //read plus time of echoPin
+	long pingTime = pulseIn(echoPin,HIGH,13200);   //read plus time of echoPin
 	//pingTime = PulseLen(echoPin,HIGH,13200); //have to take a look, why my function does not work
-	distance = (float)pingTime * 340.0 / 2.0 / 10000.0; // the sound speed is 340m/s,and calculate distance
+	float distance = (float)pingTime * 340.0 / 2.0 / 10000.0; // the sound speed is 340m/s,and calculate distance
 	return distance;
 }  
 
