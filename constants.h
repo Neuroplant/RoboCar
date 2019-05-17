@@ -1,4 +1,5 @@
-
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #define DEV_ID0		0x40
 #define PIN_BASE0 	64
@@ -70,3 +71,5 @@
 //Linefollower
 #define LinePinR 2
 #define LinePinL 3
+
+#endif /* CONSTANTS_H */
