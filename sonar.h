@@ -1,3 +1,6 @@
+#ifndef SONAR_H
+#define SONAR_H
+
 //Ultrasonic Obstacle avoidance 
 #include <sys/time.h>
 struct timespec Time0, Time1; 
@@ -41,3 +44,4 @@ int init_Sonar(void) {
 	pinMode(servoPin_US,OUTPUT);   
 	return 0;
 }
+#endif
