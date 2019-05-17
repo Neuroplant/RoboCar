@@ -1,3 +1,5 @@
+#ifndef BLINKER_H
+#define BLINKER_H
 struct s_Blinker {
 	int pin;
 	int dura;
@@ -56,3 +58,4 @@ int init_Blinker (void) {
 	}
 	return 0;
 }
+#endif /* BLINKER_H */
