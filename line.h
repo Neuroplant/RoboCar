@@ -1,3 +1,6 @@
+#ifndef LINE_H
+#define LINE_H
+
 /* Line detector
 int init_LineDetect(void)
 int LineDetect(void)
@@ -19,3 +22,4 @@ int LineDetect (void) {
 		if ((digitalRead(LinePinL)==HIGH) && (digitalRead(LinePinR)==HIGH)) val = 0;
 	return val;
 }
+#endif
