@@ -128,8 +128,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		}	
 		if ( getSonar() < 10) {
 			//Hupe
-			Sound[1].loop = 2;
-			gear = 0;
+			//Sound[1].loop = 2;
+			//gear = 0;
 		}
 		if ( gear < 1 ) {
 			Blinker[6].dura = 1;
