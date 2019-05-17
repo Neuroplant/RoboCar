@@ -111,8 +111,35 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (LineDetect() == 2) { steering = -10;Spin_Target = SPIN_MAX/3;}
 		if (LineDetect() == 3) { steering = 0;	Spin_Target = -SPIN_MAX/5;}
 
-		//if (getSonar() < 10) gear=0; //Emergency Break
-		
+	//if (getSonar() < 10) gear=0; //Emergency Break
+	
+		//blingbling
+		if ( steering == 10 ) {
+			Blinker[1].dura = 1;
+			Blinker[1].freq = 2;
+			Blinker[3].dura = 1;
+			Blinker[3].freq = 2;
+		}
+		if ( steering == -10 ) {
+			Blinker[2].dura = 1;
+			Blinker[2].freq = 2;
+			Blinker[4].dura = 1;
+			Blinker[4].freq = 2;
+		}	
+		if ( getSonar() < 10) {
+			//Hupe
+			Sound[1].loop = 2;
+			gear = 0;
+		}
+		if ( gear < 1 ) {
+			Blinker[6].dura = 1;
+			Blinker[6].freq = 0;
+			Sound[2].loop = 1;
+		}
+		if ( gear >-1 ) {
+			Blinker[5].dura = 2;
+			Blinker[5].freq = 0;
+		}
 		//OUTPUT
 
 		lcdPosition(lcdhd,0,0);
