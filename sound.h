@@ -1,3 +1,6 @@
+#ifndef SOUND_H
+#define SOUND_H
+
 #include <stdlib.h>
 
 struct s_Sound {
@@ -49,3 +52,5 @@ int init_Sound (void) {
 	}
 	return 0;
 }
+
+#endif
