@@ -49,6 +49,8 @@ void *TurretThread (void *value) {
 		servoWriteMS(servoPin_CX,map(turr1X,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
 		servoWriteMS(servoPin_CY,map(turr1Y,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
 	}
+	servoWriteMS(servoPin_CX,map(0,-10,10,SERVO_MIN_CX,SERVO_MAX_CX));
+	servoWriteMS(servoPin_CY,map(-10,-10,10,SERVO_MIN_CY,SERVO_MAX_CY));
 	printf("Turret1 off\n");
 	return NULL;
 }
