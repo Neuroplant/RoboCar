@@ -1,3 +1,6 @@
+#ifndef ENCODER_H
+#define ENCODER_H
+
 #include <wiringPi.h>
 #include <pthread.h>
 #include "constants.h"
@@ -27,3 +30,5 @@ int init_Encoder(void) {
 	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
 	return 0;
 }
+
+#endif /* ENCODER_H */
