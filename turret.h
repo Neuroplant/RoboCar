@@ -1,6 +1,7 @@
 #ifndef TURRET_H
 #define TURRET_H
 
+#include <pthread.h>
 #include "constants.h"
 #include "servo.h"
 #include "blinker.h"
