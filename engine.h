@@ -1,7 +1,10 @@
+#ifndef ENGINE_H
+#define ENGINE_H
+
 #include <wiringPi.h>
 #include <pthread.h>
 #include "constants.h"
-//#include "servo.h"
+#include "servo.h"
 
 pthread_t t_Engine;
 
@@ -52,3 +55,4 @@ int init_Engine(void){
 	return pthread_create(&t_Engine, NULL, EngineThread, NULL);
 }
 
+#endif 
