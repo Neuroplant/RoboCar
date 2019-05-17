@@ -1,3 +1,5 @@
+#ifndef GYRO_H
+#define GYRO_H
 // Gyroskop
 /* with help from to https://tutorials-raspberrypi.de/rotation-und-beschleunigung-mit-dem-raspberry-pi-messen/
 
@@ -83,3 +85,4 @@ int beschleunigung_zout(int *gyrohd) {
 	return readWord_2c(0x3f);
 }
  
+#endif 
