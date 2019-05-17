@@ -44,7 +44,7 @@
 #define D7 PIN_BASE1+7 
 
 
-#define ACCELERATION	32		//acceleration per cycle 
+
 
 #define	SERVO_MIN_MS	4
 #define SERVO_MAX_MS	26
@@ -58,6 +58,7 @@
 #define SERVO_MAX_CY	15
 
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
+#define ACCELERATION	THROTTLE_MAX/16		//acceleration per cycle 
 #define BRAKE           30          	//Bremskraft
 
 
