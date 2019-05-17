@@ -1,6 +1,10 @@
 #ifndef TURRET_H
 #define TURRET_H
 
+#include "constants.h"
+#include "servo.h"
+#include "blinker.h"
+
 
 int turr1X	= 0, turr1Y 	= -10, turret1 = 	0; 
 void *TurretThread (void *value) {
