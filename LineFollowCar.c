@@ -105,7 +105,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf("\n All Threads up: LineCar starting \n");
 	while (run) {
 		//Steuerung via LineDetect
-		
+		gear=1;
 		if (LineDetect() == 0) { steering = 0;	Spin_Target = SPIN_MAX/2;}
 		if (LineDetect() == 1) { steering = 10;	Spin_Target = SPIN_MAX/3;}
 		if (LineDetect() == 2) { steering = -10;Spin_Target = SPIN_MAX/3;}
