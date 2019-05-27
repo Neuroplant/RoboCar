@@ -58,7 +58,7 @@
 #define SERVO_MAX_CY	15
 
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
-#define ACCELERATION	THROTTLE_MAX/8		//acceleration per cycle 
+#define ACCELERATION	THROTTLE_MAX/4		//acceleration per cycle 
 #define BRAKE           30          	//Bremskraft
 
 
