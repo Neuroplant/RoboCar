@@ -101,22 +101,8 @@ int dist(int a,int b) {
 }
  
 
-int init_Gyro(int Addr,int *gyrohd) {
-	/*
-	setClockSource(MPU6050_CLOCK_PLL_XGYRO);
-    	setFullScaleGyroRange(MPU6050_GYRO_FS_250);
-    	setFullScaleAccelRange(MPU6050_ACCEL_FS_2);
-    	setSleepEnabled(false);
-	*/
-	*gyrohd=(int)wiringPiI2CSetup(Addr);
-	if ((int)gyrohd == -1) return (int)gyrohd;
-	wiringPiI2CWriteReg8 (*gyrohd, 107, 2);	// clock source:	PLL with Y axis gyroscope reference
-	wiringPiI2CWriteReg8 (*gyrohd, 28, 24); // full scale range of the accelerometer:	+- 16g
-	wiringPiI2CWriteReg8 (*gyrohd, 27, 24); // full scale range of the gyroscope:		+- 2000°/s
-	wiringPiI2CWriteReg8 (*gyrohd, 26, 2);  // LowPass filter:	 Accel: 94Hz 3.0ms 	Gyro: 98Hz 2.8ms 1kHz
-1
-	return (int)gyrohd;
-}
+int init_Gyro(int Addr,int *gyrohd);
+
 
 float temperatur_out(int gyrohd) {
 	return (((readWord_2c(gyrohd,0x41,0))/340)+36.53);
@@ -222,4 +208,13 @@ int set_gyro(int gyrohd) {
 	set_gyro_y(gyrohd);
 	set_gyro_z(gyrohd);
 	return 1;
+}
+int init_Gyro(int Addr,int *gyrohd) {
+	*gyrohd=(int)wiringPiI2CSetup(Addr);
+	if ((int)gyrohd == -1) return (int)gyrohd;
+	wiringPiI2CWriteReg8 (*gyrohd, 107, CLKSEL);	// clock source:	PLL with Y axis gyroscope reference
+	wiringPiI2CWriteReg8 (*gyrohd, 28, AFS_SEL); // full scale range of the accelerometer:	+- 16g
+	wiringPiI2CWriteReg8 (*gyrohd, 27, FS_SEL); // full scale range of the gyroscope:		+- 2000°/s
+	wiringPiI2CWriteReg8 (*gyrohd, 26, DLPF_CFG);  // LowPass filter:	 Accel: 94Hz 3.0ms 	Gyro: 98Hz 2.8ms 1kHz
+1	return (int)gyrohd;
 }
