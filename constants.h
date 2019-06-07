@@ -12,14 +12,14 @@
 #define motorPin1	13 + PIN_BASE0	//Motor Vorwärts        out PWM
 //#define enablePin	12 + PIN_BASE0  //Motor Geschwindigkeit out PWM
 
-#define servoPin_CX	11 + PIN_BASE0  //Camera X              out PWM
-#define	servoPin_CY	10 + PIN_BASE0  //Camera Y              out PWM
-#define servoPin_US  9 + PIN_BASE0   	//Ultraschall-Servo     out PWM
+#define servoPin_GX	11 + PIN_BASE0  //Gimbal X              out PWM
+#define	servoPin_GY	10 + PIN_BASE0  //Gimbal Y              out PWM
+#define servoPin_GZ  9 + PIN_BASE0  //Gimbal Z							out PWM	
 
-//#define	xxx	8 + PIN_BASE0 
+//#define	servoPin_US	8 + PIN_BASE0  //Ultraschall-Servo     out PWM
 
-//#define	xxx	7 + PIN_BASE0 
-#define laserPin	6 + PIN_BASE0  	//div LEDs              out digital
+//#define	xxx	7 + PIN_BASE0      
+#define laserPin	6 + PIN_BASE0  	      //div LEDs              out digital
 #define blinklinksvPin  5 + PIN_BASE0 	//div LEDs              out digital
 #define blinkrechtsvPin 4 + PIN_BASE0  	//div LEDs              out digital
 
