@@ -50,6 +50,8 @@ long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
 
 #include "sonar.h"
 
+#include "Gimbal.h"
+
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
 	int i;
 	
@@ -100,6 +102,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	init_Sonar();
 //Line detect
 	init_LineDetect();
+//Gimbal
+	init_Gimbal();
 	
 //Main-Loop Section
 	printf("\n All Threads up: LineCar starting \n");
