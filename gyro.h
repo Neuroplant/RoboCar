@@ -36,7 +36,7 @@ FS_SEL 		FullScale Range	LSB Sensitivity
 */
 
 #define AFS_SEL	3
-#define AccelSens 16384/(AFS_SEL+1);
+#define AccelSens 16384/(AFS_SEL+1)
 #define AccelMax pow(2,AFS_SEL+1)
 /*
 AFS_SEL 	FullScale Range	LSB Sensitivity
