@@ -31,9 +31,9 @@ void *GimbalThread (void *value) {
 		ax = accel_xout(GyroHd);
 		ay = accel_yout(GyroHd);
 		az = accel_zout(GyroHd);
-		servoWriteMS(servoPin_GX,map(ax,-AccelMax  ,AccelMax  ,SERVOGX_MIN_MS,SERVO_MAXGX_MS));
-		servoWriteMS(servoPin_GY,map(ay,-AccelMax  ,AccelMax  ,SERVOGX_MIN_MS,SERVO_MAXGY_MS));
-		servoWriteMS(servoPin_GZ,map(az,-AccelMax  ,AccelMax  ,SERVOGY_MIN_MS,SERVO_MAXGY_MS));
+		servoWriteMS(servoPin_GX,map(ax,-AccelMax  ,AccelMax  ,SERVOGX_MIN_MS,SERVOGX_MAX_MS));
+		servoWriteMS(servoPin_GY,map(ay,-AccelMax  ,AccelMax  ,SERVOGY_MIN_MS,SERVOGY_MAX_MS));
+		servoWriteMS(servoPin_GZ,map(az,-AccelMax  ,AccelMax  ,SERVOGZ_MIN_MS,SERVOGZ_MAX_MS));
 	}
 }
 
