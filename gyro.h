@@ -216,5 +216,5 @@ int init_Gyro(int Addr,int *gyrohd) {
 	wiringPiI2CWriteReg8 (*gyrohd, 28, AFS_SEL); // full scale range of the accelerometer:	+- 16g
 	wiringPiI2CWriteReg8 (*gyrohd, 27, FS_SEL); // full scale range of the gyroscope:		+- 2000°/s
 	wiringPiI2CWriteReg8 (*gyrohd, 26, DLPF_CFG);  // LowPass filter:	 Accel: 94Hz 3.0ms 	Gyro: 98Hz 2.8ms 1kHz
-1	return (int)gyrohd;
+	return (int)gyrohd;
 }
