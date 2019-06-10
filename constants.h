@@ -15,8 +15,7 @@
 #define servoPin_GX	11 + PIN_BASE0  //Gimbal X              out PWM
 #define	servoPin_GY	10 + PIN_BASE0  //Gimbal Y              out PWM
 #define servoPin_GZ  9 + PIN_BASE0  //Gimbal Z							out PWM	
-
-//#define	servoPin_US	8 + PIN_BASE0  //Ultraschall-Servo     out PWM
+#define	servoPin_US	8 + PIN_BASE0  //Ultraschall-Servo     out PWM
 
 //#define	xxx	7 + PIN_BASE0      
 #define laserPin	6 + PIN_BASE0  	      //div LEDs              out digital
