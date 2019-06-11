@@ -34,6 +34,7 @@ void setup() {
 	previousTick = millis();
 	if ( wiringPiISR (ppmInputPin, INT_EDGE_BOTH, &ppmEdge) < 0 ) {
 		printf("CheckDir failed!");
+	}
 }
 
 int main(){
