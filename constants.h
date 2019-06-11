@@ -62,8 +62,8 @@ int ACCELERATION = THROTTLE_MAX/4;		//acceleration per cycle
 
 
 //Ultraschall
-#define trigPin         4   	//Ultraschall-Trigger   out digital
-#define echoPin         5   	//Ultraschall-Echo      in  digital
+#define trigPin         5   	//Ultraschall-Trigger   out digital
+#define echoPin         4   	//Ultraschall-Echo      in  digital
 
 #define	SERVO_MIN_US	5
 #define SERVO_MAX_US	27
