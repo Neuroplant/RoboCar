@@ -29,13 +29,13 @@ void ppmEdge(void) {
 }
 
 void setup() {
-	wiringPiSetup (void);
+	wiringPiSetup ();
 	pinMode (ppmInputPin, INPUT);
 	previousTick = millis();
-	wiringPiSR(ppmInputPin,INT_EDGE_BOTH, *ppmEdge();
+	wiringPiISR(ppmInputPin,INT_EDGE_BOTH, *ppmEdge());
 }
 
-void main(){
+int main(){
 	setup();
 	while(1)
 		sleep(10);
