@@ -3,3 +3,5 @@ Remote: RemoteCar.c
 	gcc RemoteCar.c -o Remote $(LDFLAGS)
 Line:	LineFollowCar.c
 	gcc LineFollowCar.c -o Line $(LDFLAGS)
+PPM:	PPMEncoder.c
+	gcc PPMEncoder.c -o PPMTest $(LDFLAGS)
