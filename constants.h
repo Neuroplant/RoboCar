@@ -72,4 +72,9 @@
 #define LinePinR 2
 #define LinePinL 3
 
+//PPM
+#define ppmInputPin        6      // PPM input Pin
+#define ppmSyncLength      4000   // Length of PPM sync pause
+#define ppmChannelsNumber  10     // Number of PPM channels (8)
+
 #endif /* CONSTANTS_H */
