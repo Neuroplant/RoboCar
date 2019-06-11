@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <wiringPi.h>
+#include "constants.h"
 
 unsigned int currentChannel = 0;
 unsigned int previousTick;
