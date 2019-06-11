@@ -57,7 +57,7 @@
 #define SERVO_MAX_CY	15
 
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
-#define ACCELERATION	THROTTLE_MAX/4		//acceleration per cycle 
+int ACCELERATION = THROTTLE_MAX/4;		//acceleration per cycle 
 #define BRAKE           30          	//Bremskraft
 
 
@@ -76,5 +76,8 @@
 #define ppmInputPin        6      // PPM input Pin
 #define ppmSyncLength      4000   // Length of PPM sync pause
 #define ppmChannelsNumber  10     // Number of PPM channels (8)
+#define RCmax             100
+#define RCmin             0
+#define RCmid          (RCmax+RCmin)/2
 
 #endif /* CONSTANTS_H */
