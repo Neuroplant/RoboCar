@@ -39,7 +39,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/joystick.h>
 #include <sys/time.h>
 #include <pthread.h>
 #include <string.h>
@@ -79,14 +78,16 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 
 #include "engine.h"
 
-#include "turret.h"
+//#include "turret.h"
 
 #include "encoder.h"
+bool encoder_mode = true;
 
-#include "line.h"
+//#include "line.h"
 
 
-#include "ps3_control.h"
+//#include "ps3_control.h"
+#include "RCControl.h"
 
 #include "sonar.h"
 
@@ -135,7 +136,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Blinker
 	init_Blinker();
 //Turret
-	init_Turret();
+//	init_Turret();
 //Motor
 	pthread_t t_Motor;
 	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
@@ -144,14 +145,17 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	}	
 	
 //Joystick	
-	init_Joystick();
+//	init_Joystick();
+	
+//RCControl
+	init_RCControl();
 
 //Sonar
 	pinMode(trigPin, OUTPUT);
 	pinMode(echoPin, INPUT);
 	pinMode(servoPin_US,OUTPUT);
 //Line detect
-	init_LineDetect();
+//	init_LineDetect();
 	
 //Main-Loop Section
 	printf("\n All Threads up: RemoteCar starting \n");
