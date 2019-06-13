@@ -61,6 +61,7 @@ void *RCThread (void *value) {
 
 void init_RCControl() {
 	pinMode (ppmInputPin, INPUT);
+	pullUpDnControl (ppmInputPin, PUD_DOWN);
 	previousTick = millis();
 	wiringPiSR(ppmInputPin,INT_EDGE_BOTH, *ppmEdge();
 	pthread_t t_RCControl;
