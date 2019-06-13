@@ -31,6 +31,7 @@ void ppmEdge(void) {
 void setup() {
 	wiringPiSetup ();
 	pinMode (ppmInputPin, INPUT);
+	pullUpDnControl(ppmInputPin,PUD_DOWN);
 	previousTick = millis();
 	if ( wiringPiISR (ppmInputPin, INT_EDGE_BOTH, &ppmEdge) < 0 ) {
 		printf("CheckDir failed!");
