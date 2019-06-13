@@ -69,7 +69,9 @@ float getSonarP(int angle) {
 
 int init_Sonar(void) {
 	pinMode(trigPin, OUTPUT);
+	pullUpDnControl(trigPin,PUD_DOWN);
 	pinMode(echoPin, INPUT);
+	pullUpDnControl(echoPin,PUD_DOWN);
 	pinMode(servoPin_US,OUTPUT);   
 	return 0;
 }
