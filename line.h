@@ -10,7 +10,9 @@ int LineDetect(void)
 
 int init_LineDetect(void) {
 	pinMode(LinePinL, INPUT);
+	pullUpDnControl (LinePinL, PUD_DOWN);
 	pinMode(LinePinR, INPUT);
+	pullUpDnControl (LinePinR, PUD_DOWN);
 	return 0;
 }
 
