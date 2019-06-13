@@ -26,7 +26,9 @@ float Spin_Current (void){
 }
 int init_Encoder(void) {
 	pinMode(phaseAPin,INPUT);
+	pullUpDnControl (phaseAPin, PUD_DOWN);
 	pinMode(phaseBPin,INPUT);
+	pullUpDnControl (phaseBPin, PUD_DOWN);
 	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
 	return 0;
 }
