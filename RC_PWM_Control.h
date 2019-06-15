@@ -10,6 +10,7 @@
 //#define Anz_RC_Channels	10
 //const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
+pthread_t t_RC_PWM_Control;
 
 int RC_Channel[Anz_RC_Channels][2];
 
@@ -44,10 +45,13 @@ void init_RC_PWM() {
 		pinMode (RC_Channel[i][0], INPUT);
 		pullUpDnControl(RC_Channel[i][0],PUD_DOWN);
 	}
-	
+	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
+	   	printf("Error creating thread t_RC_PWM_Control %i\n",i);
+	   	return 1;
+	}
 }
 
-void *RC_PWM_Thread(*void) {
+void *RC_PWM_Thread(void*) {
 	printf("RC_PWM_Thread start \n");
 	while(run) {
 	for (int i=0;i<Anz_RC_Channels;i++) {
