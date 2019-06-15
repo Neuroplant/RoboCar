@@ -38,7 +38,7 @@ int pulsln(int pin,bool level, int timeout) {
   return micros() - timerStart ;
 }
 
-void int_RC_PWM() {
+void init_RC_PWM() {
 	for (int i=0;i<Anz_RC_Channels;i++) {
 		RC_Channel[i][0] = RCPin[i]; 
 		pinMode (RC_Channel[i][0], INPUT);
