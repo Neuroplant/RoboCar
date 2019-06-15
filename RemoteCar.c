@@ -87,7 +87,8 @@ bool encoder_mode = true;
 
 
 //#include "ps3_control.h"
-#include "RCControl.h"
+//#include "RCControl.h"
+#include "RC_PWM_Control.h"
 
 #include "sonar.h"
 
@@ -148,7 +149,8 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //	init_Joystick();
 	
 //RCControl
-	init_RCControl();
+	//init_RCControl();
+	init_RC_PWM();
 
 //Sonar
 	pinMode(trigPin, OUTPUT);
