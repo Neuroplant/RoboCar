@@ -11,7 +11,7 @@
 const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
 
-int RC_Data[Anz_RC_Channels][2];
+int RC_Channel[Anz_RC_Channels][2];
 
 int pulsln(int pin,bool level, int timeout) {
   unsigned int numloops = 0;
