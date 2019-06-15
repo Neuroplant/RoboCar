@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 #define Anz_RC_Channels	10
-const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29}
+const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
 
 int RC_Data[Anz_RC_Channels][2];
