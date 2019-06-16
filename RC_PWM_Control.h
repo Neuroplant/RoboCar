@@ -86,7 +86,6 @@ void *RC_PWM_Thread(void *value) {
 	}
 	printf("RC_PWM_Thread end\n");
 	return NULL;
-	}
 }
 
 void init_RC_PWM() {
