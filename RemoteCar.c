@@ -186,7 +186,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		
 //End Section
 
-    close(js);
+  //  close(js);
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
@@ -200,11 +200,11 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Sound[4],NULL);
 	printf(".");
-	pthread_join(t_Motor,NULL);
+//	pthread_join(t_Motor,NULL);
 	printf(".");
-	pthread_join(t_Turret,NULL);
+//	pthread_join(t_Turret,NULL);
 	printf(".");
-	pthread_join(t_Joystick,NULL);
+//	pthread_join(t_Joystick,NULL);
 	printf(".");
 	pthread_join(t_Blinker[0],NULL);
 	printf(".");
