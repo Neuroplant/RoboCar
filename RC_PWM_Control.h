@@ -61,7 +61,7 @@ void *RC_PWM_Thread(void *value) {
 	//RC-Channel 4	(analog)
 	
 	//RC-Channel 5	(analog rotary encoder)
-		ACCELERATION	= (map(RC_Channel[4][1], RCmin,RCmax,0,(int)THROTTLE_MAX))
+		ACCELERATION	= (map(RC_Channel[4][1], RCmin,RCmax,0,(int)THROTTLE_MAX));
 	//RC-Channel 6	(analog rotary encoder)
 	
 	//RC-Channel 7	(2-way switch)
