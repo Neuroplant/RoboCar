@@ -140,11 +140,11 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Turret
 //	init_Turret();
 //Motor
-	pthread_t t_Motor;
-	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
-		printf("Error creating thread t_Motor\n");
-		return 1;
-	}	
+//	pthread_t t_Motor;
+//	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
+//		printf("Error creating thread t_Motor\n");
+//		return 1;
+//	}	
 	
 //Joystick	
 //	init_Joystick();
