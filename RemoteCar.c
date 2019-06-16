@@ -75,13 +75,14 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 #include "sound.h"
 
 #include "blinker.h"
+#include "encoder.h"
+bool encoder_mode = true;
+
 
 #include "engine.h"
 
 //#include "turret.h"
 
-#include "encoder.h"
-bool encoder_mode = true;
 
 //#include "line.h"
 
