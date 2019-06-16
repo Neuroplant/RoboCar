@@ -51,7 +51,7 @@ void init_RC_PWM() {
 	}
 }
 
-void *RC_PWM_Thread(void*) {
+void *RC_PWM_Thread(void *value) {
 	printf("RC_PWM_Thread start \n");
 	while(run) {
 	for (int i=0;i<Anz_RC_Channels;i++) {
