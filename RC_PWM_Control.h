@@ -95,7 +95,7 @@ void init_RC_PWM() {
 		pullUpDnControl(RC_Channel[i][0],PUD_DOWN);
 	}
 	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
-	   	printf("Error creating thread t_RC_PWM_Control %i\n",i);
+	   	printf("Error creating thread t_RC_PWM_Control \n");
 	   	return 1;
 	}
 }
