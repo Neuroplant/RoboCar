@@ -52,7 +52,7 @@ int steering = 0, throttle = 0, gear = 1;
 
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
-
+/*
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
 	printf("Servo Pin %i OK\n",pin);
@@ -71,7 +71,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
     pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
 	delay(10);
 }
-
+*/
 #include "sound.h"
 
 #include "blinker.h"
