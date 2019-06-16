@@ -39,18 +39,6 @@ int pulsln(int pin,bool level, int timeout) {
   return micros() - timerStart ;
 }
 
-void init_RC_PWM() {
-	for (int i=0;i<Anz_RC_Channels;i++) {
-		RC_Channel[i][0] = RCPin[i]; 
-		pinMode (RC_Channel[i][0], INPUT);
-		pullUpDnControl(RC_Channel[i][0],PUD_DOWN);
-	}
-	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
-	   	printf("Error creating thread t_RC_PWM_Control %i\n",i);
-	   	return 1;
-	}
-}
-
 void *RC_PWM_Thread(void *value) {
 	printf("RC_PWM_Thread start \n");
 	while(run) {
@@ -100,4 +88,18 @@ void *RC_PWM_Thread(void *value) {
 	return NULL;
 	}
 }
+
+void init_RC_PWM() {
+	for (int i=0;i<Anz_RC_Channels;i++) {
+		RC_Channel[i][0] = RCPin[i]; 
+		pinMode (RC_Channel[i][0], INPUT);
+		pullUpDnControl(RC_Channel[i][0],PUD_DOWN);
+	}
+	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
+	   	printf("Error creating thread t_RC_PWM_Control %i\n",i);
+	   	return 1;
+	}
+}
+
+
 #endif
