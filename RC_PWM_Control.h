@@ -88,7 +88,7 @@ void *RC_PWM_Thread(void *value) {
 	return NULL;
 }
 
-void init_RC_PWM() {
+int init_RC_PWM() {
 	for (int i=0;i<Anz_RC_Channels;i++) {
 		RC_Channel[i][0] = RCPin[i]; 
 		pinMode (RC_Channel[i][0], INPUT);
