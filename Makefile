@@ -3,8 +3,8 @@ Remote: RemoteCar.c
 	gcc RemoteCar.c -o Remote $(LDFLAGS)
 Line:	LineFollowCar.c
 	gcc LineFollowCar.c -o Line $(LDFLAGS)
-PPM:	PPMEncoder.c
-	gcc PPMEncoder.c -o PPMTest $(LDFLAGS)
+PPM:	PPM_Test_beta.c
+	gcc PPM_Test_beta.c -o Test $(LDFLAGS)
 RCPWM:	RC_PWM_Test.c
 	gcc RC_PWM_Test.c -o Test $(LDFLAGS)
 Encoder:	Encoder_Test.c
