@@ -10,30 +10,6 @@
 
 int PWM_Channel[Anz_PWM_Channels];
 
-int pulsln(int pin,bool level, int timeout) {
-  unsigned int numloops = 0;
-
-  while (digitalRead(pin) == level)
-  {
-    if (numloops++ == timeout)
-      return 0 ;
-  }
-
-  while (digitalRead(pin) != level)
-  {
-    if (numloops++ == timeout)
-      return 0 ;
-  }
-
-  int timerStart = micros();
-  while (digitalRead(pin) == level)
-  {
-    if (numloops++ == timeout)
-      return 0 ;
-  }
-
-  return micros() - timerStart ;
-}
 
 void setup() {
 	wiringPiSetup ();
