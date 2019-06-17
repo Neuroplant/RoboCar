@@ -74,7 +74,7 @@ int ACCELERATION = THROTTLE_MAX/4;		//acceleration per cycle
 
 //RC Contol
 #define Anz_RC_Channels	10
-const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
+const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 31, 25, 26, 27, 28, 29};
 
 #define ppmInputPin        6      // PPM input Pin
 #define ppmSyncLength      4000   // Length of PPM sync pause
