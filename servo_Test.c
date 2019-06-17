@@ -22,7 +22,6 @@ void setup() {
 	int fd = pca9685Setup(PIN_BASE0, DEV_ID0, HERTZ);
 	if (fd < 0) {
 		printf("Error in setup\n");
-		return fd;
 	}
 	pinMode(DEV_ID0_enable,OUTPUT);
 	digitalWrite(DEV_ID0_enable,LOW);
