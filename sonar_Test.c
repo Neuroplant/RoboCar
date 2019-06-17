@@ -10,10 +10,6 @@
 void setup() {
 	wiringPiSetup ();
 	init_Sonar();
-	for (int i=0;i<Anz_PWM_Channels;i++) 
-		PWM_Channel[i]=0; 
-	pinMode (PPMPin, INPUT);
-	pullUpDnControl(PPMPin,PUD_DOWN);	
 }
 
 void loop() {
