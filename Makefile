@@ -12,4 +12,6 @@ Encoder:	Encoder_Test.c
 Blinker:	blinker_Test.c
 	gcc blinker_Test.c -o Test $(LDFLAGS)
 Servo:	servo_Test.c
-	gcc blinker_Test.c -o Test $(LDFLAGS)
+	gcc servo_Test.c -o Test $(LDFLAGS)
+Sonar:	sonar_Test.c
+	gcc sonar_Test.c -o Test $(LDFLAGS)
