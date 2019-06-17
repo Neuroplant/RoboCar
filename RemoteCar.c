@@ -118,12 +118,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Turret
 //	init_Turret();
 //Motor
-//	pthread_t t_Motor;
-//	if(pthread_create(&t_Motor, NULL, MotorThread, NULL)) {
-//		printf("Error creating thread t_Motor\n");
-//		return 1;
-//	}	
-	
+	init_Engine();
 //Joystick	
 	if (PS3Mode) init_Joystick();
 	
@@ -141,21 +136,30 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //Main-Loop Section
 	printf("\n All Threads up: RemoteCar starting \n");
 	while (run) {
-//OUTPUT
-	if (LCDMode) {
-		lcdPosition(lcdhd,0,0);
-		lcdPrintf(lcdhd,"TR %4i US %4f\n", throttle, getSonar());
-		lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
+	//OUTPUT
+		if (LCDMode) {
+			lcdPosition(lcdhd,0,0);
+			lcdPrintf(lcdhd,"TR %4i US %4f\n", throttle, getSonar());
+			lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
+		}
+		system("clear");
+		
+		if (EncoderMode)printf("Encoder Turns: %5.2f/%5.2f \n Trottle %i\n",Spin_Current(),Spin_Target,throttle);
+		if (SonarMode) 	printf("Sonar %fcm \n",getSonar());
+		if (LineMode)	printf("Line ");
+		if (RCMode)	printf("RC ");
+		if (PS3Mode)	printf("PS3 ");
+		if (LCDMode)	printf("LCD ");
+		printf("\n");
+		for (i=0;i<5;i++) {
+			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
+		}
+		for (i=0;i<5;i++) {
+			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+		}
+		if (EncoderMode) printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
-	system("clear"); 
-	printf("Throttle %i Distance %fcm\n", throttle, getSonar());
-	for (i=0;i<5;i++) {
-	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-	}
-	for (i=0;i<5;i++) {
-		printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-	}
-	if (EncoderMode) printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);		
+	
 //End Section
 	if (PS3Mode) close(js);
 	run=false;
@@ -171,7 +175,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 	pthread_join(t_Sound[4],NULL);
 	printf(".");
-//	pthread_join(t_Motor,NULL);
+	pthread_join(t_engine,NULL);
 	printf(".");
 //	pthread_join(t_Turret,NULL);
 	printf(".");
