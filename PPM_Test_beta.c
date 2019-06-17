@@ -20,10 +20,11 @@ void setup() {
 }
 
 void loop() {
-	while(pulsln(PPMPin, HIGH,1000000) < 11000){}
-	for(int x=0; x<Anz_PWM_Channels; x++) 
+	while(pulsln(PPMPin, HIGH,1000000) < 10000){} 		//wait
+	for(int x=0; x<Anz_PWM_Channels; x++) 			//read
 		PWM_Channel[x]=pulsln(PPMPin, HIGH,1000000);
-	for(int x=0; x<Anz_PWM_Channels; x++) {
+	
+	for(int x=0; x<Anz_PWM_Channels; x++) {			//output
 		printf(" %i:%i ",x,PWM_Channel[x]);
 		PWM_Channel[x]=0; 
 	}
