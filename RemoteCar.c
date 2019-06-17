@@ -45,13 +45,13 @@
 #include <stdbool.h>
 
 #include "constants.h"
+#include "common.h"
 ;
 bool run			= true;
 float Spin_Target 	= 0;
 int steering = 0, throttle = 0, gear = 1;
 
-long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
-    return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;}
+
 /*
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);

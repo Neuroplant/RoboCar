@@ -1,5 +1,10 @@
 #ifndef BLINKER_H
 #define BLINKER_H
+#include <pthread.h>
+#include <wiringPiI2C.h>
+#include <pca9685.h>	//PWM
+#include "servo.h"
+
 struct s_Blinker {
 	int pin;
 	int dura;
@@ -13,8 +18,9 @@ void *BlinkerThread (void *arg) {
 	long idNr = (long)arg;
 	int cycles,i;
 	printf("Blinker %i ready\n", idNr);
-	for (int i=0; i <= PWM_MAX; i=i+10) pwmWrite(Blinker[idNr].pin,i);
-	for (int i=PWM_MAX; i >= 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
+	pinMode(Blinker[i].pin,OUTPUT);
+//	for (int i=0; i <= PWM_MAX; i=i+10) pwmWrite(Blinker[idNr].pin,i);
+//	for (int i=PWM_MAX; i >= 0; i=i-20) pwmWrite(Blinker[idNr].pin,i);
 	
 	while (run) {
 		if (Blinker[idNr].dura != 0) {
@@ -46,11 +52,9 @@ int init_Blinker (void) {
 	Blinker[4].pin = blinklinksvPin;
 	Blinker[5].pin = frontlightPin;
 	Blinker[6].pin = rearlightPin;
-
-	
 	int i=0;
 	for (i=0;i<=6;i++) {
-		pinMode(Blinker[i].pin,OUTPUT);
+		
 		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
 	   	printf("Error creating thread t_Blinker %i\n",i);
 	   	return 1;
