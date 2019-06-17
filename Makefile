@@ -5,8 +5,8 @@ Line:	LineFollowCar.c
 	gcc LineFollowCar.c -o Line $(LDFLAGS)
 PPM:	PPM_Test_beta.c
 	gcc PPM_Test_beta.c -o Test $(LDFLAGS)
-RCPWM:	RC_PWM_Test.c
-	gcc RC_PWM_Test.c -o Test $(LDFLAGS)
+RCPWM:	RC_PWM_Control_Test.c
+	gcc RC_PWM_Control_Test.c -o Test $(LDFLAGS)
 Encoder:	Encoder_Test.c
 	gcc Encoder_Test.c -o Test $(LDFLAGS)
 Blinker:	blinker_Test.c
