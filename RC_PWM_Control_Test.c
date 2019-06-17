@@ -12,9 +12,8 @@ bool run = true;
 
 void setup() {
 	if(wiringPiSetup() == -1){ 
-        printf("setup wiringPi faiservo !");
-        return 1; 
-	};
+        	printf("setup wiringPi faiservo !");
+        };
 	init_RC_PWM();
 }
 
