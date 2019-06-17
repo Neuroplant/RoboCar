@@ -32,7 +32,7 @@ void *RC_PWM_Thread(void *value) {
 	printf("RC_PWM_Thread end\n");
 	return NULL;
 }
-////////////////////////////
+/*
 void Control() {
 //RC-Channel 1	(analog)
 	steering = map(RC_Channel[0][1],RCmin,RCmax,10,-10);
@@ -72,7 +72,7 @@ void Control() {
 		run = true;
 	}
 }
-/////////////////////////////////
+*/////////////////////////////////
 int init_RC_PWM() {
 	for (int i=0;i<Anz_RC_Channels;i++) {
 		RC_Channel[i][0] = RCPin[i]; 
