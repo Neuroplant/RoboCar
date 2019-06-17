@@ -29,7 +29,7 @@ void *RC_PWM_Thread(void *value) {
 			RC_Channel[i][1] = pulsln(RC_Channel[i][0],HIGH,1000000); 
 			if (RC_Channel[i][1] !=last[i]) {
 				last[i] = RC_Channel[i][1];
-				Control();
+//				Control();
 			}
 		}
 	}
