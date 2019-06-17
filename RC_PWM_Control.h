@@ -27,21 +27,21 @@ void *RC_PWM_Thread(void *value) {
 			RC_Channel[i][1] = pulsln(RC_Channel[i][0],HIGH,1000000); 
 			if (RC_Channel[i][1] !=last[i]) {
 				last[i] = RC_Channel[i][1];
-//				Control();
+				Control();
 			}
 		}
 	}
 	printf("RC_PWM_Thread end\n");
 	return NULL;
 }
-/*
+
 void Control() {
 //RC-Channel 1	(analog)
 	steering = map(RC_Channel[0][1],RCmin,RCmax,10,-10);
 //RC-Channel 2	(analog)
 
 //RC-Channel 3	(analog)
-	if (encoder_mode) {
+	if (EncoderMode) {
 		Spin_Target = (map(RC_Channel[2][1],RCmin,RCmax,0,(int)SPIN_MAX));
 	}else{
 		throttle = (map(RC_Channel[2][1], RCmin,RCmax,0,(int)THROTTLE_MAX));
@@ -59,9 +59,9 @@ void Control() {
 	}
 //RC-Channel 8	(2-way switch)
 	if (RC_Channel[7][1] >= RCmid) {
-		encoder_mode 	= true;
+		EncoderMode 	= true;
 	}else {
-		encoder_mode 	= false;
+		EncoderMode 	= false;
 	}			
 //RC-Channel 9	(3-way switch)
 	if (RC_Channel[8][1] > RCmid+100) 	gear = 1;
@@ -69,12 +69,12 @@ void Control() {
 	if (RC_Channel[8][1] < RCmid-100) 	gear = -1;
 //RC-Channel 10	(2-way switch)
 	if (RC_Channel[9][1] >= RCmid) {
-		run	 = false;
-	}else {
 		run = true;
+	}else {
+		run = false;
 	}
 }
-*/////////////////////////////////
+/////////////////////////////
 int init_RC_PWM() {
 	for (int i=0;i<Anz_RC_Channels;i++) {
 		RC_Channel[i][0] = RCPin[i]; 
