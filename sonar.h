@@ -3,6 +3,7 @@
 
 //Ultrasonic Obstacle avoidance 
 #include <sys/time.h>
+#include "servo.h"
 struct timespec Time0, Time1; 
 long StartTime, EndTime, OutTime; 
 
