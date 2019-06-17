@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+bool run = true;
+
 #include "constants.h"
 #include "common.h"
 #include "RC_PWM_Control.h"
 
-bool run = true;
 
 void setup() {
 	if(wiringPiSetup() == -1){ 
