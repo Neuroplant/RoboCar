@@ -20,7 +20,7 @@ void setup() {
 }
 
 void loop() {
-	while(pulseln(PPMPin, HIGH,1000000) < 11000){}
+	while(pulsln(PPMPin, HIGH,1000000) < 11000){}
 	for(int x=0; x<Anz_PWM_Channels; x++) 
 		PWM_Channel[x]=pulseln(PPMPin, HIGH,1000000);
 	for(int x=0; x<Anz_PWM_Channels; x++) {
