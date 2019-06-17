@@ -46,51 +46,27 @@
 
 #include "constants.h"
 #include "common.h"
-;
+
 bool run			= true;
+///Options
+bool SonarMode	=	false;
+bool LineMode	=	false;
+bool EncoderMode=	false;
+bool RCMode	=	true;
+bool PS3Mode	=	false;
+bool LCDMode	=	false;
+
 float Spin_Target 	= 0;
 int steering = 0, throttle = 0, gear = 1;
 
-
-/*
-int servoInit(int pin){        		//initialization function for servo PMW pins
-	pinMode(pin,OUTPUT);
-	printf("Servo Pin %i OK\n",pin);
-	return 0;
-}
-
-void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
-    if(ms > SERVO_MAX_MS) {
-        printf("Pin: %i ms: %i too big\n",pin,ms);
-        ms = SERVO_MAX_MS;
-    };
-    if(ms < SERVO_MIN_MS) {
-        printf("Pin: %i ms: %i too small\n",pin,ms);
-        ms = SERVO_MIN_MS;
-    };
-    pwmWrite(pin,map(ms,0,200,0,PWM_MAX));
-	delay(10);
-}
-*/
 #include "sound.h"
-
 #include "blinker.h"
 #include "encoder.h"
-bool encoder_mode = true;
-
-
 #include "engine.h"
-
 //#include "turret.h"
-
-
-//#include "line.h"
-
-
-//#include "ps3_control.h"
-//#include "RCControl.h"
+#include "line.h"
+#include "ps3_control.h"
 #include "RC_PWM_Control.h"
-
 #include "sonar.h"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
@@ -118,21 +94,23 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pinMode(DEV_ID0_enable,OUTPUT);
 	digitalWrite(DEV_ID0_enable,LOW);
 //	wiringPi PCF8574 (for LCD)
-	pcf8574Setup(PIN_BASE1,DEV_ID1);// initialize PCF8574 
-	for(i=0;i<8;i++){ 
-		pinMode(PIN_BASE1+i,OUTPUT); // set PCF8574 port to output mode 
-	}
-	digitalWrite(LED,HIGH); // turn on LCD backlight 
-	digitalWrite(RW,LOW); // allow writing to LCD 
+	if (LCDMode) {
+		pcf8574Setup(PIN_BASE1,DEV_ID1);// initialize PCF8574 
+		for(i=0;i<8;i++){
+			pinMode(PIN_BASE1+i,OUTPUT); // set PCF8574 port to output mode 
+		}
+		digitalWrite(LED,HIGH); // turn on LCD backlight 
+		digitalWrite(RW,LOW); // allow writing to LCD 
 //  wiringPi LCD
-	int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
-	if(lcdhd < 0) {
-		printf("lcdInit failed !"); 
-		return lcdhd; 
+		int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
+		if(lcdhd < 0) {
+			printf("lcdInit failed !"); 
+			return lcdhd;
+		}
 	} 
 
 // AB - Encoder
-	init_Encoder();
+	if (EncoderMode) init_Encoder();
 //Sound
 	init_Sound();
 //Blinker
@@ -147,46 +125,39 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 //	}	
 	
 //Joystick	
-//	init_Joystick();
+	if (PS3Mode) init_Joystick();
 	
 //RCControl
-	//init_RCControl();
-	init_RC_PWM();
-
+	if (RCMode) init_RC_PWM();
 //Sonar
-	pinMode(trigPin, OUTPUT);
-	pinMode(echoPin, INPUT);
-	pinMode(servoPin_US,OUTPUT);
+	if (SonarMode) {
+		pinMode(trigPin, OUTPUT);
+		pinMode(echoPin, INPUT);
+		pinMode(servoPin_US,OUTPUT);
+	}
 //Line detect
-//	init_LineDetect();
+	if (LineMode) init_LineDetect();
 	
 //Main-Loop Section
 	printf("\n All Threads up: RemoteCar starting \n");
 	while (run) {
-		//Steuerung via joystick
-		
-		//if (getSonar() < 10) gear=0;
-		
-		//OUTPUT
-
+//OUTPUT
+	if (LCDMode) {
 		lcdPosition(lcdhd,0,0);
 		lcdPrintf(lcdhd,"TR %4i US %4f\n", throttle, getSonar());
 		lcdPrintf(lcdhd,"US%5.2f/%5.2f",Spin_Current(),Spin_Target);
-
-		system("clear"); 
-		printf("Throttle %i Distance %fcm\n", throttle, getSonar());
-		for (i=0;i<5;i++) {
-			printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
-		 }
-		for (i=0;i<5;i++) {
-			printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
-		 }
-		printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);
 	}
-		
+	system("clear"); 
+	printf("Throttle %i Distance %fcm\n", throttle, getSonar());
+	for (i=0;i<5;i++) {
+	printf("Blinker: %i Pin: %i Frequenz: %2.3f Dauer: %i \n",i,Blinker[i].pin,Blinker[i].freq,Blinker[i].dura);
+	}
+	for (i=0;i<5;i++) {
+		printf("SoundNr.: %i Loop: %i \n",i,Sound[i].loop);
+	}
+	if (EncoderMode) printf("Turns per Secound: %5.2f/%5.2f \n",Spin_Current(),Spin_Target);		
 //End Section
-
-  //  close(js);
+	if (PS3Mode) close(js);
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");
@@ -204,7 +175,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 //	pthread_join(t_Turret,NULL);
 	printf(".");
-//	pthread_join(t_Joystick,NULL);
+	if (PS3Mode) pthread_join(t_Joystick,NULL);
 	printf(".");
 	pthread_join(t_Blinker[0],NULL);
 	printf(".");
