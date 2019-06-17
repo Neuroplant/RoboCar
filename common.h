@@ -1,4 +1,4 @@
-#common functions
+//common functions
 #ifndef COMMON_H
 #define COMMON_H
 
