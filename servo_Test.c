@@ -31,11 +31,11 @@ void setup() {
 void loop() {
 	for (int i=0;i<16;i++) {
 		printf(" Servo Nr.%i \n",i);
-		for (int ms= SERVO_MIN_MS; ms <= SERVO_MAX_MS; i++) {
+		for (int ms= SERVO_MIN_MS; ms <= SERVO_MAX_MS; ms++) {
 			servoWriteMS(i+PIN_BASE0, ms);
 			printf(".");
 		}
-		for (int ms= SERVO_MAX_MS; ms <= SERVO_MIN_MS; i--) {
+		for (int ms= SERVO_MAX_MS; ms <= SERVO_MIN_MS; ms--) {
 			servoWriteMS(i+PIN_BASE0, ms);
 			printf(".");
 		}
