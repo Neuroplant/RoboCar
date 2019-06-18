@@ -50,10 +50,10 @@ int init_Sound (void) {
 		if(pthread_create(&t_Sound[i], NULL, SoundThread, (void*)i)) {
 	   	printf("Error creating thread t_Sound %i\n",i);
 
-	   	return 1;
+	   	return 0;
 		}
 	}
-	return 0;
+	return 1;
 }
 
 #endif
