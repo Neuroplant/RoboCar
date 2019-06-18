@@ -94,6 +94,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pinMode(DEV_ID0_enable,OUTPUT);
 	digitalWrite(DEV_ID0_enable,LOW);
 //	wiringPi PCF8574 (for LCD)
+	
 	if (LCDMode) {
 		pcf8574Setup(PIN_BASE1,DEV_ID1);// initialize PCF8574 
 		for(i=0;i<8;i++){
@@ -102,12 +103,13 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		digitalWrite(LED,HIGH); // turn on LCD backlight 
 		digitalWrite(RW,LOW); // allow writing to LCD 
 //  wiringPi LCD
-		int lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
+		lcdhd = lcdInit(2,16,4,RS,EN,D4,D5,D6,D7,0,0,0,0);
 		if(lcdhd < 0) {
 			printf("lcdInit failed !"); 
 			return lcdhd;
 		}
 	} 
+	int lcdhd;
 
 // AB - Encoder
 	if (EncoderMode) init_Encoder();
