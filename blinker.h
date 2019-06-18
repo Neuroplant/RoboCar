@@ -57,9 +57,9 @@ int init_Blinker (void) {
 		
 		if(pthread_create(&t_Blinker[i], NULL, BlinkerThread, (void*)i)) {
 	   	printf("Error creating thread t_Blinker %i\n",i);
-	   	return 1;
+	   	return 0;
 		}
 	}
-	return 0;
+	return 1;
 }
 #endif /* BLINKER_H */
