@@ -3,9 +3,8 @@ JJRC Q60 mit Raspberrysteuerung
 Als Zwischenschritt erstmal "RemoteCar" in dem die Steuerung nicht anhand von Sensoren etc erfolgt, sondern mit einem PS3-Controller.
 
 # RemoteCar/LineFollowCar
-Phase 1 des Projectes war die Steuerung mit einem PS3 Controller.
-Es sollen jetzt verschiedene Varianten des autonomen Fahrens probiert werden.
-Derzeit ist die Variante Line Follower in Arbeit.
+Ich habe mir mal die Mühe gemacht und etwas aufgeräumt.
+Jede einzelne Funktion/HW-Komponente findet sich jetzt in einer eigenen *.H Datei und es gibt (fast) zu jeder auch eine *_Test.c die einerseits die Natürlich die Hardware testet, als auch helfen soll die Verwendung der *.h Datei zu verstehen.
 
 # Install
 
@@ -15,8 +14,7 @@ Derzeit ist die Variante Line Follower in Arbeit.
 	pca9685 Libary 	https://github.com/Reinbert/pca9685
 	
 	make remote
-  	
-	sudo ./RemoteCar [encoder]
+  	sudo ./RemoteCar 
 
 # gyro.h
 Libary for using an MPU6050 Gyroskop
