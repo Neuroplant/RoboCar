@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+int steering, EncoderMode, Spin_Target, thottle, Blinker[6], gear;
+
 bool run = true;
 
 #include "constants.h"
