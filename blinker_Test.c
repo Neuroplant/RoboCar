@@ -5,11 +5,12 @@
 #include <stdbool.h>
 #include "constants.h"
 #include "common.h"
-#include "blinker.h"
-
 bool run = true;
 
-void setup() {
+#include "blinker.h"
+
+
+int setup() {
 	if(wiringPiSetup() == -1){ 
         printf("setup wiringPi faiservo !");
         return 1; 
