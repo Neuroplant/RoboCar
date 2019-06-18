@@ -175,7 +175,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	printf(".");
 //	pthread_join(t_Turret,NULL);
 	printf(".");
-	if (PS3Mode) pthread_join(t_Joystick,NULL);
+//	if (PS3Mode) pthread_join(t_Joystick,NULL);
 	printf(".");
 	pthread_join(t_Blinker[0],NULL);
 	printf(".");
