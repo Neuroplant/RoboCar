@@ -5,6 +5,7 @@
 #include <wiringPiI2C.h>
 #include <pca9685.h>	
 #include <pthread.h>
+#include "common.h"
 #include "constants.h"
 
 int servoInit(int pin){        		//initialization function for servo PMW pins

@@ -52,7 +52,7 @@ bool run			= true;
 bool SonarMode	=	false;
 bool LineMode	=	false;
 bool EncoderMode=	false;
-bool RCMode	=	true;
+bool RCMode		=	true;
 bool PS3Mode	=	false;
 bool LCDMode	=	false;
 
@@ -66,7 +66,7 @@ int steering = 0, throttle = 0, gear = 1;
 //#include "turret.h"
 #include "line.h"
 #include "ps3_control.h"
-#include "RC_PWM_Control.h"
+#include "RC_PWM_Control.h" //include "RC_PPM_Control.h"
 #include "sonar.h"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
@@ -123,13 +123,9 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	if (PS3Mode) init_Joystick();
 	
 //RCControl
-	if (RCMode) init_RC_PWM();
+	if (RCMode) init_RC_PWM();//init_RC_PPM();
 //Sonar
-	if (SonarMode) {
-		pinMode(trigPin, OUTPUT);
-		pinMode(echoPin, INPUT);
-		pinMode(servoPin_US,OUTPUT);
-	}
+	if (SonarMode) init_Sonar();
 //Line detect
 	if (LineMode) init_LineDetect();
 	

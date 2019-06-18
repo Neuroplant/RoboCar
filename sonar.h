@@ -56,9 +56,8 @@ float getSonar() {
 	digitalWrite(trigPin,HIGH); 
 	delayMicroseconds(10); 
 	digitalWrite(trigPin,LOW); 
-	long pingTime = pulsln(echoPin,HIGH,13200);   //read plus time of echoPin
-	//pingTime = PulseLen(echoPin,HIGH,13200); //have to take a look, why my function does not work
-	float distance = (float)pingTime * 340.0 / 2.0 / 10000.0; // the sound speed is 340m/s,and calculate distance
+	long pingTime = pulsln(echoPin,HIGH,11628);   //read puls time of echoPin
+	float distance = (float)pingTime * 0,0172; // the sound speed is 340m/s,and calculate distance in cm
 	return distance;
 }  
 
@@ -70,9 +69,8 @@ float getSonarP(int angle) {
 
 int init_Sonar(void) {
 	pinMode(trigPin, OUTPUT);
-	pullUpDnControl(trigPin,PUD_DOWN);
 	pinMode(echoPin, INPUT);
-	pullUpDnControl(echoPin,PUD_DOWN);
+//	pullUpDnControl(echoPin,PUD_DOWN);
 	pinMode(servoPin_US,OUTPUT);   
 	return 0;
 }

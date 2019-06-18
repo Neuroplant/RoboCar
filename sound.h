@@ -1,7 +1,10 @@
 #ifndef SOUND_H
 #define SOUND_H
-
+#include <pthread.h>
 #include <stdlib.h>
+#include "common.h"
+
+
 
 struct s_Sound {
 	int loop;

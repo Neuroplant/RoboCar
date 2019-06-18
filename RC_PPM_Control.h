@@ -1,21 +1,16 @@
-//Read 10 PWM Channels
-#ifndef RC_PWM_CONTROL_H
-#define RC_PWM_CONTROL_H
-
-#include <wiringPi.h>
+#IFNDEF RCCONTOL_H
+#define RCCONTOL_H
+/*PPM encoder*/
 #include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <pthread.h>
-#include "common.h"
-#include "constants.h"
+#include <unistd.h>
+#include <wiringPi.h>
+#define PPMPin	29
+#define Anz_PWM_Channels	8
+unsigned int currentChannel = 0;
+unsigned int previousTick;
+unsigned int deltaTime;
+unsigned int channel[ppmChannelsNumber];
 
-
-//#define Anz_RC_Channels	10
-//const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
-
-pthread_t t_RC_PWM_Control;
-int RC_Channel[Anz_RC_Channels][2];
 
 void Control() {
 //RC-Channel 1	(analog)
@@ -57,37 +52,42 @@ void Control() {
 	}
 }
 
-
-void *RC_PWM_Thread(void *value) {
+void *RCThread (void *value) {
 	int last[Anz_RC_Channels];
-	printf("RC_PWM_Thread start \n");
-	while(run) {
-		for (int i=0;i<Anz_RC_Channels;i++) 
-			RC_Channel[i][1] = pulsln(RC_Channel[i][0],HIGH,1000000); 
+	printf("RCThread start\n");
+	while (run) {
+		while(pulsln(PPMPin, HIGH,1000000) < 10000){} 		//wait
+		for(int i=0; i<Anz_PWM_Channels; i++)
+			PWM_Channel[i]=pulsln(PPMPin, HIGH,1000000);
 		
-		for (int i=0;i<Anz_RC_Channels;i++) {
-			if (RC_Channel[i][1] !=last[i])
+		for(int i=0; i<Anz_PWM_Channels; i++) {
+			if (RC_Channel[i] !=last[i]) 
 				Control();
-			last[i] = RC_Channel[i][1];
+			last[i] = RC_Channel[i];
 		}
+
 	}
-	printf("RC_PWM_Thread end\n");
+	printf("RCThread end\n");
 	return NULL;
 }
 
+void init_RC_PPM_Control() {
+	for (int i=0;i<Anz_PWM_Channels;i++) 
+		PWM_Channel[i]=0; 
+	pinMode (PPMPin, INPUT);
+	pullUpDnControl(PPMPin,PUD_DOWN);	
+	pinMode (ppmInputPin, INPUT);
+	pullUpDnControl (ppmInputPin, PUD_DOWN);
+	previousTick = millis();
+	wiringPiSR(ppmInputPin,INT_EDGE_BOTH, *ppmEdge();
+	pthread_t t_RCControl;
+		if(pthread_create(&t_RCControl, NULL, RCThread, NULL)) {
 
-/////////////////////////////
-int init_RC_PWM() {
-	for (int i=0;i<Anz_RC_Channels;i++) {
-		RC_Channel[i][0] = RCPin[i]; 
-		RC_Channel[i][1] = 0;
-		pinMode (RC_Channel[i][0], INPUT);
-		pullUpDnControl(RC_Channel[i][0],PUD_DOWN);
-	}
-	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
-	   	printf("Error creating thread t_RC_PWM_Control \n");
-	   	return 1;
-	}
+			printf("Error creating thread t_RCControl\n");
+
+			return 1;
+
+		}	
 }
 
 
