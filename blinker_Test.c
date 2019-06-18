@@ -31,11 +31,12 @@ void setup() {
 }
 
 void loop() {
-	for (int i=0;i<A7;i++) {
+	for (int i=0;i<7;i++) {
 		Blinker[i].freq = 	2; //Hz
 		Blinker[i].dura	=	2; //Secounds
 		printf(" Blinker Nr %i \n",i);
-		delay(2000)
+		delay(2000);
+	}
 	printf("\n");
 }
 
