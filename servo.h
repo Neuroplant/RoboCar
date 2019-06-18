@@ -11,7 +11,7 @@
 int servoInit(int pin){        		//initialization function for servo PMW pins
 	pinMode(pin,OUTPUT);
 	printf("Servo Pin %i OK\n",pin);
-	return 0;
+	return 1;
 }
 
 void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) with specific duration output by servo pin: 0.1ms
