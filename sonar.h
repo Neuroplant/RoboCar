@@ -57,7 +57,7 @@ float getSonar() {
 	delayMicroseconds(10); 
 	digitalWrite(trigPin,LOW); 
 	long pingTime = pulsln(echoPin,HIGH,11628);   //read puls time of echoPin
-	float distance = (float)pingTime * 0,0172; // the sound speed is 340m/s,and calculate distance in cm
+	float distance = (float)pingTime * 0.0172; // the sound speed is 340m/s,and calculate distance in cm
 	return distance;
 }  
 
