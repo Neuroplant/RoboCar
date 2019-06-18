@@ -30,7 +30,7 @@ int init_Encoder(void) {
 	pinMode(phaseBPin,INPUT);
 	pullUpDnControl (phaseBPin, PUD_DOWN);
 	wiringPiISR (phaseAPin, INT_EDGE_FALLING, &PhaseCounter);
-	return 0;
+	return 1;
 }
 
 #endif /* ENCODER_H */
