@@ -86,7 +86,9 @@ int init_RC_PWM() {
 	}
 	if(pthread_create(&t_RC_PWM_Control, NULL, RC_PWM_Thread, NULL)) {
 	   	printf("Error creating thread t_RC_PWM_Control \n");
-	   	return 1;
+	   	return 0;
+	}else{
+		return 1;
 	}
 }
 
