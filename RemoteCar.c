@@ -94,7 +94,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	pinMode(DEV_ID0_enable,OUTPUT);
 	digitalWrite(DEV_ID0_enable,LOW);
 //	wiringPi PCF8574 (for LCD)
-	
+		int lcdhd;
 	if (LCDMode) {
 		pcf8574Setup(PIN_BASE1,DEV_ID1);// initialize PCF8574 
 		for(i=0;i<8;i++){
@@ -109,7 +109,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 			return lcdhd;
 		}
 	} 
-	int lcdhd;
 
 // AB - Encoder
 	if (EncoderMode) init_Encoder();
