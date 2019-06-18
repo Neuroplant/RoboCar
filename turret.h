@@ -66,8 +66,9 @@ int init_Turret() {
 	pthread_t t_Turret;
         if(pthread_create(&t_Turret, NULL, TurretThread, NULL)) {
 		printf("Error creating thread t_Turret\n");
-		return 1;
+		return 0;
 	}
+	return 1;
 }
 
 #endif
