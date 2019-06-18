@@ -72,6 +72,6 @@ int init_Sonar(void) {
 	pinMode(echoPin, INPUT);
 //	pullUpDnControl(echoPin,PUD_DOWN);
 	pinMode(servoPin_US,OUTPUT);   
-	return 0;
+	return 1;
 }
 #endif
