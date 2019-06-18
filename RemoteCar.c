@@ -65,7 +65,7 @@ int steering = 0, throttle = 0, gear = 1;
 #include "engine.h"
 //#include "turret.h"
 #include "line.h"
-//#include "ps3_control.h"
+#include "ps3_control.h"
 #include "RC_PWM_Control.h" //include "RC_PPM_Control.h"
 #include "sonar.h"
 
