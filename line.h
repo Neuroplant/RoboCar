@@ -61,7 +61,7 @@ int init_LineDetect(void) {
 	pinMode(LinePinR, INPUT);
 	pullUpDnControl (LinePinR, PUD_DOWN);
 	if(pthread_create(&t_Line_Control, NULL, Line_Thread, NULL)) {
-	   	printf("Error creating thread t_Blinker %i\n",i);
+	   	printf("Error creating thread t_Line_Control\n");
 	   	return 0;
 		}
 	return 1;
