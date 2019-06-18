@@ -1,4 +1,5 @@
 //Test RC_PWM_Control
+int steering, EncoderMode, Spin_Target, thottle, Blinker[6], gear;
 #include <wiringPi.h>
 #include <stdio.h>
 #include <string.h>
@@ -6,6 +7,7 @@
 #include "constants.h"
 #include "common.h"
 bool run = true;
+
 
 #include "blinker.h"
 
