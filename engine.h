@@ -6,7 +6,7 @@
 #include "constants.h"
 #include "servo.h"
 
-pthread_t t_Engine;
+pthread_t t_engine;
 
 void *EngineThread(void *value){
 	servoInit(motorPin1);
@@ -55,7 +55,7 @@ void *EngineThread(void *value){
 }
 
 int init_Engine(void){
-	return !(pthread_create(&t_Engine, NULL, EngineThread, NULL));
+	return !(pthread_create(&t_engine, NULL, EngineThread, NULL));
 }
 
 #endif 
