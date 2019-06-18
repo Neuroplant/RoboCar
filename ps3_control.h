@@ -60,7 +60,7 @@ int AnalogControl(int axis, int value) {
 		case 4 :	//R3 Up/Down
 		break;
 		case 5 :	//R2 Pull
-			if (encoder_mode) {
+			if (EncoderMode) {
 			    Spin_Target = (map(value,-32767,32767,0,(int)SPIN_MAX));
 			}else{
 			    throttle = (map(value, -32767,32767,0,(int)THROTTLE_MAX));
@@ -106,7 +106,7 @@ int DigitalControl (int button, int value) {
 				turret1 = 3;
 			break;
 			case 3 :		//quadrat
-				encoder_mode_Switch(-1);
+				
 			break;
 			case 4	:	//L1
 				gear = -1;
