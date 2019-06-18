@@ -1,16 +1,13 @@
-#IFNDEF RCCONTOL_H
-#define RCCONTOL_H
+#IFNDEF RC_PPM_CONTOL_H
+#define RC_PPM_CONTOL_H
 /*PPM encoder*/
 #include <stdio.h>
 #include <unistd.h>
 #include <wiringPi.h>
 #define PPMPin	29
 #define Anz_PWM_Channels	8
-unsigned int currentChannel = 0;
-unsigned int previousTick;
-unsigned int deltaTime;
 unsigned int channel[ppmChannelsNumber];
-
+pthread_t t_RCControl;
 
 void Control() {
 //RC-Channel 1	(analog)
@@ -71,23 +68,18 @@ void *RCThread (void *value) {
 	return NULL;
 }
 
-void init_RC_PPM_Control() {
+int init_RC_PPM_Control() {
 	for (int i=0;i<Anz_PWM_Channels;i++) 
 		PWM_Channel[i]=0; 
 	pinMode (PPMPin, INPUT);
 	pullUpDnControl(PPMPin,PUD_DOWN);	
-	pinMode (ppmInputPin, INPUT);
-	pullUpDnControl (ppmInputPin, PUD_DOWN);
-	previousTick = millis();
-	wiringPiSR(ppmInputPin,INT_EDGE_BOTH, *ppmEdge();
-	pthread_t t_RCControl;
-		if(pthread_create(&t_RCControl, NULL, RCThread, NULL)) {
-
-			printf("Error creating thread t_RCControl\n");
-
-			return 1;
-
-		}	
+	
+	if(pthread_create(&t_RCControl, NULL, RCThread, NULL)) {
+		printf("Error creating thread t_RCControl\n");
+		return 0;
+	}else{
+		return 1;
+	}
 }
 
 
