@@ -186,6 +186,7 @@ void *StickThread (void *value) {
 			break;
 		}
 	}
+	close(js);
 	printf("StickThread end\n");
 	return NULL;
 }
@@ -202,10 +203,13 @@ int init_Joystick(void) {
 	printf("Joystick ready \n");
 
 	pthread_t t_Joystick;
-		if(pthread_create(&t_Joystick, NULL, StickThread, NULL)) {
-			printf("Error creating thread t_Joystick\n");
-			return 1;
-		}	
+		
+	if(pthread_create(&t_Joystick, NULL, StickThread, NULL)) {
+		printf("Error creating thread t_Joystick\n");
+		return 0;
+	}else{
+		return 1;
+	}
 }
 
 #endif

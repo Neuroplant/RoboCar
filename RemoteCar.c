@@ -58,14 +58,14 @@ bool LCDMode	=	false;
 
 float Spin_Target 	= 0;
 int steering = 0, throttle = 0, gear = 1;
-
+#include "RCControl.h"
 #include "sound.h"
 #include "blinker.h"
 #include "encoder.h"
 #include "engine.h"
 //#include "turret.h"
 #include "line.h"
-#include "ps3_control.h"
+//#include "ps3_control.h"
 #include "RC_PWM_Control.h" //include "RC_PPM_Control.h"
 #include "sonar.h"
 
@@ -144,7 +144,7 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 		if (EncoderMode)printf("Encoder Turns: %5.2f/%5.2f \n Trottle %i\n",Spin_Current(),Spin_Target,throttle);
 		if (SonarMode) 	printf("Sonar %fcm \n",getSonar());
 		if (LineMode)	printf("Line ");
-		if (RCMode)	printf("RC ");
+		if (RCMode)		printf("RC ");
 		if (PS3Mode)	printf("PS3 ");
 		if (LCDMode)	printf("LCD ");
 		printf("\n");
@@ -158,7 +158,6 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
 	}
 	
 //End Section
-	if (PS3Mode) close(js);
 	run=false;
 	throttle = 0;
 	printf("\n Wait for threads to close\n");

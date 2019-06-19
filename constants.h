@@ -77,7 +77,7 @@ int ACCELERATION = THROTTLE_MAX/4;		//acceleration per cycle
 const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 31, 25, 26, 27, 28, 29};
 
 #define PPMPin	          29    // PPM input Pin
-#define ppmChannelsNumber  10     // Number of PPM channels (8)
+#define Anz_RC_Channels  10     // Number of PPM channels (8)
 #define RCmax             2000
 #define RCmin             1000
 #define RCmid          (RCmax+RCmin)/2
