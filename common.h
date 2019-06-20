@@ -5,7 +5,7 @@
 long map(long value,long fromLow,long fromHigh,long toLow,long toHigh){
     return (toHigh-toLow)*(value-fromLow) / (fromHigh-fromLow) + toLow;
 }
-int	ByteToWord(byte ByteHigh,byte ByteLow) {
+int	ByteToWord(char ByteHigh,char ByteLow) {
 	return ((ByteHigh*0xFF)+ByteLow);
 }
 int readWord(int handle,int Reg) {
