@@ -8,7 +8,9 @@
 int steering, EncoderMode, Spin_Target, throttle, Blinker[6], gear;
 int RC_Channel[10][1];
 bool run = true;
-
+int Control(void) {
+		printf("\n");
+}
 #include "constants.h"
 #include "common.h"
 #include "RC_PWM_Control.h"
