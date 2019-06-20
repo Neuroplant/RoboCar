@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 int steering, EncoderMode, Spin_Target, throttle, Blinker[6], gear;
-
+int RC_Channel[10][1];
 bool run = true;
 
 #include "constants.h"
