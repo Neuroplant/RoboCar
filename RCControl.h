@@ -1,5 +1,7 @@
 #ifndef RCCONTROL_H
 #define RCCONTROL_H
+#include "constants.h"
+#include "commom.h"
 unsigned int RC_Channel[Anz_RC_Channels][2];
 
 void Control() {
