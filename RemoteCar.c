@@ -58,9 +58,9 @@ bool LCDMode	=	false;
 
 float Spin_Target 	= 0;
 int steering = 0, throttle = 0, gear = 1;
+#include "blinker.h"
 #include "RCControl.h"
 #include "sound.h"
-#include "blinker.h"
 #include "encoder.h"
 #include "engine.h"
 //#include "turret.h"
