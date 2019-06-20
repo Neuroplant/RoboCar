@@ -1,5 +1,6 @@
 #ifndef RCCONTROL_H
 #define RCCONTROL_H
+unsigned int RC_Channel[Anz_RC_Channels][2];
 
 void Control() {
 //RC-Channel 1	(analog Stick)
