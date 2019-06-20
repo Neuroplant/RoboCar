@@ -16,7 +16,7 @@
 //const int RCPin[Anz_RC_Channels] = {30, 21, 22, 23, 24, 25, 26, 27, 28, 29};
 
 pthread_t t_RC_Control;
-int RC_Channel[Anz_RC_Channels][2];
+//int RC_Channel[Anz_RC_Channels][2];
 
 
 void *RC_PWM_Thread(void *value) {
