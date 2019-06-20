@@ -4,10 +4,9 @@
 #include <wiringPi.h>
 #include <pthread.h>
 #include "constants.h"
+#include "common.h"
 
-// 	AB-Phase-Encoder ////////////////////////////////////////////////////
-#define Teeth		11	//number of teeth on the encoder wheel
-#define SPIN_MAX	100 // max 260/min
+
 int PhaseCount, SpinDirection;
 void PhaseCounter(void){
 	PhaseCount++;
