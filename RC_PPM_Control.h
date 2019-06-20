@@ -10,8 +10,6 @@
 #include "common.h"
 #include "constants.h"
 
-
-unsigned int RC_Channel[Anz_RC_Channels][2];
 pthread_t t_RCControl;
 
 void *RC_PPM_Thread (void *value) {
