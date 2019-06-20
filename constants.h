@@ -42,7 +42,9 @@
 #define D6 PIN_BASE1+6 
 #define D7 PIN_BASE1+7 
 
-
+// 	AB-Phase-Encoder 
+#define Teeth		11	//number of teeth on the encoder wheel
+#define SPIN_MAX	100 // max 260/min
 
 
 #define	SERVO_MIN_MS	4
