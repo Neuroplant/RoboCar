@@ -20,6 +20,8 @@ int get_z_rotation(int *gyrohd)
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include	"common.h"
+
+
 #define FS_SEL  3
 #define GyroSens 131072/(1000*(FS_SEL+1))
 #define GyroMax 250*(FS_SEL+1)

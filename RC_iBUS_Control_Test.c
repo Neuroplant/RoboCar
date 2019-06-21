@@ -25,7 +25,7 @@ unsigned int RC_Channel[Anz_RC_Channels];
 int Control(void) {
 		printf("\n");
 }
-#include "RC_PWM_Control.h"
+#include "RC_iBUS_Control.h"
 
 
 void setup() {
