@@ -62,7 +62,7 @@ void loop() {
 		
 		EncoderMode=false;
 		gear=1;
-		for (int i=0; i<= THROTTLE_MAX,i++) {
+		for (int i=0; i<= THROTTLE_MAX;i++) {
 			printf(" Throttle: %i\n",throttle,(int)Spin_Current());
 			delay(300);
 		}
@@ -71,11 +71,11 @@ void loop() {
 			delay(300);
 		}
 		gear=-1;
-		for (int i=0; i<= THROTTLE_MAX,i++) {
+		for (int i=0; i<= THROTTLE_MAX;i++) {
 			printf(" Throttle: %i\n",throttle,(int)Spin_Current());
 			delay(300);
 		}
-		for (int i=THROTTLE_MAX; i>= 0,i--) {
+		for (int i=THROTTLE_MAX; i>= 0;i--) {
 			printf(" Throttle: %i\n",throttle,(int)Spin_Current());
 			delay(300);
 		}
