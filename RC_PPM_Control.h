@@ -1,4 +1,4 @@
-#IFNDEF RC_PPM_CONTOL_H
+#ifndef RC_PPM_CONTOL_H
 #define RC_PPM_CONTOL_H
 
 #include <stdio.h>
