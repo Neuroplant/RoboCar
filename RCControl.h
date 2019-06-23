@@ -1,4 +1,4 @@
-#IFNDEF RCCONTROL_H
+#ifndef RCCONTROL_H
 #define RCCONTROL_H
 
 #include "constants.h"
@@ -40,7 +40,7 @@ if (Anz_RC_Channels>=8) {
 //RC-Channel 9	(3-way switch)
 if (Anz_RC_Channels>=9) {
 	if (RC_Channel[8] > RCmid+100) 	gear = 1;
-	if ((RC_Channel[8] >= RCmid-100)&&(RC_Channel[8][1] <= RCmid+100)) 	gear = 0;
+	if ((RC_Channel[8] >= RCmid-100)&&(RC_Channel[8] <= RCmid+100)) 	gear = 0;
 	if (RC_Channel[8] < RCmid-100) 	gear = -1;
 }
 //RC-Channel 10	(2-way switch)
