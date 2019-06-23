@@ -4,6 +4,7 @@
 #include <wiringPi.h>
 #include <pthread.h>
 #include <math.h>
+#include <stdlib.h>
 #include "constants.h"
 #include "servo.h"
 
