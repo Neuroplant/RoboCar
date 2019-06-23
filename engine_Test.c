@@ -67,7 +67,7 @@ void loop() {
 			printf(" Throttle: %i\n",throttle,(int)Spin_Current());
 			delay(300);
 		}
-		for (int i=THROTTLE_MAX; i>= 0,i--) {
+		for (int i=THROTTLE_MAX; i>= 0;i--) {
 			printf(" Throttle: %i\n",throttle,(int)Spin_Current());
 			delay(300);
 		}
