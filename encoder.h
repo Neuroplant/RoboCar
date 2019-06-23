@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include "constants.h"
 #include "common.h"
-
+bool EncoderMode = true;
 
 int PhaseCount, SpinDirection;
 void PhaseCounter(void){
