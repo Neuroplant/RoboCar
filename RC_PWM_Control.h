@@ -1,4 +1,4 @@
-#IFNDEF RC_PWM_CONTROL_H
+#ifndef RC_PWM_CONTROL_H
 #define RC_PWM_CONTROL_H
 
 #include <wiringPi.h>
