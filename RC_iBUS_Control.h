@@ -1,4 +1,4 @@
-#IFNDEF RC_IBUS_CONTOL_H
+#ifndef RC_IBUS_CONTOL_H
 #define RC_IBUS_CONTOL_H
 
 #include <stdio.h>
