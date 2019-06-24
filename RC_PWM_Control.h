@@ -8,7 +8,6 @@
 #include <pthread.h>
 #include "common.h"
 #include "constants.h"
-#include "RCControl.h"
 
 
 
