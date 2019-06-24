@@ -1,5 +1,5 @@
 LDFLAGS = -lwiringPi -lm -lpthread -lwiringPiPca9685 -lwiringPiDev
-Remote: RemoteCar.c
+Remote: main.c
 	gcc main.c -o Remote $(LDFLAGS)
 Line:	LineFollowCar.c
 	gcc LineFollowCar.c -o Line $(LDFLAGS)
