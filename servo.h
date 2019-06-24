@@ -26,7 +26,7 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 	delay(10);
 }
 
-int init_Servo(int devID,pinBase) {
+int init_Servo(int devID,int pinBase) {
 	if(wiringPiI2CSetup(devID) == -1){ 
     printf("setup wiringPi I2C failed !");
     }
