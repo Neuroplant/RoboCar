@@ -58,6 +58,7 @@ bool LCDMode	=	false;
 
 float Spin_Target 	= 0;
 int steering = 0, throttle = 0, gear = 1;
+#include "servo.h"
 #include "blinker.h"
 #include "RCControl.h"
 #include "sound.h"
@@ -66,7 +67,7 @@ int steering = 0, throttle = 0, gear = 1;
 //#include "turret.h"
 #include "line.h"
 #include "ps3_control.h"
-#include "RC_PWM_Control.h" //include "RC_PPM_Control.h"
+#include "RC_PWM_Control.h" //include "RC_PPM_Control.h"// include "PC_iBUS_Control.h"
 #include "sonar.h"
 
 int main (int argc, char *argv[]) {/////////////////////////////////////////////////////////////////////////////////////////
@@ -81,18 +82,10 @@ int main (int argc, char *argv[]) {/////////////////////////////////////////////
         return 1; 
 	};
 //	wiringPi I2C
-	if(wiringPiI2CSetup(DEV_ID0) == -1){ 
-       	printf("setup wiringPi I2C faiservo !");
-       	return 1; 
-	};
+
 // wiringPi PCA9685 (Servo Driver)	
-	int fd = pca9685Setup(PIN_BASE0, DEV_ID0, HERTZ);
-	if (fd < 0) {
-		printf("Error in setup\n");
-		return fd;
-	}
-	pinMode(DEV_ID0_enable,OUTPUT);
-	digitalWrite(DEV_ID0_enable,LOW);
+	init_Servo(PIN_BASE0, DEV_ID0);
+
 //	wiringPi PCF8574 (for LCD)
 		int lcdhd;
 	if (LCDMode) {

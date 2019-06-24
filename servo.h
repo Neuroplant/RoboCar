@@ -26,4 +26,18 @@ void servoWriteMS(int pin, int ms){     //specific the unit for pulse(5-25ms) wi
 	delay(10);
 }
 
+int init_Servo(int devID,pinBase) {
+	if(wiringPiI2CSetup(devID) == -1){ 
+    printf("setup wiringPi I2C failed !");
+    }
+	int fd = pca9685Setup(pinBase, devID, HERTZ);
+	if (fd < 0) {
+		printf("setup PCA9685 failed !");
+	}
+	pca9685PWMReset(fd);
+	pinMode(DEV_ID0_enable,OUTPUT);
+	digitalWrite(DEV_ID0_enable,LOW);
+	for (int i=0;i<=16;i++) servoInit(i+pinBase);
+	return 1;
+}
 #endif

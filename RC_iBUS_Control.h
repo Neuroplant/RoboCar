@@ -19,7 +19,9 @@
 #include "constants.h"
 #include "iBUS.h"
 
+#ifndef RCCONTROL_H
 extern unsigned int RC_Channel[Anz_RC_Channels];
+#endif
 pthread_t t_RCControl;
 
 
@@ -43,7 +45,7 @@ void *RC_iBUS_Thread (void *value) {
 	return NULL;
 }
 
-int init_RC_PPM_Control() {
+int init_RC_iBUS_Control() {
 	for (int i=0;i<Anz_RC_Channels;i++) 
 		RC_Channel[i]=0; 
 	open_serial();

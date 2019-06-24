@@ -3,6 +3,8 @@
 #ifndef GIMBAL_H
 #define GIMBAL_H
 
+#include <pthread.h>
+
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include "gyro.h"
@@ -33,9 +35,6 @@ int init_Gimbal() {
     printf("%i ",set_gyro_x(GyroHd));
     printf("%i ",set_gyro_y(GyroHd));
     printf("%i \n",set_gyro_z(GyroHd));
-	pinMode(servoPin_GX,OUTPUT);
-	pinMode(servoPin_GY,OUTPUT);
-	pinMode(servoPin_GZ,OUTPUT);
 	pthread_t t_Gimbal;
 	if(pthread_create(&t_Gimbal, NULL, GimbalThread, NULL)) {
 		printf("Error creating thread t_Gimbal\n");

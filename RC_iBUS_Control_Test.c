@@ -1,4 +1,4 @@
-//Test RC_PWM_Control
+//Test RC iBUS Control
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
@@ -8,16 +8,7 @@
 
 #include "constants.h"
 #include "common.h"
-
-/*int steering=0, Spin_Target=0, throttle=0, gear;
-struct s_Blinker {
-	int pin;
-	int dura;
-	float freq;
-};
-struct s_Blinker Blinker[10]; 
-*/
-
+#include "RC_iBUS_Control.h"
 
 bool run = true;//, EncoderMode =true;
 
@@ -25,14 +16,14 @@ unsigned int RC_Channel[Anz_RC_Channels];
 int Control(void) {
 		printf("\n");
 }
-#include "RC_iBUS_Control.h"
+
 
 
 void setup() {
 	if(wiringPiSetup() == -1){ 
         	printf("setup wiringPi faiservo !");
         };
-	init_RC_PWM();
+	init_RC_iBUS_Control();
 }
 
 void loop() {

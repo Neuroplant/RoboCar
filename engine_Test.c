@@ -1,4 +1,4 @@
-//Test RC_PWM_Control
+//Test Engine (Motor  & Lenkausschlag)
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <pca9685.h>	
@@ -11,6 +11,7 @@
 
 #include "constants.h"
 #include "common.h"
+#include "servo.h"
 
 bool run = true;
 float Spin_Target 	= 0;
@@ -19,16 +20,12 @@ int steering = 0, throttle = 0, gear = 1;
 #include "engine.h"
 
 void setup() {
+	// 	wiringPi
 	if(wiringPiSetup() == -1){ 
-        	printf("setup wiringPi failed !");
-        };
-	if(wiringPiI2CSetup(DEV_ID0) == -1){ 
-       	printf("setup wiringPi I2C failed !");
+        printf("setup wiringPi failed !");
 	};
-	if (int PWMhd = pca9685Setup(PIN_BASE0, DEV_ID0, HERTZ)<0){
-		printf("setup pca9685 failed !");
-	}
-	pca9685PWMReset(PWMhd);
+
+	init_Servo(DEV_ID0,PIN_BASE0);
 	init_Encoder();
 	init_Engine();
 	delay(500);

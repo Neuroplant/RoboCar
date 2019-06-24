@@ -31,3 +31,4 @@ int init_Encoder(void) {
 }
 
 #endif /* ENCODER_H */
+
