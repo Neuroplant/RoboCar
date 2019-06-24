@@ -1,7 +1,6 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <wiringPi.h>
 #include <pthread.h>
 #include <math.h>
 #include <stdlib.h>
@@ -25,8 +24,8 @@ void *EngineThread(void *value){
 			if (Spin_Current() < Spin_Target) 	throttle=throttle+ACCELERATION;
 			if (throttle > 0) 					gear= 1;
 			if (throttle < 0) 					gear=-1;
-			if (throttle < -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
-			if (throttle > THROTTLE_MAX) 		throttle = THROTTLE_MAX;
+			if (throttle <= -THROTTLE_MAX) 		throttle = -THROTTLE_MAX;
+			if (throttle >= THROTTLE_MAX) 		throttle = THROTTLE_MAX;
 		}else {
 			if (throttle < 0) 					throttle = 0;
 			if (throttle > THROTTLE_MAX) 		throttle = THROTTLE_MAX;

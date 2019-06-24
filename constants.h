@@ -59,7 +59,7 @@
 #define SERVO_MAX_CY	15
 
 #define THROTTLE_MAX    PWM_MAX         //defines the scale and also the acceleration
-int ACCELERATION = THROTTLE_MAX/4;		//acceleration per cycle 
+int ACCELERATION = THROTTLE_MAX/20;		//acceleration per cycle 
 #define BRAKE           30          	//Bremskraft
 
 

@@ -1,8 +1,6 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include <wiringPi.h>
-#include <pthread.h>
 #include "constants.h"
 #include "common.h"
 bool EncoderMode = true;
@@ -16,7 +14,7 @@ void PhaseCounter(void){
 		SpinDirection = -1;
 	}
 }
-float Spin_Current (void){
+int Spin_Current (void){
 	float rpmin;
 	PhaseCount = 0;
 	delay(100);

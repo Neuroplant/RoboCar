@@ -4,7 +4,6 @@
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <pca9685.h>	
-#include <pthread.h>
 #include "common.h"
 #include "constants.h"
 
