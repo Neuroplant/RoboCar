@@ -51,7 +51,7 @@ bool run			= true;
 ///Options
 bool SonarMode	=	false;
 bool LineMode	=	false;
-bool EncoderMode=	false;
+//bool EncoderMode=	false;
 bool RCMode		=	true;
 bool PS3Mode	=	false;
 bool LCDMode	=	false;
