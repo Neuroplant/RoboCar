@@ -47,8 +47,8 @@
 #define SPIN_MAX	100 // max 260/min
 
 
-#define	SERVO_MIN_MS	4
-#define SERVO_MAX_MS	26
+#define	SERVO_MIN_MS	5
+#define SERVO_MAX_MS	25
 
 #define	SERVO_MIN_ST	10
 #define SERVO_MAX_ST	18
@@ -67,8 +67,9 @@ int ACCELERATION = THROTTLE_MAX/20;		//acceleration per cycle
 #define trigPin         4   	//Ultraschall-Trigger   out digital
 #define echoPin         5   	//Ultraschall-Echo      in  digital
 
+
 #define	SERVO_MIN_US	5
-#define SERVO_MAX_US	27
+#define SERVO_MAX_US	25
 
 //Linefollower
 #define LinePinR 2

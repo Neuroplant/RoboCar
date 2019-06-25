@@ -4,8 +4,8 @@
 //Ultrasonic Obstacle avoidance 
 #include <sys/time.h>
 #include "servo.h"
-struct timespec Time0, Time1; 
-long StartTime, EndTime, OutTime; 
+//struct timespec Time0, Time1; 
+//long StartTime, EndTime, OutTime; 
 
 /*
 int pulseIn(int pin, int level, int timeout) {
