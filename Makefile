@@ -23,3 +23,5 @@ Gimbal:	Gimbal_Test.c
 	gcc Gimbal_Test.c -o Test $(LDFLAGS)
 Engine:	engine_Test.c
 	gcc engine_Test.c -o Test $(LDFLAGS)
+ibus:	ibus_Test.c
+	gcc ibus_Test.c -o Test $(LDFLAGS)
