@@ -1,55 +1,74 @@
-#if !defined(IBUS_H)
+#ifndef IBUS_H
 #define IBUS_H
+int open_serial(void){
+	
+  /*
+   * Oeffnet seriellen Port
+   * Gibt das Filehandle zurueck oder -1 bei Fehler
+   *
+   * RS232-Parameter:
+   * 19200 bps, 8 Datenbits, 1 Stoppbit, no parity, no handshake
+   */
 
-#include <stdint.h>
+	int ibusfd;                    /* Filedeskriptor */
+	struct termios options;    /* Schnittstellenoptionen */
 
-/*
-  The data is serial data, 115200, 8N1.
-  Messages arrive every 7 milliseconds, and are read constantly until a
-  few tenths of a second after the transmitter is switched off.
+   /* Port oeffnen - read/write, kein "controlling tty", Status von DCD ignorieren */
+	ibusfd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
+	if (ibusfd >= 0){
+	   /* get the current options */
+	   fcntl(ibusfd, F_SETFL, 0);
+	   if (tcgetattr(ibusfd, &options) != 0) return(-1);
+		memset(&options, 0, sizeof(options)); /* Structur loeschen, ggf. vorher sichern
+                                          und bei Programmende wieder restaurieren */
+     /* Baudrate setzen */
+     cfsetispeed(&options, B115200);
+     cfsetospeed(&options, B115200);
 
-  Packet format:
-  20 40 CH0 CH1 CH2 CH3 CH4 CH5 CH6 CH7 CH8 CH9 CH10 CH11 CH12 CH13 SUM
-  Channels are stored in little endian byte order.  Unused channels read
-  5DC (first byte DC, second byte 05).
+     /* setze Optionen */
+     options.c_cflag &= ~PARENB;         /* kein Paritybit */
+     options.c_cflag &= ~CSTOPB;         /* 1 Stoppbit */
+     options.c_cflag &= ~CSIZE;          /* 8 Datenbits */
+     options.c_cflag |= CS8;
 
-  Channel 0: Right horizontal: 3E8 -> 7D0
-  Channel 1: Right vertical:   3E8 -> 7CF
-  Channel 2: Left vertical:    3E8 -> 7D0
-  Channel 3: Left horizontal:  3E8 -> 7CD
-  Channel 4: Left pot:         3E8 -> 7D0
-  Channel 5: Right pot:        3E8 -> 7D0
+     /* 19200 bps, 8 Datenbits, CD-Signal ignorieren, Lesen erlauben */
+     options.c_cflag |= (CLOCAL | CREAD);
 
-  The checksum starts at 0xFFFF, then subtract each byte except the 
-  checksum bytes.
-*/
+     /* Kein Echo, keine Steuerzeichen, keine Interrupts */
+     options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+     options.c_iflag = IGNPAR;           /* Parity-Fehler ignorieren */
+     options.c_oflag &= ~OPOST;          /* setze "raw" Input */
+     options.c_cc[VMIN]  = 0;            /* warten auf min. 0 Zeichen */
+     options.c_cc[VTIME] = 10;           /* Timeout 1 Sekunde */
+     tcflush(ibusfd,TCIOFLUSH);              /* Puffer leeren */
+    if (tcsetattr(ibusfd, TCSAFLUSH, &options) != 0) return(-1);
+	}
+  return(ibusfd);
+}
 
-struct ibus_state {
-  uint_fast8_t state;
-  uint_fast16_t checksum;
-  uint_fast8_t datal;
-  uint_fast8_t channel_count;
-};
-
-/**
- * Initialize the library state.
- * @param state A state structure; the same structure must be passed to
- *   successive calls to ibus_read
- * @param channel_count How many channels to read (maximum 14)
- */
-void ibus_init(struct ibus_state* state, uint_fast8_t channel_count);
-
-/**
- * Process the next byte from the receiver.
- * @param state The library state, initialized by ibus_init and passed to
- *   all calls to this function
- * @param data Where to write the channel data.  Must contain as many elements
- *   as passed to ibus_init.
- * @param ch The next character from the receiver
- * @return 0 if the end of the packet has been received, and the checksum
- *   is OK.
- */
-int ibus_read(struct ibus_state* state, uint16_t* data, uint8_t ch);
+  
+char Data[101];   /* Eingabepuffer für die komplette Eingabe */
+int anz;         /* gelesene Zeichen */
+char c;          /* Eingabepuffer fuer 1 Byte */
+int  i;          /* Zeichenposition bzw Index */
+//   ...
+void ReadData(void) {
+	i = 0;
+	while (c != 0xFF && i < 100 && anz >= 0){
+		anz = read(ibusfd, (void*)&c, 1);
+		if (anz > 0){
+			if (c != 0xFF)
+				Data[i++] = c;
+		}
+	}
+	if (anz < 0)
+		perror("Read failed!");
+	else if (i == 0)
+		perror("No data!");    /* im Normalbetrieb loeschen!            */
+	else {
+		Data[i] = '\0';        /* Stringterminator */
+		printf("%i Bytes: %s", i, Data);
+	}
+}
 
 #endif
-
