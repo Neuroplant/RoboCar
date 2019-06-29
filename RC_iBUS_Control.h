@@ -17,7 +17,7 @@
 #include <pthread.h>
 #include "common.h"
 #include "constants.h"
-#include "iBUS.h"
+#include "ibus.h"
 
 #ifndef RCCONTROL_H
 extern unsigned int RC_Channel[Anz_RC_Channels];
