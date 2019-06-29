@@ -21,6 +21,12 @@
 
 #ifndef RCCONTROL_H
 extern unsigned int RC_Channel[Anz_RC_Channels];
+void Control(void) {
+	for (int i=0; i<Anz_RC_Channels; i++) {
+		printf(" i%: i% ",i, RC_Channel[i]);
+	}
+	printf("\n");
+}
 #endif
 pthread_t t_RCControl;
 
@@ -28,7 +34,7 @@ pthread_t t_RCControl;
 void *RC_iBUS_Thread (void *value) {
 	int last[Anz_RC_Channels];
 	printf("RC_PPM_Thread start\n");
-	while (run) {
+	while (1) {
 		ReadData();
 		int j=0;
 		for(int i=2;i<100;i=i+2){ 
