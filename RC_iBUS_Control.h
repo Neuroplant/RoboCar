@@ -20,7 +20,7 @@
 #include "ibus.h"
 
 #ifndef RCCONTROL_H
-extern unsigned int RC_Channel[Anz_RC_Channels];
+unsigned int RC_Channel[Anz_RC_Channels];
 void Control(void) {
 	for (int i=0; i<Anz_RC_Channels; i++) {
 		printf(" i%: i% ",i, RC_Channel[i]);
