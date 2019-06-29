@@ -12,10 +12,6 @@
 
 bool run = true;//, EncoderMode =true;
 
-unsigned int RC_Channel[Anz_RC_Channels];
-int Control(void) {
-		printf("\n");
-}
 
 
 
