@@ -1,5 +1,6 @@
 #ifndef IBUS_H
 #define IBUS_H
+int ibusfd;
 int open_serial(void){
 	
   /*
